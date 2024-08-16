@@ -1,0 +1,32 @@
+{
+    "file_path": {
+        "design_work_space": "${RESULT_DIR}/to",
+        "sdc_file": "unused",
+        "lib_files": "unused",
+        "lef_files": "unused",
+        "def_file": "unused",
+        "output_def": "unused",
+        "report_file": "${RESULT_DIR}/to/report.txt",
+        "gds_file": "unused"
+    },
+    "setup_slack_margin": 0.0,
+    "hold_slack_margin": 0.0,
+    "max_buffer_percent": 0.4,
+    "max_utilization": 0.8,
+    "fix_fanout": false,
+    "optimize_drv": false,
+    "optimize_hold": true,
+    "optimize_setup": false,
+    "DRV_insert_buffers": [
+        "sky130_fd_sc_hs__buf_8"
+    ],
+    "setup_insert_buffers": [
+        "sky130_fd_sc_hs__buf_8"
+    ],
+    "hold_insert_buffers": [
+        "sky130_fd_sc_hs__buf_8"
+    ],
+    "number_passes_allowed_decreasing_slack": 5,
+    "rebuffer_max_fanout": 20,
+    "split_load_min_fanout": 8
+}

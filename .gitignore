@@ -1,0 +1,5 @@
+$RESULT_DIR
+${RESULT_DIR}
+**/results/**
+r2g_results
+demo
