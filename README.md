@@ -18,6 +18,23 @@ A tool to compile your RTL files into GDSII layouts.
 
 ## Usage
 
+### 0. Setup Runtime Environment
+
+`rtl2gds` depends on [yosys](https://github.com/YosysHQ/yosys) and [iEDA](https://gitee.com/oscc-project/iEDA). A prebuilt iEDA binary is presented at `/home/wsl/rtl2gds/bin/iEDA`.
+
+If you prefer to build from source code, [here](https://gitee.com/oscc-project/iEDA/blob/master/README.md#method-2--install-dependencies-and-compile) is how you do it:
+
+```shell
+# git clone https://atomgit.com/harrywh/rtl2gds.git && cd rtl2gds
+# only works for ubuntu 20.04
+git clone --recursive https://gitee.com/oscc-project/iEDA.git iEDA && cd iEDA
+sudo bash build.sh -i apt
+bash build.sh
+# succeed if prints "Hello iEDA!"
+./bin/iEDA -script scripts/hello.tcl
+mv ./bin/iEDA ../bin/iEDA/iEDA
+```
+
 ### 1. Prepare File Inputs
 
 Prepare your RTL design (Verilog files), design constraints (`.sdc` file), and configuration parameters (environment variables).

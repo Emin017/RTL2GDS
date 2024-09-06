@@ -5,7 +5,7 @@ BINARY_PATH="${PROJ_PATH}/bin"
 source ${BINARY_PATH}/runtime_env_setup.sh
 
 # please change your design config
-source ${PROJ_PATH}/picorv32a/config.sh
+source ${PROJ_PATH}/gcd/config.sh
 
 # preprocess
 test -e $FOUNDRY_DIR/lib/merged.lib || bash $FOUNDRY_DIR/mergelib.sh

@@ -1,80 +1,55 @@
 #!/usr/bin/env python3
 import argparse
 import os
+import subprocess
+import yaml
 
-# def EdaModel(params, )
+import Configs
+
+default_vars = Configs.tool_path | Configs.design_path
 
 def main():
     parser = argparse.ArgumentParser(description="RTL to GDSII conversion script.")
-    
-    parser.add_argument('--top', default='top', help='Design top module name (default: top)')
-    parser.add_argument('--rtl', default='top.v', help='RTL file (default: top.v)')
-    parser.add_argument('--out', default='top.gds', help='Output GDS file (default: top.gds)')
-    parser.add_argument('--mhz', type=int, default=1000, help='Clock frequency in MHz (default: 1000)')
-    parser.add_argument('--x', type=int, default=150, help='Die area X dimension (default: 150)')
-    parser.add_argument('--y', type=int, default=150, help='Die area Y dimension (default: 150)')
-    parser.add_argument('--flow', choices=['all', 'netlist', 'fp', 'pr', 'signoff'], default='all', help='Flow to run: all|netlist|fp|pr|signoff (default: all)')
-    parser.add_argument('--gui', action='store_true', help='Enable GUI')
-    parser.add_argument('--config', default='top.json', help='Configuration JSON file (default: top.json)')
+
+    parser.add_argument('--step', type=str, required=False, choices=Configs.shell_cmd.keys(), help='to run each chip backend design step')
+    parser.add_argument('--config', type=str, required=True, default='top.yaml', help='Configuration YAML file (default: top.yaml)')
+    parser.add_argument('--json', type=str, required=False, default='gds.json', help='json form layout gds file')
 
     args = parser.parse_args()
+    default_vars.update({'GDS_JSON_FILE' : args.json})
 
-    design_top = args.top
-    rtl_file = args.rtl
-    gds_file = args.out
-    clk_freq_mhz = args.mhz
-    die_x = args.x
-    die_y = args.y
-    flow = args.flow
-    enable_gui = args.gui
-    config_json = args.config
+    with open(args.config, 'r') as config_file:
+        '''
+        a typical top.yaml file:
 
-    die_area = f"0 0 {die_x} {die_y}"
-    core_area = f"10 10 {die_x - 10} {die_y - 10}"
+            RESULT_DIR: ./gcd_results
+            # design settings
+            DESIGN_TOP: gcd
+            RTL_FILE: /home/wsl/rtl2gds/gcd/gcd.v
+            # PDK: sky130
+            # key result files
+            GDS_FILE: gcd.gds
+            # design constrains
+            CLK_PORT_NAME: clk
+            CLK_FREQ_MHZ:  200
+            DIE_AREA:   0  0 120 120
+            CORE_AREA: 10 10 110 110
+        '''
+        default_vars.update(yaml.safe_load(config_file))
 
-    run_synthesis = run_floorplan = run_place_route = run_signoff = 0
+    assert (set(default_vars.keys()) == Configs.keywords), "Keys of `default_r2g_vars` MUST match `variables_list`"
 
-    if flow == 'all':
-        run_synthesis = run_floorplan = run_place_route = run_signoff = 1
-    elif flow == 'netlist':
-        run_synthesis = 1
-    elif flow == 'fp':
-        run_floorplan = 1
-    elif flow == 'pr':
-        run_place_route = 1
-    elif flow == 'signoff':
-        run_signoff = 1
+    # export_sys_env_variables
+    for env_var, value in default_vars.items():
+        os.environ[env_var] = value
 
-    # Export environment variables
-    os.environ['DESIGN_TOP'] = design_top
-    os.environ['RTL_FILE'] = rtl_file
-    os.environ['GDS_FILE'] = gds_file
-    os.environ['CLK_FREQ_MHZ'] = str(clk_freq_mhz)
-    os.environ['DIE_AREA'] = die_area
-    os.environ['CORE_AREA'] = core_area
-    os.environ['ENABLE_GUI'] = str(int(enable_gui))
-    os.environ['CONFIG_JSON'] = config_json
-
-    # Dummy implementation of the flow steps
-    print(f"Running with the following settings:")
-    print(f"Top module: {design_top}")
-    print(f"RTL file: {rtl_file}")
-    print(f"Output GDS file: {gds_file}")
-    print(f"Clock frequency: {clk_freq_mhz} MHz")
-    print(f"Die area: {die_area}")
-    print(f"Core area: {core_area}")
-    print(f"Flow: {flow}")
-    print(f"Enable GUI: {enable_gui}")
-    print(f"Config JSON: {config_json}")
-
-    if run_synthesis:
-        print("Running synthesis...")
-    if run_floorplan:
-        print("Running floorplan...")
-    if run_place_route:
-        print("Running place and route...")
-    if run_signoff:
-        print("Running signoff...")
+    # run design steps using subprocess
+    if args.step:
+        subprocess.call(Configs.shell_cmd[args.step])
+    else:
+        for step, cmd in Configs.shell_cmd.items():
+            retcode = subprocess.call(cmd)
+            assert retcode == 0, f"Step {step} failed with return code {retcode}"
 
 if __name__ == "__main__":
     main()

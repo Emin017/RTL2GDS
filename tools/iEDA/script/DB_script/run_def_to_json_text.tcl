@@ -28,9 +28,9 @@ def_init -path $::env(RESULT_DIR)/iPL_filler_result.def
 ##   Full layer information instance:(-discard li/mcon/nwell/pwell/met/via)
 ##   use (-discard null) to choose all layer
 #===========================================================
-json_save -path $::env(RESULT_DIR)/final_design.json -discard li
+json_save -path $::env(RESULT_DIR)/$::env(GDS_JSON_FILE).json -discard li
 
 #===========================================================
 ##   Exit 
-#=======================                                 ====================================
+#===========================================================
 flow_exit
