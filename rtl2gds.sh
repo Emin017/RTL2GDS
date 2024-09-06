@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e
 export PROJ_PATH=$(cd "$(dirname "$0")";pwd)
+export SDC_FILE="${PROJ_PATH}/tools/default.sdc"
+export FOUNDRY_DIR="${PROJ_PATH}/foundry/sky130"
 BINARY_PATH="${PROJ_PATH}/bin"
 source ${BINARY_PATH}/runtime_env_setup.sh
 
@@ -8,8 +10,6 @@ source ${BINARY_PATH}/runtime_env_setup.sh
 source ${PROJ_PATH}/gcd/config.sh
 
 # preprocess
-export SDC_FILE="${PROJ_PATH}/tools/default.sdc"
-export FOUNDRY_DIR="${DESIGN_PATH}/../foundry/sky130"
 test -e $FOUNDRY_DIR/lib/merged.lib || bash $FOUNDRY_DIR/mergelib.sh
 mkdir -p $RESULT_DIR/yosys
 
