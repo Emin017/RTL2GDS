@@ -4,12 +4,14 @@ export PROJ_PATH=$(cd "$(dirname "$0")";pwd)
 BINARY_PATH="${PROJ_PATH}/bin"
 source ${BINARY_PATH}/runtime_env_setup.sh
 
-# please change your design config
+# please change your design config.sh file
 source ${PROJ_PATH}/gcd/config.sh
 
 # preprocess
+export SDC_FILE="${PROJ_PATH}/tools/default.sdc"
+export FOUNDRY_DIR="${DESIGN_PATH}/../foundry/sky130"
 test -e $FOUNDRY_DIR/lib/merged.lib || bash $FOUNDRY_DIR/mergelib.sh
-mkdir -p $RESULT_DIR/verilog
+mkdir -p $RESULT_DIR/yosys
 
 # run synthesis
 yosys ${PROJ_PATH}/tools/yosys/yosys.tcl

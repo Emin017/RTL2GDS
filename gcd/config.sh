@@ -1,15 +1,11 @@
-DESIGN_PATH=${PROJ_PATH}/gcd
-
 # necessary directories
-export FOUNDRY_DIR="${DESIGN_PATH}/../foundry/sky130"
+DESIGN_PATH=${PROJ_PATH}/gcd
 export RESULT_DIR="${DESIGN_PATH}/results"
-export NETLIST_DIR="${RESULT_DIR}/verilog"
 
 # design settings
 export DESIGN_TOP="gcd"
 export RTL_FILE="${DESIGN_PATH}/${DESIGN_TOP}.v"
-export SDC_FILE="${DESIGN_PATH}/${DESIGN_TOP}.sdc"
-export NETLIST_FILE="${NETLIST_DIR}/${DESIGN_TOP}.v"
+export NETLIST_FILE="${RESULT_DIR}/${DESIGN_TOP}_netlist.v"
 
 # design constrains
 export CLK_FREQ_MHZ=200

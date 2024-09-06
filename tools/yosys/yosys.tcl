@@ -3,8 +3,8 @@
 #===========================================================
 set DESIGN                  "$::env(DESIGN_TOP)"
 set FOUNDRY_DIR             "$::env(FOUNDRY_DIR)"
-set RESULT_DIR              "$::env(RESULT_DIR)/verilog"
-set RPT_PATH                "$::env(RESULT_DIR)/verilog"
+set RESULT_DIR              "$::env(RESULT_DIR)/yosys"
+set RPT_PATH                "$::env(RESULT_DIR)/yosys"
 set SDC_FILE                "$::env(SDC_FILE)"
 set NETLIST_FILE            "$::env(NETLIST_FILE)"
 set VERILOG_FILES           "$::env(RTL_FILE)"
