@@ -6,7 +6,7 @@ flow_init -config $::env(CONFIG_DIR)/flow_config.json
 #===========================================================
 ##   read db config
 #===========================================================
-db_init -config $::env(CONFIG_DIR)/db_default_config.json
+db_init -config $::env(CONFIG_DIR)/db_default_config.json -output_dir_path $::env(RESULT_DIR)
 
 #===========================================================
 ##   reset data path
@@ -21,12 +21,23 @@ source $::env(TCL_SCRIPT_DIR)/DB_script/db_init_lef.tcl
 #===========================================================
 ##   read def
 #===========================================================
-def_init -path $::env(DEF_FILE)
+def_init -path $::env(RESULT_DIR)/iRT_result.def
 
 #===========================================================
-##   save gds 
+##   run DRC
+## -type shape / pattern
 #===========================================================
-gds_save -path $::env(GDS_FILE)
+eco_repair_via -type shape
+
+#===========================================================
+##   def & netlist
+#===========================================================
+def_save -path $::env(RESULT_DIR)/iECO_result.def
+
+#===========================================================
+##   save netlist 
+#===========================================================
+netlist_save -path $::env(RESULT_DIR)/iECO_result.v -exclude_cell_names {}
 
 #===========================================================
 ##   Exit 
