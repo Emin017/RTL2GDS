@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """test flow"""
 
 from rtl2gds import chip, flow

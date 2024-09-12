@@ -27,7 +27,7 @@ class Chip:
         self.io_env: dict[str:str]
 
     def load_config(self, config_file: str):
-        with open(config_file, "r") as f:
+        with open(config_file, "r", encoding="utf-8") as f:
             user_config = yaml.safe_load(f)
 
         print(user_config)
@@ -49,4 +49,4 @@ class Chip:
             core_area=user_config["CORE_AREA"],
         )
 
-        os.makedirs(self.path_setting.result_dir, exist_ok=True)
+        os.makedirs(self.path_setting.result_dir + "/yosys/", exist_ok=True)

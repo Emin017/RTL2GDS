@@ -19,10 +19,13 @@ class RTL2GDS:
             "hold_opt",
             "legalize",
             "route",
+            "filler",
             "layout_gds",
         ]
 
     def run(self):
+        synthesis = step.Synthesis()
+        synthesis.run(self.chip.io_env)
         # netlist_file = self.chip.path_setting.netlist_file
         floorplan = step.Floorplan()
         # input=netlist_file, output=self.chip.path_setting.def_file
@@ -37,9 +40,10 @@ class RTL2GDS:
             # step.output = self.chip.path_setting.def_file
             # self.update_metrics()
 
-        layout_gds = step.DumpLayout()
+        layout_gds = step.DumpLayout("gds")
         # input=self.chip.path_setting.def_file, output=self.chip.gds_file
         layout_gds.run(self.chip.io_env)
+        # step.split_gds_json(self.chip.io_env["GDS_JSON_FILE"])
         # self.update_metrics()
 
     def update_metrics(self):

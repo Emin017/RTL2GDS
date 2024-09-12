@@ -18,12 +18,6 @@ ENV_TOOLS_PATH = {
     "RUST_BACKTRACE": "1",
 }
 
-# DESIGN_PATH = {
-#     "NETLIST_FILE": f"{PKG_SRC_DIR}/result/verilog/gcd.v",
-#     "SDC_FILE": f"{PKG_PDK_DIR}/sdc/gcd.sdc",
-#     "SPEF_FILE": f"{PKG_PDK_DIR}/spef/gcd.spef",
-# }
-
 CONFIG_KEYWORDS = {
     "NETLIST_FILE",
     "SDC_FILE",
@@ -43,6 +37,7 @@ CONFIG_KEYWORDS = {
 }
 
 SHELL_CMD = {
+    "synthesis": ["yosys", f"{PKG_TOOL_DIR}/yosys/yosys.tcl"],
     "floorplan": [
         "iEDA",
         "-script",
@@ -83,6 +78,11 @@ SHELL_CMD = {
         "-script",
         f'{ENV_TOOLS_PATH["TCL_SCRIPT_DIR"]}/iRT_script/run_iRT.tcl',
     ],
+    "filler": [
+        "iEDA",
+        "-script",
+        f'{ENV_TOOLS_PATH["TCL_SCRIPT_DIR"]}/iPL_script/run_iPL_filler.tcl',
+    ],
     "layout_gds": [
         "iEDA",
         "-script",
@@ -95,9 +95,14 @@ SHELL_CMD = {
     ],
 }
 
-# 'sv2v':       ['sv2v', f'--incdir={default_vars["FOUNDRY_DIR"]}/verilog', f'--top={default_vars["DESIGN_TOP"]}', f'--write={default_vars["DESIGN_TOP"]}.v', default_vars['RTL_FILE']],
-# 'netlist':    ['echo', '"pass run yosys"'],
-# 'layout_oasis': ['iEDA', '-script', f'{tool_path['TCL_SCRIPT_DIR']}/DB_script/run_def_to_oasis.tcl'],
+
+# "sv2v": [
+#     "sv2v",
+#     f"--incdir={default_vars["FOUNDRY_DIR"]}/verilog",
+#     f"--top={default_vars["DESIGN_TOP"]}",
+#     f"--write={default_vars["DESIGN_TOP"]}.v",
+#     default_vars["RTL_FILE"],
+# ]
 
 
 def main():
