@@ -1,10 +1,10 @@
-# RTL to GDSII Flow
+# RTL to GDSII Compiler
 
 A tool to compile your RTL files into GDSII layouts.
 
 ## Table of Contents
 
-- [RTL to GDSII Flow](#rtl-to-gdsii-flow)
+- [RTL to GDSII Compiler](#rtl-to-gdsii-compiler)
   - [Table of Contents](#table-of-contents)
   - [Overview](#overview)
   - [Usage](#usage)
@@ -45,7 +45,7 @@ The repository includes several example designs to help you get started:
 - `picorv32a`: A RISC-V CPU core, single Verilog file
 - `aes`: An AES encryption module, multiple Verilog files
 
-### 2. Run RTL2GDS flow
+### 2. Compile
 
 `rtl2gds` has been tested on the following Docker images: `ubuntu:20.04`, `debian:11`, and `debian:12`.
 

@@ -1,21 +1,19 @@
-# PROJ_PATH: /home/wsl/rtl2gds/gcd
-RESULT_DIR: ./gcd_results
-
-# design settings
+# design_setting:
 DESIGN_TOP: gcd
-RTL_FILE: /home/wsl/rtl2gds/gcd/gcd.v
-NETLIST_FILE: /home/wsl/rtl2gds/gcd/results/verilog/gcd_netlist.v
-# PDK: sky130
 
-# key result files
+# path_setting:
+RTL_FILE: /home/wsl/rtl2gds/gcd/gcd.v
+NETLIST_FILE: /home/wsl/rtl2gds/gcd/results/gcd_netlist.v
+RESULT_DIR: ./gcd_results
 GDS_FILE: ./gcd_results/gcd.gds
 
-# design constrains
+# constrain:
 CLK_PORT_NAME: clk
-CLK_FREQ_MHZ:  200
+CLK_FREQ_MHZ:  "200"
 DIE_AREA:   0  0 120 120
 CORE_AREA: 10 10 110 110
 
+# PDK: sky130
 # RTL_TYPE: SystemVerilog
 # RTL_INCLUDE: /home/wsl/rtl2gds/gcd
 # DEF_FILE: /home/wsl/rtl2gds/gcd/gcd.v
