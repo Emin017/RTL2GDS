@@ -1,0 +1,14 @@
+# design_setting:
+DESIGN_TOP: picorv32a
+
+# path_setting:
+RTL_FILE: ../picorv32a/picorv32a.v
+NETLIST_FILE: ./pico_results/pico_netlist.v
+RESULT_DIR: ./pico_results
+GDS_FILE: ./pico_results/picorv32a.gds
+
+# constrain:
+CLK_PORT_NAME: clk
+CLK_FREQ_MHZ:  "200"
+DIE_AREA:   0  0 900 900
+CORE_AREA: 10 10 890 890

@@ -6,7 +6,6 @@ RTL_FILE: ../gcd/gcd.v
 NETLIST_FILE: ./gcd_results/gcd_netlist.v
 RESULT_DIR: ./gcd_results
 GDS_FILE: ./gcd_results/gcd.gds
-GDS_JSON_FILE: ./gcd_results/gds.json
 
 # constrain:
 CLK_PORT_NAME: clk
