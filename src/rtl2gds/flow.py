@@ -1,14 +1,12 @@
 import yaml
 
-from . import metrics
-from . import step
-from . import chip
+from . import chip, metrics, step
 
 
 class RTL2GDS:
 
-    def __init__(self, chip: chip):
-        self.chip = chip
+    def __init__(self, cc: chip.Chip):
+        self.chip = cc
         self.metrics: FlowMetrics
         self._steps = [
             "floorplan",

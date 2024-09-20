@@ -1,9 +1,10 @@
 import os
-import yaml
 from dataclasses import dataclass
 
-from .design_constrain import DesignConstrain
+import yaml
+
 from . import configs
+from .design_constrain import DesignConstrain
 
 
 # would it be better if use pydantic as a validation layer
@@ -19,8 +20,8 @@ class ProjectPath:
 
 
 class Chip:
-    def __init__(self):
-        self.design_top: str
+    def __init__(self, top: str):
+        self.design_top = top
         self.step: str
         self.path_setting: ProjectPath
         self.constrain: DesignConstrain

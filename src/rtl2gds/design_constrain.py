@@ -9,6 +9,7 @@ class DesignConstrain:
     # area constrain
     die_area: str
     core_area: str
+    # utility: float
 
 
 # def export_env(self):
