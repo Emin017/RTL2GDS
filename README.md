@@ -56,10 +56,6 @@ $ docker run --rm -it -v $(pwd):/rtl2gds ubuntu:20.04 bash
 $ cd /rtl2gds && bash rtl2gds.sh
 ```
 
-## Known Problem
-
-The prebuilt binary was compiled on an Intel Xeon server. However, some users have reported encountering "Illegal instruction" errors when running it on AMD platforms. If you encounter this issue, consider building the EDA tools from the source code instead.
-
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request.
