@@ -5,3 +5,4 @@ ${RESULT_DIR}
 **/results/**
 *_results
 demo
+uv.lock
