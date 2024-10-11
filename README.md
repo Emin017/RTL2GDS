@@ -37,9 +37,9 @@ mv ./bin/iEDA ../bin/iEDA/iEDA
 
 ### 1. Prepare File Inputs
 
-Prepare your RTL design (Verilog files), design constraints (`.sdc` file), and configuration parameters (environment variables).
+Prepare your RTL design (Verilog files), and configuration (yaml file).
 
-The repository includes several example designs to help you get started:
+`design_zoo` includes several example designs to help you get started:
 
 - `gcd`: A simple GCD calculator, single Verilog file
 - `picorv32a`: A RISC-V CPU core, single Verilog file
@@ -53,7 +53,8 @@ To compile your design, use the following commands:
 
 ```shell
 $ docker run --rm -it -v $(pwd):/rtl2gds ubuntu:20.04 bash
-$ cd /rtl2gds && bash rtl2gds.sh
+$ cd /rtl2gds
+$ python3 -m rtl2gds -c <your-design-config>.yaml
 ```
 
 ## Contributing
