@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 import yaml
 
-from . import configs
+from . import global_configs
 from .design_constrain import DesignConstrain
 
 
@@ -29,10 +29,11 @@ class Chip:
 
     def load_config(self, config_file: str):
         with open(config_file, "r", encoding="utf-8") as f:
-            user_config = yaml.safe_load(f)
+            user_config = dict(yaml.safe_load(f))
 
-        print(user_config)
-        self.io_env = dict(user_config | configs.ENV_TOOLS_PATH)
+        user_config.update(global_configs.ENV_TOOLS_PATH)
+        self.io_env = user_config
+
         self.design_top = user_config["DESIGN_TOP"]
         self.step = "init"
         self.path_setting = ProjectPath(
