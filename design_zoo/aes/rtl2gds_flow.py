@@ -1,25 +1,28 @@
 #!/usr/bin/env python3
 """test flow"""
-import os
-import sys
+# # Add Python rtl2gds module path if necessary
+# import os
+# import sys
+# sys.path.insert(
+#     0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "src"))
+# )
 
-# Add Python module path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'src')))
+import logging
 
-from rtl2gds import chip, flow
+from rtl2gds import Chip, flow
 
 
 def main():
     """aes + rtl2gds flow"""
 
-    aes = chip.Chip("aes") # top name is not necessary
-    aes.load_config("./aes.yaml")
+    logging.basicConfig(
+        format="[%(asctime)s - %(levelname)s - %(name)s]: %(message)s",
+        level=logging.INFO,
+    )
 
-    rtl2gds_flow = flow.RTL2GDS(aes)
-    rtl2gds_flow.run()
+    aes = Chip.from_yaml("./aes.yaml")
 
-    rtl2gds_flow.dump_metrics()
-    rtl2gds_flow.dump_gds()
+    flow.rtl2gd_flow.run(aes)
 
 
 if __name__ == "__main__":

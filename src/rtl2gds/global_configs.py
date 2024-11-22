@@ -14,43 +14,45 @@ ENV_TOOLS_PATH = {
     "FOUNDRY_DIR": PKG_PDK_DIR,
     "TCL_SCRIPT_DIR": f"{PKG_TOOL_DIR}/iEDA/script",
     "CONFIG_DIR": f"{PKG_TOOL_DIR}/iEDA/iEDA_config",
-    "SDC_FILE": f"{PKG_TOOL_DIR}/default.sdc",
     "RUST_BACKTRACE": "1",
     "VERILOG_INCLUDE_DIRS": "",
 }
 
-CONFIG_KEYWORDS = {
-    "NETLIST_FILE",
-    "SDC_FILE",
-    "SPEF_FILE",
-    "FOUNDRY_DIR",
-    "TCL_SCRIPT_DIR",
-    "CONFIG_DIR",
-    "RESULT_DIR",
-    "DESIGN_TOP",
-    "RTL_FILE",
-    "GDS_FILE",
-    "CLK_PORT_NAME",
-    "CLK_FREQ_MHZ",
-    "DIE_AREA",
-    "CORE_AREA",
-}
+DEFAULT_SDC_FILE = f"{PKG_TOOL_DIR}/default.sdc"
+
+# Flow & Step settings
+RTL2GDS_FLOW_STEP = [
+    "synthesis",
+    "floorplan",
+    "fixfanout",
+    "place",
+    "cts",
+    "drv_opt",
+    "hold_opt",
+    "legalize",
+    "route",
+    "filler",
+    "layout_gds",
+]
+
+PR_FLOW_STEP = RTL2GDS_FLOW_STEP[2:-1]
+
+INIT_STEP = "init"
 
 
 def main():
+    """print all"""
     print(
-        PKG_SRC_DIR,
-        "\n",
-        PKG_BIN_DIR,
-        "\n",
-        PKG_PDK_DIR,
-        "\n",
+        "DEFAULT_SDC_FILE:",
         ENV_TOOLS_PATH,
-        "\n",
-        ENV_TOOLS_PATH,
-        "\n",
-        CONFIG_KEYWORDS,
-        "\n",
+        "\nPKG_SRC_DIR:",
+        DEFAULT_SDC_FILE,
+        "\nRTL2GDS_FLOW_STEP:",
+        RTL2GDS_FLOW_STEP,
+        "\nPR_FLOW_STEP:",
+        PR_FLOW_STEP,
+        "\nINIT_STEP:",
+        INIT_STEP,
     )
 
 

@@ -10,18 +10,6 @@ GDS_FILE: ./gcd_results/gcd.gds
 # constrain:
 CLK_PORT_NAME: clk
 CLK_FREQ_MHZ:  "200"
-DIE_AREA:   0  0 120 120
-CORE_AREA: 10 10 110 110
-
-# PDK: sky130
-# FLOW: RTL2GDS
-# RTL_TYPE: SystemVerilog
-# RTL_INCLUDE: /home/wsl/rtl2gds/gcd
-# DEF_FILE: /home/wsl/rtl2gds/gcd/gcd.v
-# SDC_FILE: /home/wsl/rtl2gds/gcd/gcd.sdc
-# SPEF_FILE: ${foundry_dir}/spef/gcd.spef',
-
-# AREA_UTIL: 0.7
-
-# INPUT_DEF: ./gcd_results/iFP.def
-# NEXT_STEP: fixfanout
+# DIE_AREA:   0  0 120 120
+# CORE_AREA: 10 10 110 110
+CORE_UTIL: 0.7

@@ -9,6 +9,7 @@ GDS_FILE: ./pico_results/picorv32a.gds
 
 # constrain:
 CLK_PORT_NAME: clk
-CLK_FREQ_MHZ: "200"
-DIE_AREA: 0  0 900 900
-CORE_AREA: 10 10 890 890
+CLK_FREQ_MHZ: "100"
+CORE_UTIL: 0.7
+# DIE_AREA: 0  0 900 900
+# CORE_AREA: 10 10 890 890

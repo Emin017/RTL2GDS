@@ -2,7 +2,14 @@
 DESIGN_TOP: aes_cipher_top
 
 # path_setting:
-RTL_FILE: "./aes_cipher_top.v \n ./aes_inv_cipher_top.v \n ./aes_inv_sbox.v \n ./aes_key_expand_128.v \n ./aes_rcon.v \n ./aes_sbox.v \n ./timescale.v"
+RTL_FILE: 
+- ./aes_cipher_top.v
+- ./aes_inv_cipher_top.v
+- ./aes_inv_sbox.v
+- ./aes_key_expand_128.v
+- ./aes_rcon.v
+- ./aes_sbox.v
+- ./timescale.v
 
 NETLIST_FILE: ./aes_results/aes_netlist.v
 RESULT_DIR: ./aes_results
@@ -11,5 +18,7 @@ GDS_FILE: ./aes_results/aes.gds
 # constrain:
 CLK_PORT_NAME: clk
 CLK_FREQ_MHZ:  "100"
-DIE_AREA:  0  0  700 700
-CORE_AREA: 10 10 690 690
+CORE_UTIL: 0.6
+
+# DIE_AREA:  0  0  700 700
+# CORE_AREA: 10 10 690 690

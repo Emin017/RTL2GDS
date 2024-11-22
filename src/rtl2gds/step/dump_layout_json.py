@@ -1,17 +1,23 @@
 """
-use for 云平台
+use for rtl2gds cloud
 """
 
+import logging
 import os
+import pathlib
 import re
+import subprocess
 from concurrent.futures import ThreadPoolExecutor
 
 import orjson
 
+from rtl2gds.global_configs import ENV_TOOLS_PATH
+from rtl2gds.step.configs import SHELL_CMD
+
 DEFAULT_MAX_FILE_SIZE = 19 * 1024 * 1024  # 19MB in bytes
 
 
-def _save_chunk(data_chunk, file_no_suffix, index):
+def _save_chunk(data_chunk, file_no_suffix, index) -> str:
     """
     Save a chunk of data to a JSON file.
 
@@ -25,13 +31,10 @@ def _save_chunk(data_chunk, file_no_suffix, index):
     """
     chunk_data = {"data": data_chunk}
     file_name = f"{file_no_suffix}-{index}.json"
-    try:
-        with open(file_name, "wb") as file:
-            file.write(orjson.dumps(chunk_data))
-        return file_name
-    except IOError as e:
-        print(f"Error writing file {file_name}: {e}")
-        return None
+
+    with open(file_name, "wb") as file:
+        file.write(orjson.dumps(chunk_data))
+    return file_name
 
 
 def _remove_bracket_trailing_commas(json_str):
@@ -110,16 +113,16 @@ def _split_data_into_chunks(data, max_file_size):
     return chunks
 
 
-def split_gds_json(filename: str, max_file_size=DEFAULT_MAX_FILE_SIZE) -> list:
+def _split_layout_json(filename: str, max_file_size=DEFAULT_MAX_FILE_SIZE) -> list:
     """
-    Split a GDS JSON file into smaller chunks and save them along with their headers.
+    Split a Layout JSON file into smaller chunks and save them along with their headers.
 
-    This function reads a GDS JSON file, extracts the header and data parts,
+    This function reads a Layout JSON file, extracts the header and data parts,
     and splits the data into multiple smaller chunks based on the maximum file size limit.
     Each chunk along with its header is saved as a separate JSON file.
 
     Parameters:
-    filename (str): The name of the GDS JSON file to be split.
+    filename (str): The name of the Layout JSON file to be split.
     max_file_size (int): The maximum size of each chunk in bytes (default: 1 MB).
 
     Returns:
@@ -145,14 +148,45 @@ def split_gds_json(filename: str, max_file_size=DEFAULT_MAX_FILE_SIZE) -> list:
             for idx, chunk in enumerate(chunks)
         ]
         for future in futures:
-            result = future.result()
-            if result:
-                file_names.append(result)
+            file_names.append(future.result())
 
     return file_names
 
 
+def run(input_def: pathlib.Path, layout_json_file: pathlib.Path) -> list:
+    """
+    in:
+    (fix) CONFIG_DIR, TCL_SCRIPT_DIR, RESULT_DIR
+    (var) INPUT_DEF, LAYOUT_JSON_FILE
+    out: list of layout json files
+    
+    Raises:
+        subprocess.CalledProcessError: If the GDS dump command fails
+    """
+    step_name = __file__.rsplit("/", maxsplit=1)[-1].split(".")[0]
+    step_cmd = SHELL_CMD[step_name]
+    step_env = {"INPUT_DEF": input_def, "LAYOUT_JSON_FILE": layout_json_file}
+
+    logging.info(
+        "(step.%s) \n subprocess cmd: %s \n subprocess env: %s",
+        step_name,
+        str(step_cmd),
+        str(step_env),
+    )
+
+    ret_code = subprocess.call(step_cmd, env=step_env.update(ENV_TOOLS_PATH))
+    if ret_code != 0:
+        raise subprocess.CalledProcessError(ret_code, step_cmd)
+
+    return _split_layout_json(layout_json_file)
+
+
 if __name__ == "__main__":
-    # note: get test file name from cmd line arg
-    result_files = split_gds_json(os.sys.argv[1])
-    print(result_files)
+    # # note: get test file name from cmd line arg
+    # result_files = _split_layout_json(os.sys.argv[1])
+    # print(result_files)
+    logging.basicConfig(
+        format="[%(asctime)s - %(levelname)s - %(name)s]: %(message)s",
+        level=logging.INFO,
+    )
+    run("/path/to/input_def.def", "layout.json")

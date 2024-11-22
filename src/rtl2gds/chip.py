@@ -1,54 +1,85 @@
-import os
-from dataclasses import dataclass
+from pathlib import Path
+from typing import Dict, Optional
 
 import yaml
 
-from . import global_configs
+import rtl2gds.global_configs as configs
+
 from .design_constrain import DesignConstrain
-
-
-# would it be better if use pydantic as a validation layer
-@dataclass
-class ProjectPath:
-    rtl_file: str
-    netlist_file: str
-    # sdc_file = f"${Configs.PKG_TOOL_DIR}/default.sdc"
-    def_file = ""
-    gds_file: str
-    # json_file: str
-    result_dir: str
+from .design_path import DesignPath
+from .metrics import DesignMetrics
 
 
 class Chip:
-    def __init__(self, top: str = ""):
-        self.design_top = top
-        self.step: str
-        self.path_setting: ProjectPath
-        self.constrain: DesignConstrain
-        self.io_env: dict
+    """
+    Main design object that manages chip design flow from RTL to GDS.
 
-    def load_config(self, config_file: str):
-        with open(config_file, "r", encoding="utf-8") as f:
-            user_config = dict(yaml.safe_load(f))
+    This class centralizes all design information and provides interfaces
+    for running design flow steps like synthesis, floorplanning, etc.
+    """
 
-        user_config.update(global_configs.ENV_TOOLS_PATH)
-        self.io_env = user_config
+    def __init__(
+        self,
+        design_top: str = "",
+        path_setting: Optional[DesignPath] = None,
+        constrain: Optional[DesignConstrain] = None,
+    ):
+        self.design_top = design_top
+        self.path_setting = path_setting
+        self.constrain = constrain
+        self.metrics = DesignMetrics()
+        self.finished_step = configs.INIT_STEP
+        self.expect_step = configs.INIT_STEP
 
-        self.design_top = user_config["DESIGN_TOP"]
-        self.step = "init"
-        self.path_setting = ProjectPath(
-            rtl_file=user_config["RTL_FILE"],
-            netlist_file=user_config["NETLIST_FILE"],
-            gds_file=user_config["GDS_FILE"],
-            result_dir=user_config["RESULT_DIR"],
-            # def_file = user_config[''],
-            # json_file = user_config[''],
-        )
-        # self.constrain = DesignConstrain(
-        #     clk_port_name=user_config["CLK_PORT_NAME"],
-        #     clk_freq_mhz=user_config["CLK_FREQ_MHZ"],
-        #     die_area=user_config["DIE_AREA"],
-        #     core_area=user_config["CORE_AREA"],
+    def init_for_step(self, expect_step: str):
+        self.finished_step = self.expect_step
+        self.expect_step = expect_step
+
+    @classmethod
+    def from_yaml(cls, config_path: Path) -> "Chip":
+        """Create a Chip instance from YAML configuration"""
+        with open(config_path, "r", encoding="utf-8") as f:
+            config = yaml.safe_load(f)
+
+        # Parse RTL files
+        rtl_files = config["RTL_FILE"]
+        # rtl_files = (
+        #     config["RTL_FILE"]
+        #     if isinstance(config["RTL_FILE"], list)
+        #     else [
+        #         p for pattern in config["RTL_FILE"].split() for p in glob.glob(pattern)
+        #     ]
         # )
 
-        os.makedirs(self.path_setting.result_dir + "/yosys/", exist_ok=True)
+        # Create path settings and constraints
+        path_setting = DesignPath(
+            rtl_file=rtl_files,
+            netlist_file=config["NETLIST_FILE"],
+            def_file=config.get("DEF_FILE", ""),
+            gds_file=config["GDS_FILE"],
+            result_dir=config["RESULT_DIR"],
+            sdc_file=config.get("SDC_FILE", configs.DEFAULT_SDC_FILE),
+        )
+
+        constrain = DesignConstrain(
+            clk_port_name=config["CLK_PORT_NAME"],
+            clk_freq_mhz=config["CLK_FREQ_MHZ"],
+            die_area=config.get("DIE_AREA", ""),
+            core_area=config.get("CORE_AREA", ""),
+            core_util=config.get("CORE_UTIL", 0),
+        )
+
+        return cls(
+            design_top=config["DESIGN_TOP"],
+            path_setting=path_setting,
+            constrain=constrain,
+        )
+
+    @property
+    def env(self) -> Dict[str, str]:
+        """Get environment variables for running tools"""
+        env = configs.ENV_TOOLS_PATH.copy()
+        env.update(self.path_setting.to_env_dict())
+        env.update(self.constrain.to_env_dict())
+        env["DESIGN_TOP"] = self.design_top
+        return env
