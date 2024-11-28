@@ -61,7 +61,7 @@ def run(
     Raises:
         subprocess.CalledProcessError: If the GDS dump command fails
     """
-    step_name = "layout_gds"
+    step_name = __file__.rsplit("/", maxsplit=1)[-1].split(".")[0]
     step_cmd = SHELL_CMD[step_name]
 
     # Prepare environment variables

@@ -29,3 +29,37 @@ Notes：
 
 - 配置文件为yaml格式，包含RTL基础信息（Top名）、结果/报告文件路径、设计约束（时序/面积/利用率）
 <!-- - 输出通常还包含当前阶段的版图俯视图，为图片格式。 -->
+
+## 3 模块设计
+
+### 3.1 Chip-芯片设计信息
+
+包含关键文件路径、设计约束、运行时上下文、metrics等
+
+RTL2GDS功能核心，由Flow进行修改
+
+### 3.2 Flow-芯片设计流程
+
+基于Step构建，使用Chip进行上下文信息传递
+
+- RTL2GDS
+
+RTL2GDS全流程，对应需求1
+
+linear sequential flow
+
+- CloudFlow
+
+由 HTTP RESTful api 请求调用，启动容器，通过容器入口命令传递参数。在 `cloud_main.py` 构造 `CloudFlow` 并运行。关键参数如下：
+
+| IO | Arguements | Avaliable Values | Source |
+|---|---|---|
+| Input | config path | "/path/to/config.yaml" | API request body |
+| Input | step | "rtl2gds", "route" | API request body |
+| Output | container info | container_id | docker python api |
+
+
+### 3.3 Step-执行工具封装
+
+约定执行步骤的标准输入和输出，进行信息验证和工具功能执行
+封装了包含iEDA、yosys和klayout在内的开源EDA工具

@@ -5,7 +5,7 @@ from dataclasses import dataclass
 class DesignConstrain:
     # timing constrain (sdc)
     clk_port_name: str
-    clk_freq_mhz: str
+    clk_freq_mhz: float
     # area constrain
     die_area: str = None
     core_area: str = None

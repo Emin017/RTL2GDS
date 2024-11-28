@@ -1,13 +1,12 @@
-from pathlib import Path
-from typing import Dict, Optional
+import os
+import pathlib
+from typing import Dict
 
 import yaml
 
-import rtl2gds.global_configs as configs
-
+from . import global_configs
 from .design_constrain import DesignConstrain
 from .design_path import DesignPath
-from .metrics import DesignMetrics
 
 
 class Chip:
@@ -20,27 +19,36 @@ class Chip:
 
     def __init__(
         self,
-        design_top: str = "",
-        path_setting: Optional[DesignPath] = None,
-        constrain: Optional[DesignConstrain] = None,
+        config_yaml: str,
     ):
-        self.design_top = design_top
-        self.path_setting = path_setting
-        self.constrain = constrain
-        self.metrics = DesignMetrics()
-        self.finished_step = configs.INIT_STEP
-        self.expect_step = configs.INIT_STEP
+        self.design_top = None
+        self.path_setting: DesignPath = None
+        self.constrain: DesignConstrain = None
+        # self.metrics: DesignMetrics = None
+        self.finished_step = None
+        self.config_yaml = config_yaml
+        # self._io_env = {}
+        self.init_from_yaml(config_yaml)
 
-    def init_for_step(self, expect_step: str):
-        self.finished_step = self.expect_step
-        self.expect_step = expect_step
-
-    @classmethod
-    def from_yaml(cls, config_path: Path) -> "Chip":
-        """Create a Chip instance from YAML configuration"""
+    def init_from_yaml(self, config_path: str):
+        """Init a Chip instance from YAML configuration"""
+        if not os.path.exists(config_path):
+            pathlib.Path(config_path).touch()
+        self.config_yaml = config_path
         with open(config_path, "r", encoding="utf-8") as f:
             config = yaml.safe_load(f)
+        self.init_from_config(config)
 
+    def init_from_config(self, config: Dict):
+        """Init a Chip instance from a config dictionary"""
+        if not os.path.exists(self.config_yaml):
+            pathlib.Path(self.config_yaml).touch()
+        self.finished_step = (
+            config["FINISHED_STEP"]
+            if "FINISHED_STEP" in config
+            else global_configs.StepName.INIT
+        )
+        self.design_top = config["DESIGN_TOP"]
         # Parse RTL files
         rtl_files = config["RTL_FILE"]
         # rtl_files = (
@@ -58,7 +66,7 @@ class Chip:
             def_file=config.get("DEF_FILE", ""),
             gds_file=config["GDS_FILE"],
             result_dir=config["RESULT_DIR"],
-            sdc_file=config.get("SDC_FILE", configs.DEFAULT_SDC_FILE),
+            sdc_file=config.get("SDC_FILE", global_configs.DEFAULT_SDC_FILE),
         )
 
         constrain = DesignConstrain(
@@ -69,17 +77,19 @@ class Chip:
             core_util=config.get("CORE_UTIL", 0),
         )
 
-        return cls(
-            design_top=config["DESIGN_TOP"],
-            path_setting=path_setting,
-            constrain=constrain,
-        )
+        self.path_setting = path_setting
+        self.constrain = constrain
 
-    @property
     def env(self) -> Dict[str, str]:
         """Get environment variables for running tools"""
-        env = configs.ENV_TOOLS_PATH.copy()
-        env.update(self.path_setting.to_env_dict())
-        env.update(self.constrain.to_env_dict())
-        env["DESIGN_TOP"] = self.design_top
-        return env
+        io_env = global_configs.ENV_TOOLS_PATH.copy()
+        io_env.update(self.path_setting.to_env_dict())
+        io_env.update(self.constrain.to_env_dict())
+        io_env["DESIGN_TOP"] = self.design_top
+        io_env["FINISHED_STEP"] = self.finished_step
+        return io_env
+
+    def dump_config(self):
+        """Dump the config to the yaml file"""
+        with open(self.config_yaml, "w", encoding="utf-8") as f:
+            yaml.dump(self.env(), f)

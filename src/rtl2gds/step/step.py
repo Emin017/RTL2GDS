@@ -6,9 +6,7 @@ import logging
 import os
 import subprocess
 
-import rtl2gds.global_configs as configs
-
-from ..global_configs import DEFAULT_SDC_FILE, ENV_TOOLS_PATH
+from ..global_configs import DEFAULT_SDC_FILE, ENV_TOOLS_PATH, StepName
 from . import configs
 
 
@@ -27,11 +25,6 @@ class Step:
         clk_port_name: str,
         clk_freq_mhz: float,
     ):
-        """
-        TCL KEY IO ENV:
-        INPUT_DEF
-        GDS_FILE
-        """
         logging.info("(step.%s) %s", self.name, self.description)
         assert os.path.exists(input_def)
 
@@ -56,7 +49,7 @@ class Step:
 class FixFanout(Step):
     def __init__(self):
         super().__init__()
-        self.name = "fixfanout"
+        self.name = StepName.FIXFANOUT
         self.description = "Fixing fanout by iEDA-iNO"
         self.shell_cmd = configs.SHELL_CMD[self.name]
 
@@ -64,7 +57,7 @@ class FixFanout(Step):
 class Place(Step):
     def __init__(self):
         super().__init__()
-        self.name = "place"
+        self.name = StepName.PLACE
         self.description = "Standard Cell Placement by iEDA-iPL"
         self.shell_cmd = configs.SHELL_CMD[self.name]
 
@@ -72,7 +65,7 @@ class Place(Step):
 class CTS(Step):
     def __init__(self):
         super().__init__()
-        self.name = "cts"
+        self.name = StepName.CTS
         self.description = "Clock Tree Synthesis by iEDA-iCTS"
         self.shell_cmd = configs.SHELL_CMD[self.name]
 
@@ -80,7 +73,7 @@ class CTS(Step):
 class DrvOpt(Step):
     def __init__(self):
         super().__init__()
-        self.name = "drv_opt"
+        self.name = StepName.DRV_OPT
         self.description = "Optimization Design Rule Voilation by iEDA-iTO"
         self.shell_cmd = configs.SHELL_CMD[self.name]
 
@@ -88,7 +81,7 @@ class DrvOpt(Step):
 class HoldOpt(Step):
     def __init__(self):
         super().__init__()
-        self.name = "hold_opt"
+        self.name = StepName.HOLD_OPT
         self.description = "Optimization Hold Time Voilation by iEDA-iTO"
         self.shell_cmd = configs.SHELL_CMD[self.name]
 
@@ -96,7 +89,7 @@ class HoldOpt(Step):
 class Legalize(Step):
     def __init__(self):
         super().__init__()
-        self.name = "legalize"
+        self.name = StepName.LEGALIZE
         self.description = "Standard Cell Legalization by iEDA-iPL"
         self.shell_cmd = configs.SHELL_CMD[self.name]
 
@@ -104,7 +97,7 @@ class Legalize(Step):
 class Filler(Step):
     def __init__(self):
         super().__init__()
-        self.name = "filler"
+        self.name = StepName.FILLER
         self.description = "Adding Filler for DFM by iEDA-iPL"
         self.shell_cmd = configs.SHELL_CMD[self.name]
 
@@ -112,6 +105,6 @@ class Filler(Step):
 class Route(Step):
     def __init__(self):
         super().__init__()
-        self.name = "route"
+        self.name = StepName.ROUTE
         self.description = "Routing by iEDA-iRT"
         self.shell_cmd = configs.SHELL_CMD[self.name]

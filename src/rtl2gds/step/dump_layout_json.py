@@ -11,7 +11,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 import orjson
 
-from rtl2gds.global_configs import ENV_TOOLS_PATH
+from rtl2gds.global_configs import ENV_TOOLS_PATH, DEFAULT_SDC_FILE
 from rtl2gds.step.configs import SHELL_CMD
 
 DEFAULT_MAX_FILE_SIZE = 19 * 1024 * 1024  # 19MB in bytes
@@ -153,7 +153,7 @@ def _split_layout_json(filename: str, max_file_size=DEFAULT_MAX_FILE_SIZE) -> li
     return file_names
 
 
-def run(input_def: pathlib.Path, layout_json_file: pathlib.Path) -> list:
+def run(input_def: str, result_dir: str, layout_json_file: str) -> list:
     """
     in:
     (fix) CONFIG_DIR, TCL_SCRIPT_DIR, RESULT_DIR
@@ -165,7 +165,13 @@ def run(input_def: pathlib.Path, layout_json_file: pathlib.Path) -> list:
     """
     step_name = __file__.rsplit("/", maxsplit=1)[-1].split(".")[0]
     step_cmd = SHELL_CMD[step_name]
-    step_env = {"INPUT_DEF": input_def, "LAYOUT_JSON_FILE": layout_json_file}
+    assert pathlib.Path(input_def).exists()
+    step_env = {
+        "INPUT_DEF": input_def, 
+        "RESULT_DIR": result_dir, 
+        "LAYOUT_JSON_FILE": layout_json_file,
+        "SDC_FILE": DEFAULT_SDC_FILE
+    }
 
     logging.info(
         "(step.%s) \n subprocess cmd: %s \n subprocess env: %s",
@@ -174,7 +180,8 @@ def run(input_def: pathlib.Path, layout_json_file: pathlib.Path) -> list:
         str(step_env),
     )
 
-    ret_code = subprocess.call(step_cmd, env=step_env.update(ENV_TOOLS_PATH))
+    step_env.update(ENV_TOOLS_PATH)
+    ret_code = subprocess.call(step_cmd, env=step_env)
     if ret_code != 0:
         raise subprocess.CalledProcessError(ret_code, step_cmd)
 

@@ -13,7 +13,7 @@ from rtl2gds import Chip, flow
 def main():
     """gcd + rtl2gds flow"""
 
-    gcd = Chip.from_yaml("./gcd.yaml")
+    gcd = Chip("./gcd.yaml")
 
     flow.rtl2gd_flow.run(gcd)
 

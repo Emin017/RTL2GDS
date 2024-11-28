@@ -1,4 +1,5 @@
 import os
+from dataclasses import dataclass
 
 PKG_SRC_DIR = os.path.dirname(os.path.abspath(__file__))
 PKG_BIN_DIR = os.path.abspath(PKG_SRC_DIR + "/../../bin")
@@ -20,41 +21,41 @@ ENV_TOOLS_PATH = {
 
 DEFAULT_SDC_FILE = f"{PKG_TOOL_DIR}/default.sdc"
 
+
 # Flow & Step settings
+@dataclass
+class StepName:
+    """RTL2GDS flow step names"""
+
+    RTL2GDS_ALL = "rtl2gds_all"
+    INIT = "init"
+    SYNTHESIS = "synthesis"
+    FLOORPLAN = "floorplan"
+    FIXFANOUT = "fixfanout"
+    PLACE = "place"
+    CTS = "cts"
+    DRV_OPT = "drv_opt"
+    HOLD_OPT = "hold_opt"
+    LEGALIZE = "legalize"
+    ROUTE = "route"
+    FILLER = "filler"
+    LAYOUT_GDS = "dump_layout_gds"
+    LAYOUT_JSON = "dump_layout_json"
+
+
+# Flow step sequences
 RTL2GDS_FLOW_STEP = [
-    "synthesis",
-    "floorplan",
-    "fixfanout",
-    "place",
-    "cts",
-    "drv_opt",
-    "hold_opt",
-    "legalize",
-    "route",
-    "filler",
-    "layout_gds",
+    StepName.INIT,
+    StepName.SYNTHESIS,
+    StepName.FLOORPLAN,
+    StepName.FIXFANOUT,
+    StepName.PLACE,
+    StepName.CTS,
+    StepName.DRV_OPT,
+    StepName.HOLD_OPT,
+    StepName.LEGALIZE,
+    StepName.ROUTE,
+    StepName.FILLER,
 ]
 
-PR_FLOW_STEP = RTL2GDS_FLOW_STEP[2:-1]
-
-INIT_STEP = "init"
-
-
-def main():
-    """print all"""
-    print(
-        "DEFAULT_SDC_FILE:",
-        ENV_TOOLS_PATH,
-        "\nPKG_SRC_DIR:",
-        DEFAULT_SDC_FILE,
-        "\nRTL2GDS_FLOW_STEP:",
-        RTL2GDS_FLOW_STEP,
-        "\nPR_FLOW_STEP:",
-        PR_FLOW_STEP,
-        "\nINIT_STEP:",
-        INIT_STEP,
-    )
-
-
-if __name__ == "__main__":
-    main()
+PR_FLOW_STEP = RTL2GDS_FLOW_STEP[3:]

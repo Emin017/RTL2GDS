@@ -1,60 +1,60 @@
 """step shell commands"""
 
-from rtl2gds.global_configs import ENV_TOOLS_PATH, PKG_TOOL_DIR
+from rtl2gds.global_configs import ENV_TOOLS_PATH, PKG_TOOL_DIR, StepName
 
 SHELL_CMD = {
-    "synthesis": ["yosys", f"{PKG_TOOL_DIR}/yosys/yosys.tcl"],
-    "floorplan": [
+    StepName.SYNTHESIS: ["yosys", f"{PKG_TOOL_DIR}/yosys/yosys.tcl"],
+    StepName.FLOORPLAN: [
         "iEDA",
         "-script",
         f'{ENV_TOOLS_PATH["TCL_SCRIPT_DIR"]}/iFP_script/run_iFP.tcl',
     ],
-    "fixfanout": [
+    StepName.FIXFANOUT: [
         "iEDA",
         "-script",
         f'{ENV_TOOLS_PATH["TCL_SCRIPT_DIR"]}/iNO_script/run_iNO_fix_fanout.tcl',
     ],
-    "place": [
+    StepName.PLACE: [
         "iEDA",
         "-script",
         f'{ENV_TOOLS_PATH["TCL_SCRIPT_DIR"]}/iPL_script/run_iPL.tcl',
     ],
-    "cts": [
+    StepName.CTS: [
         "iEDA",
         "-script",
         f'{ENV_TOOLS_PATH["TCL_SCRIPT_DIR"]}/iCTS_script/run_iCTS.tcl',
     ],
-    "drv_opt": [
+    StepName.DRV_OPT: [
         "iEDA",
         "-script",
         f'{ENV_TOOLS_PATH["TCL_SCRIPT_DIR"]}/iTO_script/run_iTO_drv.tcl',
     ],
-    "hold_opt": [
+    StepName.HOLD_OPT: [
         "iEDA",
         "-script",
         f'{ENV_TOOLS_PATH["TCL_SCRIPT_DIR"]}/iTO_script/run_iTO_hold.tcl',
     ],
-    "legalize": [
+    StepName.LEGALIZE: [
         "iEDA",
         "-script",
         f'{ENV_TOOLS_PATH["TCL_SCRIPT_DIR"]}/iPL_script/run_iPL_legalization.tcl',
     ],
-    "route": [
+    StepName.ROUTE: [
         "iEDA",
         "-script",
         f'{ENV_TOOLS_PATH["TCL_SCRIPT_DIR"]}/iRT_script/run_iRT.tcl',
     ],
-    "filler": [
+    StepName.FILLER: [
         "iEDA",
         "-script",
         f'{ENV_TOOLS_PATH["TCL_SCRIPT_DIR"]}/iPL_script/run_iPL_filler.tcl',
     ],
-    "layout_gds": [
+    StepName.LAYOUT_GDS: [
         "iEDA",
         "-script",
         f'{ENV_TOOLS_PATH["TCL_SCRIPT_DIR"]}/DB_script/run_def_to_gds_text.tcl',
     ],
-    "dump_layout_json": [
+    StepName.LAYOUT_JSON: [
         "iEDA",
         "-script",
         f'{ENV_TOOLS_PATH["TCL_SCRIPT_DIR"]}/DB_script/run_def_to_json_text.tcl',

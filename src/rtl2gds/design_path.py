@@ -13,10 +13,11 @@ class DesignPath:
 
     def to_env_dict(self) -> dict:
         """Convert to dictionary with uppercase keys for environment variables."""
+        if isinstance(self.rtl_file, list):
+            # Join with newlines for yosys compatibility
+            self.rtl_file = " \n ".join(self.rtl_file)
         return {
-            "RTL_FILE": " \n ".join(
-                self.rtl_file
-            ),  # Join with newlines for yosys compatibility
+            "RTL_FILE": self.rtl_file,
             "NETLIST_FILE": str(self.netlist_file),
             "DEF_FILE": str(self.def_file),
             "INPUT_DEF": str(self.def_file),  # attention, it's INPUT_DEF

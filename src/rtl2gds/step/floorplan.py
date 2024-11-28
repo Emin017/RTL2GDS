@@ -2,19 +2,24 @@
 Floorplan step implementation using iEDA-iFP
 """
 
+import json
 import logging
 import subprocess
 
-from rtl2gds.design_constrain import DesignConstrain
-from rtl2gds.design_path import DesignPath
-from rtl2gds.global_configs import ENV_TOOLS_PATH
-from rtl2gds.step.configs import SHELL_CMD
+from ..global_configs import ENV_TOOLS_PATH, StepName
+from .configs import SHELL_CMD
+
+STEP_NAME = StepName.FLOORPLAN
 
 
 def run(
     design_top: str,
-    design_path: DesignPath,
-    design_constrain: DesignConstrain,
+    result_dir: str,
+    sdc_file: str,
+    input_netlist: str,
+    output_def: str,
+    die_area: str,
+    core_area: str,
 ) -> dict:
     """
     Run floorplan step using iEDA-iFP.
@@ -29,23 +34,22 @@ def run(
     Raises:
         subprocess.CalledProcessError: If floorplan fails
     """
-    step_name = __file__.rsplit("/", maxsplit=1)[-1].split(".")[0]
-    step_cmd = SHELL_CMD[step_name]
+    step_cmd = SHELL_CMD[STEP_NAME]
 
     # Prepare environment variables
     step_env = {
         "DESIGN_TOP": design_top,
-        "RESULT_DIR": design_path.result_dir,
-        "SDC_FILE": design_path.sdc_file,
-        "NETLIST_FILE": design_path.netlist_file,
-        "OUTPUT_DEF": design_path.def_file,
-        "DIE_AREA": design_constrain.die_area,
-        "CORE_AREA": design_constrain.core_area,
+        "RESULT_DIR": result_dir,
+        "SDC_FILE": sdc_file,
+        "NETLIST_FILE": input_netlist,
+        "OUTPUT_DEF": output_def,
+        "DIE_AREA": die_area,
+        "CORE_AREA": core_area,
     }
 
     logging.info(
         "(step.%s) \n subprocess cmd: %s \n subprocess env: %s",
-        step_name,
+        STEP_NAME,
         str(step_cmd),
         str(step_env),
     )
@@ -55,48 +59,74 @@ def run(
     if ret_code != 0:
         raise subprocess.CalledProcessError(ret_code, step_cmd)
 
-    return step_env
+    # collect results
+    layout_summary_json = f"{result_dir}/feature/summary_{STEP_NAME}.json"
+    with open(
+        layout_summary_json,
+        "r",
+        encoding="utf-8",
+    ) as f:
+        summary = json.load(f)
+        die_width = summary["Design Layout"]["die_bounding_width"]
+        die_height = summary["Design Layout"]["die_bounding_height"]
 
+        core_bottom_left_x = summary["Design Layout"]["core_bot_left_x"]
+        core_bottom_left_y = summary["Design Layout"]["core_bot_left_y"]
+        core_top_right_x = summary["Design Layout"]["core_top_right_x"]
+        core_top_right_y = summary["Design Layout"]["core_top_right_y"]
 
-if __name__ == "__main__":
-    logging.basicConfig(
-        format="[%(asctime)s - %(levelname)s - %(name)s]: %(message)s",
-        level=logging.INFO,
+        core_util = float(summary["Design Layout"]["core_usage"])
+
+    return dict(
+        {
+            "DIE_AREA": f"0 0 {die_width} {die_height}",
+            "CORE_AREA": f"{core_bottom_left_x} {core_bottom_left_y} {core_top_right_x} {core_top_right_y}",
+            "CORE_UTIL": core_util,
+        }
     )
 
-    logging.info("Testing floorplan...")
 
-    # Setup test design
-    TEST_DESIGN_TOP = "aes_cipher_top"
-    RESULT_DIR = "./results"
-    INPUT_NETLIST = "./results/aes_netlist.v"
-    OUTPUT_DEF = "./results/aes_fp.def"
+# if __name__ == "__main__":
+#     logging.basicConfig(
+#         format="[%(asctime)s - %(levelname)s - %(name)s]: %(message)s",
+#         level=logging.INFO,
+#     )
 
-    from rtl2gds.global_configs import DEFAULT_SDC_FILE
+#     logging.info("Testing floorplan...")
 
-    test_path = DesignPath(
-        rtl_file="",
-        sdc_file=DEFAULT_SDC_FILE,
-        netlist_file=INPUT_NETLIST,
-        def_file=OUTPUT_DEF,
-        result_dir=RESULT_DIR,
-    )
+#     # Setup test design
+#     TEST_DESIGN_TOP = "aes_cipher_top"
+#     RESULT_DIR = "./results"
+#     INPUT_NETLIST = "./results/aes_netlist.v"
+#     OUTPUT_DEF = "./results/aes_fp.def"
 
-    test_constrain = DesignConstrain(
-        clk_port_name="",
-        clk_freq_mhz="",
-        die_area="0 0 700 700",
-        core_area="10 10 690 690",
-    )
+#     from ..design_constrain import DesignConstrain
+#     from ..design_path import DesignPath
+#     from ..global_configs import DEFAULT_SDC_FILE
 
-    env = run(
-        design_top=TEST_DESIGN_TOP,
-        design_path=test_path,
-        design_constrain=test_constrain,
-    )
+#     test_path = DesignPath(
+#         rtl_file="",
+#         sdc_file=DEFAULT_SDC_FILE,
+#         netlist_file=INPUT_NETLIST,
+#         def_file=OUTPUT_DEF,
+#         result_dir=RESULT_DIR,
+#     )
 
-    import os
+#     test_constrain = DesignConstrain(
+#         clk_port_name="",
+#         clk_freq_mhz="",
+#         die_area="0 0 700 700",
+#         core_area="10 10 690 690",
+#     )
 
-    assert os.path.exists(OUTPUT_DEF)
-    logging.info("Generated def: %s", env["OUTPUT_DEF"])
-    logging.info("env: %s", env)
+#     env = run(
+#         design_top=TEST_DESIGN_TOP,
+#         design_path=test_path,
+#         design_constrain=test_constrain,
+#     )
+
+#     import os
+
+#     assert os.path.exists(OUTPUT_DEF)
+#     logging.info("Generated def: %s", env["OUTPUT_DEF"])
+#     logging.info("env: %s", env)
