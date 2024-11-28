@@ -16,7 +16,7 @@ ENV PYTHONPATH="${R2G_WORKSPACE}/src"
 ADD ${R2G_REPO} ${R2G_WORKSPACE}
 
 RUN apt-get update && apt-get install -y python3-pip && \
-    pip3 install pyyaml orjson && \
+    pip3 install pyyaml orjson klayout requests && \
     apt-get autoremove -y && apt-get clean -y
 
 WORKDIR ${R2G_WORKSPACE}
