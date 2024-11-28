@@ -9,3 +9,4 @@ lib/merged.lib*
 demo
 uv.lock
 .ipynb_checkpoints
+.cursorignore

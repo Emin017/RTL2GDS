@@ -3,8 +3,7 @@
 #===========================================================
 set DESIGN                  "$::env(DESIGN_TOP)"
 set FOUNDRY_DIR             "$::env(FOUNDRY_DIR)"
-set RESULT_DIR              "$::env(RESULT_DIR)/yosys"
-set RPT_PATH                "$::env(RESULT_DIR)/yosys"
+set REPORT_DIR              "$::env(YOSYS_REPORT_DIR)"
 set SDC_FILE                "$::env(SDC_FILE)"
 set NETLIST_FILE            "$::env(NETLIST_FILE)"
 set VERILOG_FILES           "$::env(RTL_FILE)"
@@ -108,8 +107,8 @@ insbuf -buf {*}$MIN_BUF_CELL_AND_PORTS
 opt_clean -purge
 
 # reports
-tee -o $RPT_PATH/synth_check.txt check
-tee -o $RPT_PATH/synth_stat.txt stat -liberty $MERGED_LIB_FILE
+tee -o $REPORT_DIR/synth_check.txt check
+tee -o $REPORT_DIR/synth_stat.txt stat -liberty $MERGED_LIB_FILE
 
 # write synthesized design
 write_verilog -noattr -noexpr -nohex -nodec $NETLIST_FILE

@@ -93,6 +93,7 @@ def_save -path [expr {[info exists ::env(OUTPUT_DEF)] ? $::env(OUTPUT_DEF) : $DE
 ##   report db summary
 #===========================================================
 report_db -path "$::env(RESULT_DIR)/report/fp_db.rpt"
+feature_summary -path $::env(RESULT_DIR)/feature/summary_floorplan.json -step floorplan
 
 # run_power -output $::env(RESULT_PATH)/sta/
 
