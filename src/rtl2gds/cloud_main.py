@@ -2,13 +2,72 @@
 """module main"""
 import logging
 import sys
+import uuid
+from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
+from typing import List, Optional
 
+import requests
 import yaml
 
 from rtl2gds.chip import Chip
 from rtl2gds.flow import cloud_flow
 from rtl2gds.global_configs import StepName
+
+
+@dataclass
+class NotifyTaskBody:
+    """
+    NotifyTaskBody example:
+    {
+        "taskID": "${uuid}",
+        "taskName": "",
+        "serverTimestamp": 1724814202505,
+        "files": [
+            "gds-${uuid}-1.json",
+            "gds-${uuid}-2.json",
+            "gds-${uuid}-3.json",
+            "gds-${uuid}-4.json"
+        ],
+        "userID":  112,
+        "projectID": 3
+    }
+    """
+
+    files: List[str]
+    server_timestamp: int
+    status: str
+    task_id: str
+    task_type: str
+    task_name: Optional[str] = None
+
+
+def _get_timestamp() -> str:
+    return str(datetime.now())
+
+
+def _notify_task(layout_files: list):
+    # notify_server = "192.168.0.10:8083"
+    notify_server = "localhost:8083"
+    notify_path = "/apis/v1/notify/task"
+    notify_url = notify_server + notify_path
+    json_body = NotifyTaskBody(
+        files=layout_files,
+        server_timestamp=_get_timestamp(),
+        status="success",
+        task_id=uuid.uuid4(),
+        task_type="@TODO",
+    )
+    response = requests.post(
+        url=notify_url,
+        json=json_body,
+        timeout=5.0,
+    )
+    print(
+        f"POST request response: success?({response.status_code == 200}) {response.text}"
+    )
+
 
 def main():
     """
@@ -32,9 +91,12 @@ def main():
     generate_complete_config(config_yaml, rtl_path, workspace_path)
     chip_design = Chip(config_yaml)
 
-    cloud_flow.run(chip_design, expect_step=step)
+    layout_json_files = cloud_flow.run(chip_design, expect_step=step)
 
     chip_design.dump_config()
+
+    # Notify task results
+    _notify_task(layout_json_files)
 
 
 def generate_complete_config(config_yaml: str, rtl_path: str, workspace_path: str):
