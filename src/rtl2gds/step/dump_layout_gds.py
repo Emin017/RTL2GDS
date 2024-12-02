@@ -3,13 +3,12 @@ Dump layout GDS step for RTL2GDS flow.
 """
 
 import logging
-import pathlib
 import subprocess
 from typing import Optional
 
 from klayout import lay
 
-from ..global_configs import ENV_TOOLS_PATH, DEFAULT_SDC_FILE
+from ..global_configs import DEFAULT_SDC_FILE, ENV_TOOLS_PATH
 from .configs import SHELL_CMD
 
 
@@ -69,7 +68,7 @@ def run(
         "INPUT_DEF": input_def,
         "RESULT_DIR": result_dir,
         "GDS_FILE": gds_file,
-        "SDC_FILE": DEFAULT_SDC_FILE
+        "SDC_FILE": DEFAULT_SDC_FILE,
     }
     step_env.update(ENV_TOOLS_PATH)
 

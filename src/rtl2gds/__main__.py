@@ -34,7 +34,7 @@ def main():
 
     logging.info("rtl2gds starting...")
 
-    chip_design = Chip.from_yaml(args.config)
+    chip_design = Chip(args.config)
 
     flow.rtl2gd_flow.run(chip_design)
 

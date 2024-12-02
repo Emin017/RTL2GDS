@@ -15,6 +15,7 @@ class Step:
         self.name: str
         self.description: str
         self.shell_cmd: list
+        self.tmp_feature_json: str
 
     def run(
         self,
@@ -52,6 +53,7 @@ class FixFanout(Step):
         self.name = StepName.FIXFANOUT
         self.description = "Fixing fanout by iEDA-iNO"
         self.shell_cmd = configs.SHELL_CMD[self.name]
+        self.tmp_feature_json = "ino_opt.json"
 
 
 class Place(Step):
@@ -60,6 +62,7 @@ class Place(Step):
         self.name = StepName.PLACE
         self.description = "Standard Cell Placement by iEDA-iPL"
         self.shell_cmd = configs.SHELL_CMD[self.name]
+        self.tmp_feature_json = "ipl_place.json"
 
 
 class CTS(Step):
@@ -68,6 +71,7 @@ class CTS(Step):
         self.name = StepName.CTS
         self.description = "Clock Tree Synthesis by iEDA-iCTS"
         self.shell_cmd = configs.SHELL_CMD[self.name]
+        self.tmp_feature_json = "icts.json"
 
 
 class DrvOpt(Step):
@@ -76,6 +80,7 @@ class DrvOpt(Step):
         self.name = StepName.DRV_OPT
         self.description = "Optimization Design Rule Voilation by iEDA-iTO"
         self.shell_cmd = configs.SHELL_CMD[self.name]
+        self.tmp_feature_json = "ito_optDrv.json"
 
 
 class HoldOpt(Step):
@@ -84,6 +89,7 @@ class HoldOpt(Step):
         self.name = StepName.HOLD_OPT
         self.description = "Optimization Hold Time Voilation by iEDA-iTO"
         self.shell_cmd = configs.SHELL_CMD[self.name]
+        self.tmp_feature_json = "ito_opthold.json"
 
 
 class Legalize(Step):
@@ -92,6 +98,7 @@ class Legalize(Step):
         self.name = StepName.LEGALIZE
         self.description = "Standard Cell Legalization by iEDA-iPL"
         self.shell_cmd = configs.SHELL_CMD[self.name]
+        self.tmp_feature_json = "ipl_legalization.json"
 
 
 class Filler(Step):
@@ -100,6 +107,7 @@ class Filler(Step):
         self.name = StepName.FILLER
         self.description = "Adding Filler for DFM by iEDA-iPL"
         self.shell_cmd = configs.SHELL_CMD[self.name]
+        self.tmp_feature_json = "summary_ipl_filler.json"
 
 
 class Route(Step):
@@ -108,3 +116,4 @@ class Route(Step):
         self.name = StepName.ROUTE
         self.description = "Routing by iEDA-iRT"
         self.shell_cmd = configs.SHELL_CMD[self.name]
+        self.tmp_feature_json = "irt.json"

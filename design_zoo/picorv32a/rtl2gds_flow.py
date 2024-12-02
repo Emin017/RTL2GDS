@@ -20,7 +20,7 @@ def main():
         level=logging.INFO,
     )
 
-    picorv32 = Chip.from_yaml("./pico.yaml")
+    picorv32 = Chip("./pico.yaml")
 
     flow.rtl2gd_flow.run(picorv32)
 

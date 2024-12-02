@@ -11,7 +11,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 import orjson
 
-from rtl2gds.global_configs import ENV_TOOLS_PATH, DEFAULT_SDC_FILE
+from rtl2gds.global_configs import DEFAULT_SDC_FILE, ENV_TOOLS_PATH
 from rtl2gds.step.configs import SHELL_CMD
 
 DEFAULT_MAX_FILE_SIZE = 19 * 1024 * 1024  # 19MB in bytes
@@ -136,12 +136,13 @@ def _split_layout_json(filename: str, max_file_size=DEFAULT_MAX_FILE_SIZE) -> li
         print(f"Error reading file {filename}: {e}")
         return []
 
-    with open(f"{file_no_suffix}-header.json", "wb") as file:
+    header_name = f"{file_no_suffix}-header.json"
+    with open(header_name, "wb") as file:
         file.write(orjson.dumps(header))
 
     chunks = _split_data_into_chunks(data["data"], max_file_size)
 
-    file_names = []
+    file_names = [header_name]
     with ThreadPoolExecutor() as executor:
         futures = [
             executor.submit(_save_chunk, chunk, file_no_suffix, idx)
@@ -159,7 +160,7 @@ def run(input_def: str, result_dir: str, layout_json_file: str) -> list:
     (fix) CONFIG_DIR, TCL_SCRIPT_DIR, RESULT_DIR
     (var) INPUT_DEF, LAYOUT_JSON_FILE
     out: list of layout json files
-    
+
     Raises:
         subprocess.CalledProcessError: If the GDS dump command fails
     """
@@ -167,10 +168,10 @@ def run(input_def: str, result_dir: str, layout_json_file: str) -> list:
     step_cmd = SHELL_CMD[step_name]
     assert pathlib.Path(input_def).exists()
     step_env = {
-        "INPUT_DEF": input_def, 
-        "RESULT_DIR": result_dir, 
+        "INPUT_DEF": input_def,
+        "RESULT_DIR": result_dir,
         "LAYOUT_JSON_FILE": layout_json_file,
-        "SDC_FILE": DEFAULT_SDC_FILE
+        "SDC_FILE": DEFAULT_SDC_FILE,
     }
 
     logging.info(
@@ -188,12 +189,12 @@ def run(input_def: str, result_dir: str, layout_json_file: str) -> list:
     return _split_layout_json(layout_json_file)
 
 
-if __name__ == "__main__":
-    # # note: get test file name from cmd line arg
-    # result_files = _split_layout_json(os.sys.argv[1])
-    # print(result_files)
-    logging.basicConfig(
-        format="[%(asctime)s - %(levelname)s - %(name)s]: %(message)s",
-        level=logging.INFO,
-    )
-    run("/path/to/input_def.def", "layout.json")
+# if __name__ == "__main__":
+#     # # note: get test file name from cmd line arg
+#     # result_files = _split_layout_json(os.sys.argv[1])
+#     # print(result_files)
+#     logging.basicConfig(
+#         format="[%(asctime)s - %(levelname)s - %(name)s]: %(message)s",
+#         level=logging.INFO,
+#     )
+#     run("/path/to/input_def.def", "layout.json")
