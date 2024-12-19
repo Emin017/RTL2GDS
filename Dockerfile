@@ -17,7 +17,7 @@ ENV PYTHONPATH="${R2G_WORKSPACE}/src"
 
 # syntax=docker/dockerfile:1.5-labs
 # (docker build) --ssh default=$HOME/.ssh/id_rsa
-# ADD ${R2G_REPO} ${R2G_WORKSPACE}
+ADD ${R2G_REPO} ${R2G_WORKSPACE}
 
 WORKDIR ${R2G_WORKSPACE}
 

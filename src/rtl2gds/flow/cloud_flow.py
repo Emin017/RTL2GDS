@@ -23,6 +23,10 @@ def run(chip: Chip, expect_step: str = StepName.RTL2GDS_ALL):
             dump_json = True
         else:
             result_files = runner.run_pr_step(expect_step)
+            if expect_step == StepName.LEGALIZE:
+                result_files.append(
+                    f"{chip.path_setting.result_dir}/feature/rt/legalization_egr_union_overflow.csv"
+                )
             if expect_step in [
                 StepName.PLACE,
                 StepName.CTS,

@@ -9,15 +9,19 @@ from fastapi import FastAPI
 
 @dataclass
 class Request:
+    """
+    for POST request to `/apis/v1/notify/task`
+    """
+
     files: List[str]
-    server_timestamp: int
+    serverTimestamp: int
     status: str
-    task_id: str
-    task_type: str
-    task_name: Optional[str] = None
+    taskID: str
+    taskType: str
+    taskName: Optional[str] = None
 
     def __str__(self) -> str:
-        return f"Request(task_id={self.task_id}\ntime={self.server_timestamp}\ntask_type={self.task_type}\nstatus={self.status}\nfiles={self.files})"
+        return f"Request(task_id={self.taskID}\ntime={self.serverTimestamp}\ntask_type={self.taskType}\nstatus={self.status}\nfiles={self.files})"
 
 
 app = FastAPI()

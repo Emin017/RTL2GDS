@@ -14,10 +14,10 @@ app = FastAPI()
 @dataclass
 class StdinEDA(BaseModel):
     code: str
-    owner_id: str
-    project_id: str
-    user_id: str  # not in use
-    file_path: Optional[str] = None
+    ownerID: str
+    projectID: str
+    userID: str  # not in use
+    filePath: Optional[str] = None
 
 
 @dataclass
@@ -38,9 +38,9 @@ async def call_ieda(stdin: StdinEDA) -> Response:
     request(StdinEDA) body:
     {
         "code": "user input commands",
-        "user_id": "user id",
-        "project_id":"project id",
-        "owner_id":"owner id"
+        "userID": "user id",
+        "projectID":"project id",
+        "ownerID":"owner id"
     }
     """
     print(stdin)
@@ -50,7 +50,7 @@ async def call_ieda(stdin: StdinEDA) -> Response:
         return Response(code=0, message="bad", data=ResponseData("Invalid step name"))
 
     mount_point = "/data/eda-project-cos"
-    eda_workspace = f"{mount_point}/{stdin.project_id}"
+    eda_workspace = f"{mount_point}/{stdin.projectID}"
     cloud_config = f"{eda_workspace}/gcd.yaml"
     rtl_file = f"{eda_workspace}/gcd.v"
 
@@ -160,6 +160,7 @@ def get_hello():
 
 # docker run -it --rm --net eda-subnet \
 #  --ip 192.168.0.12 -p 9444:9444 --name r2gcloud \
+#  -v ${mount_point}:${mount_point} \
 #  -v /var/run/docker.sock:/var/run/docker.sock \
 #  -v $(which docker):/usr/bin/docker \
 #  r2gcloud:latest python3 /opt/r2gcloud/cloud.py
