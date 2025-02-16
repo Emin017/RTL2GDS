@@ -67,20 +67,25 @@ def run(
         encoding="utf-8",
     ) as f:
         summary = json.load(f)
-        die_width = summary["Design Layout"]["die_bounding_width"]
-        die_height = summary["Design Layout"]["die_bounding_height"]
-
-        core_bottom_left_x = summary["Design Layout"]["core_bot_left_x"]
-        core_bottom_left_y = summary["Design Layout"]["core_bot_left_y"]
-        core_top_right_x = summary["Design Layout"]["core_top_right_x"]
-        core_top_right_y = summary["Design Layout"]["core_top_right_y"]
-
+        die_width = float(summary["Design Layout"]["die_bounding_width"])
+        die_height = float(summary["Design Layout"]["die_bounding_height"])
+        core_width = float(summary["Design Layout"]["core_bounding_width"])
+        core_height = float(summary["Design Layout"]["core_bounding_height"])
         core_util = float(summary["Design Layout"]["core_usage"])
+
+        margin_width = float(die_width - core_width)/2
+        margin_height = float(die_height - core_height)/2
+
+        # @TODO: collect core_shape from summary.json
+        # core_bottom_left_x = summary["Design Layout"]["core_bot_left_x"]
+        # core_bottom_left_y = summary["Design Layout"]["core_bot_left_y"]
+        # core_top_right_x = summary["Design Layout"]["core_top_right_x"]
+        # core_top_right_y = summary["Design Layout"]["core_top_right_y"]
 
     return dict(
         {
             "DIE_AREA": f"0 0 {die_width} {die_height}",
-            "CORE_AREA": f"{core_bottom_left_x} {core_bottom_left_y} {core_top_right_x} {core_top_right_y}",
+            "CORE_AREA": f"{margin_width} {margin_height} {margin_width+core_width} {margin_height+core_height}",
             "CORE_UTIL": core_util,
         }
     )
