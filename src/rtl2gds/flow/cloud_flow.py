@@ -1,7 +1,7 @@
 from .. import step
 from ..chip import Chip
 from ..global_configs import StepName
-from . import rtl2gd_flow
+from . import rtl2gds_flow
 from .step_runner import StepRunner
 
 
@@ -10,7 +10,7 @@ def run(chip: Chip, expect_step: str = StepName.RTL2GDS_ALL):
     dump_json = False
     result_files = []
     if expect_step == StepName.RTL2GDS_ALL:
-        rtl2gd_flow.run(chip)
+        rtl2gds_flow.run(chip)
         dump_json = True
     else:
         runner = StepRunner(chip)

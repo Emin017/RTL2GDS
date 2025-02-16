@@ -1,6 +1,6 @@
-from . import cloud_flow, rtl2gd_flow
+from . import cloud_flow, rtl2gds_flow
 
 __all__ = [
-    "rtl2gd_flow",
+    "rtl2gds_flow",
     "cloud_flow",
 ]

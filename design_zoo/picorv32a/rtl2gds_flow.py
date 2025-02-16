@@ -22,7 +22,7 @@ def main():
 
     picorv32 = Chip("./pico.yaml")
 
-    flow.rtl2gd_flow.run(picorv32)
+    flow.rtl2gds_flow.run(picorv32)
 
 
 if __name__ == "__main__":

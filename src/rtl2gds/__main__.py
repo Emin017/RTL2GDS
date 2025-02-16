@@ -36,7 +36,7 @@ def main():
 
     chip_design = Chip(args.config)
 
-    flow.rtl2gd_flow.run(chip_design)
+    flow.rtl2gds_flow.run(chip_design)
 
     logging.info("rtl2gds finished")
     # rtl2gds_flow.dump_metrics()

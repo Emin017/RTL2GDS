@@ -84,9 +84,7 @@ def run(
             }
         )
     elif core_util:
-        assert (
-            0 < core_util < 1
-        ), f"Core utilization {core_util} out of range (0,1)"
+        assert 0 < core_util < 1, f"Core utilization {core_util} out of range (0,1)"
         step_env.update(
             {
                 "CORE_UTIL": str(core_util),

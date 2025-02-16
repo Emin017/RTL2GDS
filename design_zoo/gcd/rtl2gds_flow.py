@@ -15,7 +15,7 @@ def main():
 
     gcd = Chip("./gcd.yaml")
 
-    flow.rtl2gd_flow.run(gcd)
+    flow.rtl2gds_flow.run(gcd)
 
 
 if __name__ == "__main__":

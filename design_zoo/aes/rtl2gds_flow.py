@@ -22,7 +22,7 @@ def main():
 
     aes = Chip.from_yaml("./aes.yaml")
 
-    flow.rtl2gd_flow.run(aes)
+    flow.rtl2gds_flow.run(aes)
 
 
 if __name__ == "__main__":
