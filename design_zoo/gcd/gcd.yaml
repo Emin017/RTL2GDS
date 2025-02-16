@@ -9,7 +9,7 @@ GDS_FILE: ./gcd_results/gcd.gds
 
 # constrain:
 CLK_PORT_NAME: clk
-CLK_FREQ_MHZ:  "200"
+CLK_FREQ_MHZ:  200
 # DIE_AREA:   0  0 120 120
 # CORE_AREA: 10 10 110 110
 CORE_UTIL: 0.7

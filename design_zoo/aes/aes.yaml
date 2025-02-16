@@ -17,7 +17,7 @@ GDS_FILE: ./aes_results/aes.gds
 
 # constrain:
 CLK_PORT_NAME: clk
-CLK_FREQ_MHZ:  "100"
+CLK_FREQ_MHZ:  100
 CORE_UTIL: 0.6
 
 # DIE_AREA:  0  0  700 700

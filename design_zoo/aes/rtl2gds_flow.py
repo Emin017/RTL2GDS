@@ -20,7 +20,7 @@ def main():
         level=logging.INFO,
     )
 
-    aes = Chip.from_yaml("./aes.yaml")
+    aes = Chip("./aes.yaml")
 
     flow.rtl2gds_flow.run(aes)
 

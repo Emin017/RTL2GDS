@@ -57,9 +57,10 @@ def run(
         subprocess.CalledProcessError: If synthesis fails
         AssertionError: If required parameters are missing
     """
-    assert os.path.exists(rtl_file)
     if isinstance(rtl_file, list):
         rtl_file = " \n ".join(rtl_file)
+    else:
+        assert os.path.exists(rtl_file), f"rtl_file {rtl_file} does not exist"
 
     step_cmd = SHELL_CMD[STEP_NAME]
 
