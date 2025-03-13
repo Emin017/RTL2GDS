@@ -27,5 +27,12 @@ Issues = "https://atomgit.com/harrywh/rtl2gds/issues"
 Documentation = "https://atomgit.com/harrywh/rtl2gds"
 Repository = "https://atomgit.com/harrywh/rtl2gds"
 
+[project.scripts]
+rtl2gds = "rtl2gds.__main__:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["rtl2gds"]
+
 [tool.uv]
 index-url = "https://mirrors.aliyun.com/pypi/simple/"
