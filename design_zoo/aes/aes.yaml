@@ -1,5 +1,5 @@
 # design_setting:
-DESIGN_TOP: aes_cipher_top
+TOP_NAME: aes_cipher_top
 
 # path_setting:
 RTL_FILE: 

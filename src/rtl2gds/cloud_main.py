@@ -12,7 +12,7 @@ import requests
 import yaml
 
 from rtl2gds.chip import Chip
-from rtl2gds.flow import cloud_flow
+from rtl2gds.flow import single_step
 from rtl2gds.global_configs import StepName
 
 
@@ -70,9 +70,9 @@ def main():
     generate_complete_config(config_yaml, rtl_path, workspace_path)
     chip_design = Chip(config_yaml)
 
-    result_files = cloud_flow.run(chip_design, expect_step=step)
+    result_files = single_step.run(chip_design, expect_step=step)
 
-    chip_design.dump_config()
+    chip_design.dump_config_yaml()
 
     # Notify task results
     _notify_task(result_files)
@@ -83,12 +83,12 @@ def generate_complete_config(config_yaml: str, rtl_path: str, workspace_path: st
         config = yaml.safe_load(f)
 
     config["RTL_FILE"] = rtl_path
-    required_keys = ["DESIGN_TOP", "CLK_PORT_NAME"]
+    required_keys = ["TOP_NAME", "CLK_PORT_NAME"]
     missing_keys = [key for key in required_keys if key not in config]
     if missing_keys:
         raise ValueError(f"Missing required keys in config: {', '.join(missing_keys)}")
 
-    top_name = config["DESIGN_TOP"]
+    top_name = config["TOP_NAME"]
     default_configs = {
         "RESULT_DIR": f"{workspace_path}",
         "NETLIST_FILE": f"{workspace_path}/{top_name}.v",

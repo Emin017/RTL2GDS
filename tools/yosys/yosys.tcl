@@ -1,7 +1,7 @@
 #===========================================================
 #   set parameter
 #===========================================================
-set DESIGN                  "$::env(DESIGN_TOP)"
+set DESIGN                  "$::env(TOP_NAME)"
 set FOUNDRY_DIR             "$::env(FOUNDRY_DIR)"
 set REPORT_DIR              "$::env(YOSYS_REPORT_DIR)"
 set SDC_FILE                "$::env(SDC_FILE)"

@@ -1,6 +1,6 @@
 import unittest
 
-from rtl2gds import chip
+from rtl2gds import Chip
 
 
 class TestFlow(unittest.TestCase):
@@ -11,5 +11,5 @@ class TestFlow(unittest.TestCase):
         print("tearDown")
 
     def test_naive(self):
-        gcd = chip.Chip("gcd")
-        self.assertIsInstance(gcd, chip.Chip)
+        gcd = Chip("gcd")
+        self.assertIsInstance(gcd, Chip)

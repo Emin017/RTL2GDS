@@ -1,52 +1,58 @@
 #===========================================================
+
+#===========================================================
+set RESULT_DIR          "./ieda_results"
+
+# input files
+set NETLIST_FILE        "$::env(NETLIST_FILE)"
+
+# input variables
+set TOP_NAME            "$::env(TOP_NAME)"
+set DIE_AREA            "$::env(DIE_AREA)"
+set CORE_AREA           "$::env(CORE_AREA)"
+
+# output files
+set OUTPUT_DEF          "$RESULT_DIR/iFP_result.def"
+set DESIGN_STAT_TEXT    "$RESULT_DIR/report/floorplan_stat.rpt"
+set DESIGN_STAT_JSON    "$RESULT_DIR/report/floorplan_stat.json"
+
+# script path
+set IEDA_CONFIG_DIR     "$::env(IEDA_CONFIG_DIR)"
+set IEDA_TCL_SCRIPT_DIR "$::env(IEDA_TCL_SCRIPT_DIR)"
+
+#===========================================================
+#   environment variables
+#===========================================================
+source $IEDA_TCL_SCRIPT_DIR/DB_script/env_var_setup.tcl
+
+#===========================================================
 ##   init flow config
 #===========================================================
-flow_init -config $::env(CONFIG_DIR)/flow_config.json
+flow_init -config $IEDA_CONFIG_DIR/flow_config.json
 
 #===========================================================
 ##   read db config
 #===========================================================
-db_init -config $::env(CONFIG_DIR)/db_default_config.json -output_dir_path $::env(RESULT_DIR)
+db_init -config $IEDA_CONFIG_DIR/db_default_config.json -output_dir_path $RESULT_DIR
 
 #===========================================================
 ##   reset data path
 #===========================================================
-source $::env(TCL_SCRIPT_DIR)/DB_script/db_path_setting.tcl
+source $IEDA_TCL_SCRIPT_DIR/DB_script/db_path_setting.tcl
 
 #===========================================================
 ##   read lef
 #===========================================================
-source $::env(TCL_SCRIPT_DIR)/DB_script/db_init_lef.tcl
+source $IEDA_TCL_SCRIPT_DIR/DB_script/db_init_lef.tcl
 
 #===========================================================
 ##   read verilog
 #===========================================================
-verilog_init -path $::env(NETLIST_FILE) -top $::env(DESIGN_TOP)
+verilog_init -path $NETLIST_FILE -top $TOP_NAME
 
 #===========================================================
 ##   init floorplan
-##   gcd & & APU & uart
 #===========================================================
-set DIE_AREA $::env(DIE_AREA)
-set CORE_AREA $::env(CORE_AREA)
-# if { $DESIGN_TOP == "gcd" } {
-#     set DIE_AREA "0.0    0.0   149.96   150.128"
-#     set CORE_AREA "9.996 10.08 139.964  140.048"
-# } elseif { $DESIGN_TOP == "APU" } {
-#     set DIE_AREA "0.0    0.0   500   500"
-#     set CORE_AREA "10.0  10.0  490   490"
-# } else {
-#     set DIE_AREA "0.0    0.0   149.96   150.128"
-#     set CORE_AREA "9.996 10.08 139.964  140.048"
-# }
-
-#===========================================================
-##   init floorplan
-##   aes_cipher_top
-#===========================================================
-#set DIE_AREA "0.0    0.0   1100   1100"
-#set CORE_AREA "10.0 10.0 1090.0  1090.0"
-
 set PLACE_SITE unit 
 set IO_SITE unit
 set CORNER_SITE unit
@@ -58,7 +64,7 @@ init_floorplan \
    -io_site $IO_SITE \
    -corner_site $CORNER_SITE
 
-source $::env(TCL_SCRIPT_DIR)/iFP_script/module/create_tracks.tcl
+source $IEDA_TCL_SCRIPT_DIR/iFP_script/module/create_tracks.tcl
 
 #===========================================================
 ##   Place IO Port
@@ -76,26 +82,23 @@ tapcell \
 #===========================================================
 ##   PDN 
 #===========================================================
-source $::env(TCL_SCRIPT_DIR)/iFP_script/module/pdn.tcl 
+source $IEDA_TCL_SCRIPT_DIR/iFP_script/module/pdn.tcl 
 
 #===========================================================
 ##   set clock net
 #===========================================================
-source $::env(TCL_SCRIPT_DIR)/iFP_script/module/set_clocknet.tcl
+source $IEDA_TCL_SCRIPT_DIR/iFP_script/module/set_clocknet.tcl
 
 #===========================================================
 ##   save def 
 #===========================================================
-set DEFAULT_OUTPUT_DEF "$::env(RESULT_DIR)/iFP_result.def"
-def_save -path [expr {[info exists ::env(OUTPUT_DEF)] ? $::env(OUTPUT_DEF) : $DEFAULT_OUTPUT_DEF}]
+def_save -path $OUTPUT_DEF
 
 #===========================================================
 ##   report db summary
 #===========================================================
-report_db -path "$::env(RESULT_DIR)/report/fp_db.rpt"
-feature_summary -path $::env(RESULT_DIR)/feature/summary_floorplan.json -step floorplan
-
-# run_power -output $::env(RESULT_PATH)/sta/
+report_db -path $DESIGN_STAT_TEXT
+feature_summary -step floorplan -path $DESIGN_STAT_JSON
 
 #===========================================================
 ##   Exit 

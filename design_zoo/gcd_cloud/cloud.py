@@ -76,13 +76,13 @@ class StepName:
     RTL2GDS_ALL = "rtl2gds_all"
     SYNTHESIS = "synthesis"
     FLOORPLAN = "floorplan"
-    FIXFANOUT = "fixfanout"
-    PLACE = "place"
+    NETLIST_OPT = "netlist_opt"
+    PLACEMENT = "placement"
     CTS = "cts"
     DRV_OPT = "drv_opt"
     HOLD_OPT = "hold_opt"
-    LEGALIZE = "legalize"
-    ROUTE = "route"
+    LEGALIZATION = "legalization"
+    ROUTING = "routing"
     FILLER = "filler"
 
 
@@ -90,13 +90,13 @@ RTL2GDS_FLOW_STEP = [
     StepName.RTL2GDS_ALL,
     StepName.SYNTHESIS,
     StepName.FLOORPLAN,
-    StepName.FIXFANOUT,
-    StepName.PLACE,
+    StepName.NETLIST_OPT,
+    StepName.PLACEMENT,
     StepName.CTS,
     StepName.DRV_OPT,
     StepName.HOLD_OPT,
-    StepName.LEGALIZE,
-    StepName.ROUTE,
+    StepName.LEGALIZATION,
+    StepName.ROUTING,
     StepName.FILLER,
 ]
 
@@ -117,7 +117,7 @@ def is_valid_config(cloud_config: str, step_name: str) -> Response:
             data=ResponseData(f"Config file {cloud_config} does not exist"),
         )
 
-    required_keys = ["DESIGN_TOP", "CLK_PORT_NAME", "CLK_FREQ_MHZ", "CORE_UTIL"]
+    required_keys = ["TOP_NAME", "CLK_PORT_NAME", "CLK_FREQ_MHZ", "CORE_UTIL"]
 
     try:
         with open(cloud_config, "r", encoding="utf-8") as f:

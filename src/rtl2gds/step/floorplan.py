@@ -13,14 +13,14 @@ STEP_NAME = StepName.FLOORPLAN
 
 
 def run(
-    design_top: str,
+    top_name: str,
     result_dir: str,
     sdc_file: str,
     input_netlist: str,
     output_def: str,
-    die_area: str,
-    core_area: str,
-) -> dict:
+    die_bbox: str,
+    core_bbox: str,
+):
     """
     Run floorplan step using iEDA-iFP.
 
@@ -29,40 +29,48 @@ def run(
         design_constrain (DesignConstrain): Design timing and area constraints
 
     Returns:
-        dict: Updated environment variables
+        metrics (dict): Updated environment variables
+        artifacts (dict): Expected artifacts from the step
 
     Raises:
         subprocess.CalledProcessError: If floorplan fails
     """
-    step_cmd = SHELL_CMD[STEP_NAME]
+    shell_cmd = SHELL_CMD[STEP_NAME]
+
+    artifacts = {
+        "def": output_def,
+        "design_stat_text": f"{result_dir}/report/floorplan_stat.rpt",
+        "design_stat_json": f"{result_dir}/report/floorplan_stat.json",
+    }
 
     # Prepare environment variables
-    step_env = {
-        "DESIGN_TOP": design_top,
+    shell_env = {
+        "TOP_NAME": top_name,
         "RESULT_DIR": result_dir,
         "SDC_FILE": sdc_file,
         "NETLIST_FILE": input_netlist,
         "OUTPUT_DEF": output_def,
-        "DIE_AREA": die_area,
-        "CORE_AREA": core_area,
+        "DIE_AREA": die_bbox,
+        "CORE_AREA": core_bbox,
+        "DESIGN_STAT_TEXT": artifacts["design_stat_text"],
+        "DESIGN_STAT_JSON": artifacts["design_stat_json"],
     }
 
     logging.info(
         "(step.%s) \n subprocess cmd: %s \n subprocess env: %s",
         STEP_NAME,
-        str(step_cmd),
-        str(step_env),
+        str(shell_cmd),
+        str(shell_env),
     )
 
-    step_env.update(ENV_TOOLS_PATH)
-    ret_code = subprocess.call(step_cmd, env=step_env)
+    shell_env.update(ENV_TOOLS_PATH)
+    ret_code = subprocess.call(shell_cmd, env=shell_env)
     if ret_code != 0:
-        raise subprocess.CalledProcessError(ret_code, step_cmd)
+        raise subprocess.CalledProcessError(ret_code, shell_cmd)
 
     # collect results
-    layout_summary_json = f"{result_dir}/feature/summary_{STEP_NAME}.json"
     with open(
-        layout_summary_json,
+        artifacts["design_stat_json"],
         "r",
         encoding="utf-8",
     ) as f:
@@ -71,24 +79,37 @@ def run(
         die_height = float(summary["Design Layout"]["die_bounding_height"])
         core_width = float(summary["Design Layout"]["core_bounding_width"])
         core_height = float(summary["Design Layout"]["core_bounding_height"])
+
+        core_area = float(summary["Design Layout"]["core_area"])
         core_util = float(summary["Design Layout"]["core_usage"])
+        die_area = float(summary["Design Layout"]["die_area"])
+        die_util = float(summary["Design Layout"]["die_usage"])
+        cell_area = float(summary["Instances"]["total"]["area"])
+        num_instances = int(summary["Design Statis"]["num_instances"])
 
         margin_width = float(die_width - core_width)/2
         margin_height = float(die_height - core_height)/2
 
-        # @TODO: collect core_shape from summary.json
-        # core_bottom_left_x = summary["Design Layout"]["core_bot_left_x"]
-        # core_bottom_left_y = summary["Design Layout"]["core_bot_left_y"]
-        # core_top_right_x = summary["Design Layout"]["core_top_right_x"]
-        # core_top_right_y = summary["Design Layout"]["core_top_right_y"]
+        # @TODO: collect core_bbox from summary.json
+        # core_lower_left_x = summary["Design Layout"]["core_lower_left_x"]
+        # core_lower_left_y = summary["Design Layout"]["core_lower_left_y"]
+        # core_upper_right_x = summary["Design Layout"]["core_upper_right_x"]
+        # core_upper_right_y = summary["Design Layout"]["core_upper_right_y"]
+        # {"core_bbox": f"{core_lower_left_x} {core_lower_left_y} {core_upper_right_x} {core_upper_right_y}"}
 
-    return dict(
-        {
-            "DIE_AREA": f"0 0 {die_width} {die_height}",
-            "CORE_AREA": f"{margin_width} {margin_height} {margin_width+core_width} {margin_height+core_height}",
-            "CORE_UTIL": core_util,
-        }
-    )
+    metrics = {
+        "die_bbox": f"0 0 {die_width} {die_height}",
+        "core_bbox": f"{margin_width} {margin_height} {margin_width+core_width} {margin_height+core_height}",
+        "core_area": core_area,
+        "core_util": core_util,
+        "die_area": die_area,
+        "die_util": die_util,
+        "cell_area": cell_area,
+        "num_instances": num_instances,
+    }
+
+    return metrics, artifacts
+
 
 
 # if __name__ == "__main__":
@@ -125,7 +146,7 @@ def run(
 #     )
 
 #     env = run(
-#         design_top=TEST_DESIGN_TOP,
+#         top_name=TEST_DESIGN_TOP,
 #         design_path=test_path,
 #         design_constrain=test_constrain,
 #     )

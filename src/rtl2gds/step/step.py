@@ -2,6 +2,7 @@
 description: behavior of each RTL2GDS step
 """
 
+import json
 import logging
 import os
 import subprocess
@@ -12,108 +13,181 @@ from . import configs
 
 class Step:
     def __init__(self):
-        self.name: str
+        self.step_name: str
+        self.tool_name: str
         self.description: str
         self.shell_cmd: list
-        self.tmp_feature_json: str
+        self.filename_stat_text: str
+        self.filename_stat_json: str
+        self.filename_metrics_json: str = None
+        self.dirname_tool_report: str = None
 
     def run(
         self,
-        design_top: str,
+        top_name: str,
         input_def: str,
         result_dir: str,
         output_def: str,
+        output_verilog: str,
         clk_port_name: str,
         clk_freq_mhz: float,
     ):
-        logging.info("(step.%s) %s", self.name, self.description)
         assert os.path.exists(input_def)
 
-        io_env = {
-            "DESIGN_TOP": design_top,
+        artifacts = {
+            "def": output_def,
+            "verilog": output_verilog,
+            "design_stat_text": f"{result_dir}/{self.filename_stat_text}",
+            "design_stat_json": f"{result_dir}/{self.filename_stat_json}",
+        }
+
+        shell_env = {
+            "TOP_NAME": top_name,
             "INPUT_DEF": input_def,
-            "OUTPUT_DEF": output_def,
+            "OUTPUT_DEF": artifacts["def"],
+            "OUTPUT_VERILOG": artifacts["verilog"],
+            "DESIGN_STAT_TEXT": artifacts["design_stat_text"],
+            "DESIGN_STAT_JSON": artifacts["design_stat_json"],
             "RESULT_DIR": result_dir,
             "SDC_FILE": DEFAULT_SDC_FILE,
             "CLK_PORT_NAME": clk_port_name,
             "CLK_FREQ_MHZ": str(clk_freq_mhz),
         }
-        io_env.update(ENV_TOOLS_PATH)
 
-        ret_code = subprocess.call(self.shell_cmd, env=io_env)
+        if self.filename_metrics_json:
+            artifacts["tool_metrics_json"] = f"{result_dir}/{self.filename_metrics_json}"
+            shell_env["TOOL_METRICS_JSON"] = artifacts["tool_metrics_json"]
+
+        if self.dirname_tool_report:
+            artifacts["tool_report_dir"] = f"{result_dir}/{self.dirname_tool_report}"
+            shell_env["TOOL_REPORT_DIR"] = artifacts["tool_report_dir"]
+
+        logging.info(
+            "(step.%s) \n subprocess cmd: %s \n subprocess env: %s",
+            self.step_name,
+            str(self.shell_cmd),
+            str(shell_env),
+        )
+
+        shell_env.update(ENV_TOOLS_PATH)
+
+        ret_code = subprocess.call(self.shell_cmd, env=shell_env)
         if ret_code != 0:
             raise subprocess.CalledProcessError(ret_code, self.shell_cmd)
 
-        assert os.path.exists(output_def)
+        # iterate through artifacts and check if they exist
+        for key, value in artifacts.items():
+            if not os.path.exists(value):
+                raise FileNotFoundError(
+                    f"Step({self.step_name}) Expected artifact {key} not found: {value}"
+                )
 
+        # collect results
+        with open(
+            artifacts["design_stat_json"],
+            "r",
+            encoding="utf-8",
+        ) as f:
+            summary = json.load(f)
+            metrics = {
+                "core_util": float(summary["Design Layout"]["core_usage"]),
+                "die_util": float(summary["Design Layout"]["die_usage"]),
+                "cell_area": float(summary["Instances"]["total"]["area"]),
+                "num_instances": int(summary["Design Statis"]["num_instances"]),
+            }
 
-class FixFanout(Step):
+        return metrics, artifacts
+
+class NetlistOpt(Step):
     def __init__(self):
         super().__init__()
-        self.name = StepName.FIXFANOUT
+        self.step_name = StepName.NETLIST_OPT
+        self.tool_name = "iEDA-iNO"
         self.description = "Fixing fanout by iEDA-iNO"
-        self.shell_cmd = configs.SHELL_CMD[self.name]
-        self.tmp_feature_json = "ino_opt.json"
+        self.shell_cmd = configs.SHELL_CMD[self.step_name]
+        self.filename_stat_text = f"report/{self.step_name}_stat.rpt"
+        self.filename_stat_json = f"report/{self.step_name}_stat.json"
+        self.filename_metrics_json = f"metrics/{self.tool_name}_{self.step_name}.json"
 
 
-class Place(Step):
+class Placement(Step):
     def __init__(self):
         super().__init__()
-        self.name = StepName.PLACE
+        self.step_name = StepName.PLACEMENT
+        self.tool_name = "iEDA-iPL"
         self.description = "Standard Cell Placement by iEDA-iPL"
-        self.shell_cmd = configs.SHELL_CMD[self.name]
-        self.tmp_feature_json = "ipl_place.json"
+        self.shell_cmd = configs.SHELL_CMD[self.step_name]
+        self.filename_stat_text = f"report/{self.step_name}_stat.rpt"
+        self.filename_stat_json = f"report/{self.step_name}_stat.json"
+        self.filename_metrics_json = f"metrics/{self.tool_name}_{self.step_name}.json"
+        self.dirname_tool_report = f"report/{self.tool_name}/"
 
 
 class CTS(Step):
     def __init__(self):
         super().__init__()
-        self.name = StepName.CTS
+        self.step_name = StepName.CTS
+        self.tool_name = "iEDA-iCTS"
         self.description = "Clock Tree Synthesis by iEDA-iCTS"
-        self.shell_cmd = configs.SHELL_CMD[self.name]
-        self.tmp_feature_json = "icts.json"
-
+        self.shell_cmd = configs.SHELL_CMD[self.step_name]
+        self.filename_stat_text = f"report/{self.step_name}_stat.rpt"
+        self.filename_stat_json = f"report/{self.step_name}_stat.json"
+        self.filename_metrics_json = f"metrics/{self.tool_name}_{self.step_name}.json"
+        self.dirname_tool_report = f"report/{self.tool_name}/"
 
 class DrvOpt(Step):
     def __init__(self):
         super().__init__()
-        self.name = StepName.DRV_OPT
+        self.step_name = StepName.DRV_OPT
+        self.tool_name = "iEDA-iTO"
         self.description = "Optimization Design Rule Voilation by iEDA-iTO"
-        self.shell_cmd = configs.SHELL_CMD[self.name]
-        self.tmp_feature_json = "ito_optDrv.json"
+        self.shell_cmd = configs.SHELL_CMD[self.step_name]
+        self.filename_stat_text = f"report/{self.step_name}_stat.rpt"
+        self.filename_stat_json = f"report/{self.step_name}_stat.json"
+        self.filename_metrics_json = f"metrics/{self.tool_name}_{self.step_name}.json"
 
 
 class HoldOpt(Step):
     def __init__(self):
         super().__init__()
-        self.name = StepName.HOLD_OPT
+        self.step_name = StepName.HOLD_OPT
+        self.tool_name = "iEDA-iTO"
         self.description = "Optimization Hold Time Voilation by iEDA-iTO"
-        self.shell_cmd = configs.SHELL_CMD[self.name]
-        self.tmp_feature_json = "ito_opthold.json"
+        self.shell_cmd = configs.SHELL_CMD[self.step_name]
+        self.filename_stat_text = f"report/{self.step_name}_stat.rpt"
+        self.filename_stat_json = f"report/{self.step_name}_stat.json"
+        self.filename_metrics_json = f"metrics/{self.tool_name}_{self.step_name}.json"
 
 
-class Legalize(Step):
+class Legalization(Step):
     def __init__(self):
         super().__init__()
-        self.name = StepName.LEGALIZE
-        self.description = "Standard Cell Legalization by iEDA-iPL"
-        self.shell_cmd = configs.SHELL_CMD[self.name]
-        self.tmp_feature_json = "ipl_legalization.json"
+        self.step_name = StepName.LEGALIZATION
+        self.tool_name = "iEDA-iPL"
+        self.description = "Incremental legalization for new cells by iEDA-iPL"
+        self.shell_cmd = configs.SHELL_CMD[self.step_name]
+        self.filename_stat_text = f"report/{self.step_name}_stat.rpt"
+        self.filename_stat_json = f"report/{self.step_name}_stat.json"
+
+
+class Routing(Step):
+    def __init__(self):
+        super().__init__()
+        self.step_name = StepName.ROUTING
+        self.tool_name = "iEDA-iRT"
+        self.description = "Routing by iEDA-iRT"
+        self.shell_cmd = configs.SHELL_CMD[self.step_name]
+        self.filename_stat_text = f"report/{self.step_name}_stat.rpt"
+        self.filename_stat_json = f"report/{self.step_name}_stat.json"
+        self.filename_metrics_json = f"metrics/{self.tool_name}_{self.step_name}.json"
+        self.dirname_tool_report = f"report/{self.tool_name}/"
 
 
 class Filler(Step):
     def __init__(self):
         super().__init__()
-        self.name = StepName.FILLER
+        self.step_name = StepName.FILLER
         self.description = "Adding Filler for DFM by iEDA-iPL"
-        self.shell_cmd = configs.SHELL_CMD[self.name]
-        self.tmp_feature_json = "summary_ipl_filler.json"
-
-
-class Route(Step):
-    def __init__(self):
-        super().__init__()
-        self.name = StepName.ROUTE
-        self.description = "Routing by iEDA-iRT"
-        self.shell_cmd = configs.SHELL_CMD[self.name]
-        self.tmp_feature_json = "irt.json"
+        self.shell_cmd = configs.SHELL_CMD[self.step_name]
+        self.filename_stat_text = f"report/{self.step_name}_stat.rpt"
+        self.filename_stat_json = f"report/{self.step_name}_stat.json"

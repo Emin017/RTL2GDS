@@ -1,71 +1,67 @@
 """step shell commands"""
 
-from rtl2gds.global_configs import ENV_TOOLS_PATH, PKG_TOOL_DIR, StepName
+from rtl2gds.global_configs import ENV_TOOLS_PATH, R2G_TOOL_DIR, StepName
 
 SHELL_CMD = {
-    StepName.SYNTHESIS: ["yosys", f"{PKG_TOOL_DIR}/yosys/yosys.tcl"],
+    StepName.SYNTHESIS: ["yosys", f"{R2G_TOOL_DIR}/yosys/yosys.tcl"],
     StepName.FLOORPLAN: [
         "iEDA",
         "-script",
-        f'{ENV_TOOLS_PATH["TCL_SCRIPT_DIR"]}/iFP_script/run_iFP.tcl',
+        f'{ENV_TOOLS_PATH["IEDA_TCL_SCRIPT_DIR"]}/iFP_script/run_iFP.tcl',
     ],
-    StepName.FIXFANOUT: [
+    StepName.NETLIST_OPT: [
         "iEDA",
         "-script",
-        f'{ENV_TOOLS_PATH["TCL_SCRIPT_DIR"]}/iNO_script/run_iNO_fix_fanout.tcl',
+        f'{ENV_TOOLS_PATH["IEDA_TCL_SCRIPT_DIR"]}/iNO_script/run_iNO_fix_fanout.tcl',
     ],
-    StepName.PLACE: [
+    StepName.PLACEMENT: [
         "iEDA",
         "-script",
-        f'{ENV_TOOLS_PATH["TCL_SCRIPT_DIR"]}/iPL_script/run_iPL.tcl',
+        f'{ENV_TOOLS_PATH["IEDA_TCL_SCRIPT_DIR"]}/iPL_script/run_iPL.tcl',
     ],
     StepName.CTS: [
         "iEDA",
         "-script",
-        f'{ENV_TOOLS_PATH["TCL_SCRIPT_DIR"]}/iCTS_script/run_iCTS.tcl',
+        f'{ENV_TOOLS_PATH["IEDA_TCL_SCRIPT_DIR"]}/iCTS_script/run_iCTS.tcl',
     ],
     StepName.DRV_OPT: [
         "iEDA",
         "-script",
-        f'{ENV_TOOLS_PATH["TCL_SCRIPT_DIR"]}/iTO_script/run_iTO_drv.tcl',
+        f'{ENV_TOOLS_PATH["IEDA_TCL_SCRIPT_DIR"]}/iTO_script/run_iTO_drv.tcl',
     ],
     StepName.HOLD_OPT: [
         "iEDA",
         "-script",
-        f'{ENV_TOOLS_PATH["TCL_SCRIPT_DIR"]}/iTO_script/run_iTO_hold.tcl',
+        f'{ENV_TOOLS_PATH["IEDA_TCL_SCRIPT_DIR"]}/iTO_script/run_iTO_hold.tcl',
     ],
-    StepName.LEGALIZE: [
+    StepName.LEGALIZATION: [
         "iEDA",
         "-script",
-        f'{ENV_TOOLS_PATH["TCL_SCRIPT_DIR"]}/iPL_script/run_iPL_legalization.tcl',
+        f'{ENV_TOOLS_PATH["IEDA_TCL_SCRIPT_DIR"]}/iPL_script/run_iPL_legalization.tcl',
     ],
-    StepName.ROUTE: [
+    StepName.ROUTING: [
         "iEDA",
         "-script",
-        f'{ENV_TOOLS_PATH["TCL_SCRIPT_DIR"]}/iRT_script/run_iRT.tcl',
+        f'{ENV_TOOLS_PATH["IEDA_TCL_SCRIPT_DIR"]}/iRT_script/run_iRT.tcl',
     ],
     StepName.FILLER: [
         "iEDA",
         "-script",
-        f'{ENV_TOOLS_PATH["TCL_SCRIPT_DIR"]}/iPL_script/run_iPL_filler.tcl',
+        f'{ENV_TOOLS_PATH["IEDA_TCL_SCRIPT_DIR"]}/iPL_script/run_iPL_filler.tcl',
     ],
     StepName.LAYOUT_GDS: [
         "iEDA",
         "-script",
-        f'{ENV_TOOLS_PATH["TCL_SCRIPT_DIR"]}/DB_script/run_def_to_gds_text.tcl',
+        f'{ENV_TOOLS_PATH["IEDA_TCL_SCRIPT_DIR"]}/DB_script/run_def_to_gds_text.tcl',
     ],
     StepName.LAYOUT_JSON: [
         "iEDA",
         "-script",
-        f'{ENV_TOOLS_PATH["TCL_SCRIPT_DIR"]}/DB_script/run_def_to_json_text.tcl',
+        f'{ENV_TOOLS_PATH["IEDA_TCL_SCRIPT_DIR"]}/DB_script/run_def_to_json_text.tcl',
+    ],
+    StepName.STA: [
+        "iEDA",
+        "-script",
+        f'{ENV_TOOLS_PATH["IEDA_TCL_SCRIPT_DIR"]}/iSTA_script/run_iSTA.tcl',
     ],
 }
-
-
-# "sv2v": [
-#     "sv2v",
-#     f"--incdir={default_vars["FOUNDRY_DIR"]}/verilog",
-#     f"--top={default_vars["DESIGN_TOP"]}",
-#     f"--write={default_vars["DESIGN_TOP"]}.v",
-#     default_vars["RTL_FILE"],
-# ]

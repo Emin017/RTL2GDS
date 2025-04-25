@@ -48,7 +48,7 @@ def run(
     gds_file: str,
     result_dir: str,
     snapshot_file: Optional[str] = None,
-) -> None:
+):
     """
     Run the layout GDS dump step.
 
@@ -62,6 +62,11 @@ def run(
     """
     step_name = __file__.rsplit("/", maxsplit=1)[-1].split(".")[0]
     step_cmd = SHELL_CMD[step_name]
+
+    # artifacts = {
+    #     "gds": gds_file,
+    #     "snapshot": snapshot_file,
+    # }
 
     # Prepare environment variables
     step_env = {

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """test flow"""
 
-from rtl2gds import chip, flow
+from rtl2gds import Chip, flow
 
 
 def main():
@@ -9,7 +9,7 @@ def main():
     gcd + rtl2gds flow
 
     # design_setting:
-    DESIGN_TOP: gcd
+    TOP_NAME: gcd
 
     # path_setting:
     RTL_FILE: ../gcd/gcd.v
@@ -18,7 +18,7 @@ def main():
     GDS_FILE: ./gcd_results/gcd.gds
     """
 
-    gcd = chip.Chip("gcd")
+    gcd = Chip("gcd")
     gcd.constrain = {
         "CLK_PORT_NAME": "clk",
         "CLK_FREQ_MHZ": "200",

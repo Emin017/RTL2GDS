@@ -1,25 +1,28 @@
 """ Step runner factory """
 
-from . import dump_layout_gds, dump_layout_json, floorplan, synthesis
-from .step import CTS, DrvOpt, Filler, FixFanout, HoldOpt, Legalize, Place, Route
+from . import drc, floorplan, layout_gds, layout_json, synthesis
+from .step import (CTS, DrvOpt, Filler, HoldOpt, Legalization, NetlistOpt,
+                   Placement, Routing)
 
 __all__ = [
     "synthesis",
     "floorplan",
-    "dump_layout_gds",
-    "dump_layout_json",
+    "layout_gds",
+    "layout_json",
     "pr_step_map",
+    "drc",
+    "sta",
 ]
 
 
 pr_step_map = {
-    "fixfanout": FixFanout(),
-    "place": Place(),
+    "netlist_opt": NetlistOpt(),
+    "placement": Placement(),
     "cts": CTS(),
     "drv_opt": DrvOpt(),
     "hold_opt": HoldOpt(),
-    "legalize": Legalize(),
-    "route": Route(),
+    "legalization": Legalization(),
+    "routing": Routing(),
     "filler": Filler(),
 }
 

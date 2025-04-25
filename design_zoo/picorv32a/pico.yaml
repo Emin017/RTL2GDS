@@ -1,5 +1,5 @@
 # design_setting:
-DESIGN_TOP: picorv32a
+TOP_NAME: picorv32a
 
 # path_setting:
 RTL_FILE: ./picorv32a.v

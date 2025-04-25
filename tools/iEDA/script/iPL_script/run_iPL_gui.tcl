@@ -1,38 +1,38 @@
 #===========================================================
 ##   init flow config
 #===========================================================
-flow_init -config $::env(CONFIG_DIR)/flow_config.json
+flow_init -config $IEDA_CONFIG_DIR/flow_config.json
 
 #===========================================================
 ##   read db config
 #===========================================================
-db_init -config $::env(CONFIG_DIR)/db_default_config.json -output_dir_path $::env(RESULT_DIR)
+db_init -config $IEDA_CONFIG_DIR/db_default_config.json -output_dir_path $RESULT_DIR
 
 #===========================================================
 ##   reset data path
 #===========================================================
-source $::env(TCL_SCRIPT_DIR)/DB_script/db_path_setting.tcl
+source $IEDA_TCL_SCRIPT_DIR/DB_script/db_path_setting.tcl
 
 #===========================================================
 ##   read lef
 #===========================================================
-source $::env(TCL_SCRIPT_DIR)/DB_script/db_init_lef.tcl
+source $IEDA_TCL_SCRIPT_DIR/DB_script/db_init_lef.tcl
 
 #===========================================================
 ##   read def
 #===========================================================
-#def_init -path $::env(RESULT_DIR)/iTO_fix_fanout_result.def
+#def_init -path $RESULT_DIR/iTO_fix_fanout_result.def
 
 #===========================================================
 ##   run Placer
 #===========================================================
-#run_placer -config $::env(CONFIG_DIR)/pl_default_config.json
+#run_placer -config $IEDA_CONFIG_DIR/pl_default_config.json
 
 #===========================================================
 ##   run gui
 #===========================================================
-def_init -path $::env(RESULT_DIR)/iPL_result.def
+def_init -path $RESULT_DIR/iPL_result.def
 gui_start -type global_place
-gui_show_pl -dir $::env(RESULT_DIR)/pl/gui/
+gui_show_pl -dir $RESULT_DIR/pl/gui/
 
 

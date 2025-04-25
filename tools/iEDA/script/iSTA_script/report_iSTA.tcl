@@ -1,5 +1,5 @@
 #===========================================================
 ##   run STA
 #===========================================================
-report_sta -output $::env(RESULT_DIR)/sta/timing.log
+report_sta -output $RESULT_DIR/sta/timing.log
 

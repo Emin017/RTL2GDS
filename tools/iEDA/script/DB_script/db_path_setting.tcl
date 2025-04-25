@@ -1,3 +1,9 @@
+set SDC_FILE "$::env(SDC_FILE)"
+
+if {[info exists ::env(SPEF_FILE)]} {
+    set SPEF_PATH $::env(SPEF_FILE)
+}
+
 set DB_LEF_PATH "$::env(FOUNDRY_DIR)/lef"
 set DB_LIB_PATH "$::env(FOUNDRY_DIR)/lib"
 
@@ -126,15 +132,3 @@ set LIB_PATH_HOLD ${LIB_PATH}
 ##   set setup lib path
 #===========================================================
 set LIB_PATH_SETUP ${LIB_PATH}
-
-#===========================================================
-##   set sdc path
-#===========================================================
-set SDC_PATH "$::env(SDC_FILE)"
-
-#===========================================================
-##   set spef path
-#===========================================================
-if {[info exists ::env(SPEF_FILE)]} {
-    set SPEF_PATH $::env(SPEF_FILE)
-}

@@ -1,35 +1,48 @@
 #===========================================================
+#   environment variables
+#===========================================================
+set INPUT_DEF           "$::env(INPUT_DEF)"
+set LAYOUT_JSON_FILE    "$::env(LAYOUT_JSON_FILE)"
+set RESULT_DIR          "$::env(RESULT_DIR)"
+
+set IEDA_CONFIG_DIR     "$::env(IEDA_CONFIG_DIR)"
+set IEDA_TCL_SCRIPT_DIR "$::env(IEDA_TCL_SCRIPT_DIR)"
+
+if { $INPUT_DEF == "" } {
+  set INPUT_DEF "$RESULT_DIR/iPL_filler_result.def"
+}
+
+#===========================================================
 ##   init flow config
 #===========================================================
-flow_init -config $::env(CONFIG_DIR)/flow_config.json
+flow_init -config $IEDA_CONFIG_DIR/flow_config.json
 
 #===========================================================
 ##   read db config
 #===========================================================
-db_init -config $::env(CONFIG_DIR)/db_default_config.json -output_dir_path $::env(RESULT_DIR)
+db_init -config $IEDA_CONFIG_DIR/db_default_config.json -output_dir_path $RESULT_DIR
 
 #===========================================================
 ##   reset data path
 #===========================================================
-source $::env(TCL_SCRIPT_DIR)/DB_script/db_path_setting.tcl
+source $IEDA_TCL_SCRIPT_DIR/DB_script/db_path_setting.tcl
 
 #===========================================================
 ##   read lef
 #===========================================================
-source $::env(TCL_SCRIPT_DIR)/DB_script/db_init_lef.tcl
+source $IEDA_TCL_SCRIPT_DIR/DB_script/db_init_lef.tcl
 
 #===========================================================
 ##   read def
 #===========================================================
-set DEFAULT_INPUT_DEF "$::env(RESULT_DIR)/iPL_filler_result.def"
-def_init -path [expr {[info exists ::env(INPUT_DEF)]? $::env(INPUT_DEF) : $DEFAULT_INPUT_DEF}]
+def_init -path $INPUT_DEF
 
 #===========================================================
 ##   save json 
 ##   Full layer information instance:(-discard li/mcon/nwell/pwell/met/via)
 ##   use (-discard null) to choose all layer
 #===========================================================
-json_save -path $::env(LAYOUT_JSON_FILE) -discard li
+json_save -path $LAYOUT_JSON_FILE -discard li
 
 #===========================================================
 ##   Exit 

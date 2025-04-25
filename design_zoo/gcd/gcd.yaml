@@ -1,5 +1,5 @@
 # design_setting:
-DESIGN_TOP: gcd
+TOP_NAME: gcd
 
 # path_setting:
 RTL_FILE: ./gcd.v
@@ -10,6 +10,7 @@ GDS_FILE: ./gcd_results/gcd.gds
 # constrain:
 CLK_PORT_NAME: clk
 CLK_FREQ_MHZ:  200
+CORE_UTIL: 0.7
+# you can set DIE_AREA and CORE_AREA instead of CORE_UTIL
 # DIE_AREA:   0  0 120 120
 # CORE_AREA: 10 10 110 110
-CORE_UTIL: 0.7

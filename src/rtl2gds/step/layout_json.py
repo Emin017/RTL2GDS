@@ -157,7 +157,7 @@ def _split_layout_json(filename: str, max_file_size=DEFAULT_MAX_FILE_SIZE) -> li
 def run(input_def: str, result_dir: str, layout_json_file: str) -> list:
     """
     in:
-    (fix) CONFIG_DIR, TCL_SCRIPT_DIR, RESULT_DIR
+    (fix) IEDA_CONFIG_DIR, IEDA_TCL_SCRIPT_DIR, RESULT_DIR
     (var) INPUT_DEF, LAYOUT_JSON_FILE
     out: list of layout json files
 

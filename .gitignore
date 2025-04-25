@@ -5,7 +5,9 @@ ${RESULT_DIR}
 lib/merged.lib*
 **/results/**
 *_results
+*_result
 *.log
+*.svg
 demo
 uv.lock
 .ipynb_checkpoints

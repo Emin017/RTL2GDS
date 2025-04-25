@@ -1,12 +1,18 @@
+"""@TODO"""
+
 from dataclasses import asdict, dataclass, field
-from typing import Dict, List, Optional
+from typing import Dict, List
+
 import yaml
 
+
 @dataclass
-class PerformanceMetrics:
+class TimingMetrics:
     main_freq_mhz: float = 0.0
-    critical_path: float = 0.0
+    critical_path: List[str] = field(default_factory=list)
     longest_logic_level: int = 0
+    wns: float = 0.0
+    tns: float = 0.0
 
 @dataclass
 class PowerMetrics:
@@ -17,11 +23,11 @@ class PowerMetrics:
 
 @dataclass
 class AreaMetrics:
-    die: List[float] = field(default_factory=list)
-    core: List[float] = field(default_factory=list)
-    core_value: float = 0.0
-    stdcell: float = 0.0
-    utilization: float = 0.0
+    core: float = 0.0
+    die: float = 0.0
+    cell: float = 0.0
+    core_util: float = 0.0
+    die_util: float = 0.0
 
 @dataclass
 class DesignMetrics:
@@ -30,19 +36,22 @@ class DesignMetrics:
     tech: str = "skywater130"
     
     # Design statistics
-    instance: int = 0
-    wirelength: int = 0
-    stdcell: int = 0
+    # wirelength: float = 0
+    num_instances: int = 0
+    # num_seq_cells: int = 0
+    # num_comb_cells: int = 0
+    # num_instances: int = 0
+    # num_equivalent_gates: int = 0
     
     # Detailed metrics
-    performance: PerformanceMetrics = field(default_factory=PerformanceMetrics)
+    performance: TimingMetrics = field(default_factory=TimingMetrics)
     power: PowerMetrics = field(default_factory=PowerMetrics)
     area: AreaMetrics = field(default_factory=AreaMetrics)
     
     # Signoff violations (0 means no violations)
     drc: int = 0
     lvs: int = 0
-    sta: int = 0  # setup slack >= 0
+    sta: int = 0
 
     def to_dict(self) -> Dict:
         """Convert metrics to a flat dictionary structure."""
@@ -86,6 +95,8 @@ class DesignMetrics:
         
         return "\n".join(yaml_str)
 
+    def print(self):
+        print(self.to_dict())
 
 @dataclass
 class EDAMetrics:

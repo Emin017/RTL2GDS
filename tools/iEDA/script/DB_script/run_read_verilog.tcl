@@ -1,33 +1,33 @@
 #===========================================================
 ##   init flow config
 #===========================================================
-flow_init -config $::env(CONFIG_DIR)/flow_config.json
+flow_init -config $IEDA_CONFIG_DIR/flow_config.json
 
 #===========================================================
 ##   read db config
 #===========================================================
-db_init -config $::env(CONFIG_DIR)/db_default_config.json -output_dir_path $::env(RESULT_DIR)
+db_init -config $IEDA_CONFIG_DIR/db_default_config.json -output_dir_path $RESULT_DIR
 
 #===========================================================
 ##   reset data path
 #===========================================================
-source $::env(TCL_SCRIPT_DIR)/DB_script/db_path_setting.tcl
+source $IEDA_TCL_SCRIPT_DIR/DB_script/db_path_setting.tcl
 
 #===========================================================
 ##   read lef
 #===========================================================
-source $::env(TCL_SCRIPT_DIR)/DB_script/db_init_lef.tcl
+source $IEDA_TCL_SCRIPT_DIR/DB_script/db_init_lef.tcl
 
 #===========================================================
 ##   read verilog
 #===========================================================
-verilog_init -path $::env(RESULT_DIR)/iRT_result.v -top gcd
+verilog_init -path $RESULT_DIR/iRT_result.v -top gcd
 
 #===========================================================
 ##   save def 
 #===========================================================
-def_save -path $::env(RESULT_DIR)/data_out.def
-#netlist_save -path $::env(RESULT_DIR)/iRT_result.v
+def_save -path $RESULT_DIR/data_out.def
+#netlist_save -path $RESULT_DIR/iRT_result.v
 
 #===========================================================
 ##   Exit 

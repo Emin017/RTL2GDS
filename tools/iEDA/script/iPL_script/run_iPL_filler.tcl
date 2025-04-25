@@ -1,51 +1,72 @@
 #===========================================================
+
+#===========================================================
+set RESULT_DIR          "./ieda_results"
+
+# input files
+set INPUT_DEF           "$RESULT_DIR/iRT_result.def"
+
+# output files
+set OUTPUT_DEF          "$RESULT_DIR/iPL_filler_result.def"
+set OUTPUT_VERILOG      "$RESULT_DIR/iPL_filler_result.v"
+set DESIGN_STAT_TEXT    "$RESULT_DIR/report/filler_stat.rpt"
+set DESIGN_STAT_JSON    "$RESULT_DIR/report/filler_stat.json"
+
+# script path
+set IEDA_CONFIG_DIR     "$::env(IEDA_CONFIG_DIR)"
+set IEDA_TCL_SCRIPT_DIR "$::env(IEDA_TCL_SCRIPT_DIR)"
+
+#===========================================================
+#   environment variables setup
+#===========================================================
+source $IEDA_TCL_SCRIPT_DIR/DB_script/env_var_setup.tcl
+
+#===========================================================
 ##   init flow config
 #===========================================================
-flow_init -config $::env(CONFIG_DIR)/flow_config.json
+flow_init -config $IEDA_CONFIG_DIR/flow_config.json
 
 #===========================================================
 ##   read db config
 #===========================================================
-db_init -config $::env(CONFIG_DIR)/db_default_config.json -output_dir_path $::env(RESULT_DIR)
+db_init -config $IEDA_CONFIG_DIR/db_default_config.json -output_dir_path $RESULT_DIR
 
 #===========================================================
 ##   reset data path
 #===========================================================
-source $::env(TCL_SCRIPT_DIR)/DB_script/db_path_setting.tcl
+source $IEDA_TCL_SCRIPT_DIR/DB_script/db_path_setting.tcl
 
 #===========================================================
 ##   read lef
 #===========================================================
-source $::env(TCL_SCRIPT_DIR)/DB_script/db_init_lef.tcl
+source $IEDA_TCL_SCRIPT_DIR/DB_script/db_init_lef.tcl
+
 
 #===========================================================
 ##   read def
 #===========================================================
-set DEFAULT_INPUT_DEF "$::env(RESULT_DIR)/iRT_result.def"
-def_init -path [expr {[info exists ::env(INPUT_DEF)]? $::env(INPUT_DEF) : $DEFAULT_INPUT_DEF}]
+def_init -path $INPUT_DEF
 
 #===========================================================
 ##   run Filler
 #===========================================================
-run_filler -config $::env(CONFIG_DIR)/pl_default_config.json
+run_filler -config $IEDA_CONFIG_DIR/pl_default_config.json
 
 #===========================================================
 ##   save def 
 #===========================================================
-set DEFAULT_OUTPUT_DEF "$::env(RESULT_DIR)/iPL_filler_result.def"
-def_save -path [expr {[info exists ::env(OUTPUT_DEF)] ? $::env(OUTPUT_DEF) : $DEFAULT_OUTPUT_DEF}]
+def_save -path $OUTPUT_DEF
 
 #===========================================================
 ##   save netlist 
 #===========================================================
-# netlist_save -path $::env(RESULT_DIR)/iPL_filler_result.v -exclude_cell_names {}
+netlist_save -path $OUTPUT_VERILOG -exclude_cell_names {}
 
 #===========================================================
 ##   report db summary
 #===========================================================
-report_db -path "$::env(RESULT_DIR)/report/filler_db.rpt"
-
-feature_summary -path $::env(RESULT_DIR)/feature/summary_ipl_filler.json -step filler
+report_db -path $DESIGN_STAT_TEXT
+feature_summary -path $DESIGN_STAT_JSON -step filler
 
 #===========================================================
 ##   Exit 
