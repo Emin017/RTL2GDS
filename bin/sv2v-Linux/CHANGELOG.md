@@ -1,3 +1,41 @@
+## v0.0.13
+
+### New Features
+
+* Added support for module and interface input ports with default values
+* Added conversion of severity system tasks and elaboration system tasks (e.g.,
+  `$info`) into `$display` tasks that include source file and scope information;
+  pass `-E SeverityTask` to disable this new conversion
+* Added support for gate arrays and conversion for multidimensional gate arrays
+* Added parsing support for `not`, `strong`, `weak`, `nexttime`, and
+  `s_nexttime` in assertion property expressions
+* Added `--bugpoint` utility for minimizing test cases for issue submission
+
+### Bug Fixes
+
+* Fixed `--write path/to/dir/` with directives like `` `default_nettype ``
+* Fixed `logic` incorrectly converted to `wire` even when provided to a task or
+  function output port
+* Fixed conversion of fields accessed from explicitly-cast structs
+* Fixed generated parameter name collisions when inlining interfaces and
+  interfaced-bound modules
+* Fixed conversion of enum item names and typenames nested deeply within the
+  left-hand side of an assignment
+* Fixed `input signed` ports of interface-using modules producing invalid
+  declarations after inlining
+* Fixed inlining of interfaces and interface-bound modules containing port
+  declarations tagged with an attribute
+* Fixed stray attributes producing invalid nested output when attached to
+  inlined interfaces and interface-bounds modules
+* Fixed conversion of struct variables that shadow their module's name
+* Fixed `` `resetall `` not resetting the `` `default_nettype ``
+
+### Other Enhancements
+
+* Improved error messages for invalid port or parameter bindings
+* Added warning for modules or interfaces defined more than once
+* `--write path/to/dir/` can now also be used with `--pass-through`
+
 ## v0.0.12
 
 ### Breaking Changes

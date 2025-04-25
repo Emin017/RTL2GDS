@@ -102,7 +102,7 @@ Preprocessing:
 Conversion:
      --pass-through         Dump input without converting
   -E --exclude=CONV         Exclude a particular conversion (Always, Assert,
-                            Interface, Logic, or UnbasedUnsized)
+                            Interface, Logic, SeverityTask, or UnbasedUnsized)
   -v --verbose              Retain certain conversion artifacts
   -w --write=MODE/FILE/DIR  How to write output; default is 'stdout'; use
                             'adjacent' to create a .v file next to each input;
@@ -116,6 +116,9 @@ Other:
                             number literals (e.g., 'h1_ffff_ffff, 4294967296)
      --dump-prefix=PATH     Create intermediate output files with the given
                             path prefix; used for internal debugging
+     --bugpoint=SUBSTR      Reduce the input by pruning modules, wires, etc.,
+                            that aren't needed to produce the given output or
+                            error substring when converted
      --help                 Display this help message
      --version              Print version information
      --numeric-version      Print just the version number
