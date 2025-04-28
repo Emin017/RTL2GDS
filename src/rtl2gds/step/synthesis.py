@@ -333,8 +333,8 @@ def run(
     os.makedirs(yosys_report_dir, exist_ok=True)
 
     artifacts = {
-        "synth_stat": f"{yosys_report_dir}/synth_stat.txt",
-        "synth_check": f"{yosys_report_dir}/synth_check.txt",
+        "synth_stat_txt": f"{yosys_report_dir}/synth_stat.txt",
+        "synth_check_txt": f"{yosys_report_dir}/synth_check.txt",
         "netlist": netlist_file,
     }
 
@@ -352,7 +352,7 @@ def run(
         raise subprocess.CalledProcessError(ret_code, step_cmd)
 
     # collect results
-    synth_stat = artifacts["synth_stat"]
+    synth_stat = artifacts["synth_stat_txt"]
     assert os.path.exists(synth_stat), "Synthesis statistic file not found"
     assert os.path.exists(netlist_file), "Netlist file not found"
 

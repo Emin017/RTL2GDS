@@ -92,12 +92,13 @@ def drc_klayout(
         "drc_report_json": f"{result_dir}/drc_{drc_rule_set}_{top_name}.json",
     }
 
-    design_rules = f"{R2G_PDK_DIR_IHP130}/ihp-sg13g2/libs.tech/klayout/tech/drc/{drc_rule_set}.lydrc"
+    lydrc_script = f"{R2G_PDK_DIR_IHP130}/ihp-sg13g2/libs.tech/klayout/tech/drc/{drc_rule_set}.lydrc"
     active_module = f"{top_name}"
     shell_cmd = [
         "klayout",
-        "-b", # batch mode, disable GUI
-        "-r",  design_rules,
+        "-b", # batch mode
+        "-zz", # disable all GUI
+        "-r",  lydrc_script,
         "-rd", f"log_file={artifacts['klayout_log']}",
         "-rd", f"in_gds={gds_file}",
         "-rd", f"cell={active_module}",
