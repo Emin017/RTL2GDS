@@ -1,5 +1,4 @@
-from . import flow
-from . import step
+from . import flow, step, utils
 from .chip import Chip
 from .global_configs import StepName
 
@@ -11,6 +10,7 @@ __all__ = [
     # Submodules
     "flow",
     "step",
+    "utils",
 
     # Classes
     "Chip",

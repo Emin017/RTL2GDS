@@ -1,0 +1,60 @@
+import json
+
+
+class MDLogger:
+    def __init__(self, markdown_log_file):
+        self.log_file = markdown_log_file
+        self.step_counter = 0
+        with open(self.log_file, 'w') as f:
+            f.write("# RTL2GDS exec result:\n")
+
+    def end_log(self):
+        with open(self.log_file, 'a') as f:
+            f.write("\n\n---\n\n")
+            f.write(f"End with {self.step_counter} RTL2GDS steps\n\n")
+
+    def add_header(self, step):
+        with open(self.log_file, 'a') as f:
+            self.step_counter += 1
+            f.write("\n\n---\n\n")
+            f.write(f"## {self.step_counter}.{step}\n\n")
+
+    def _add_dict_in_json(self, dict_name, dict_data: dict):
+        with open(self.log_file, 'a') as f:
+            f.write(f"\n\n### {dict_name}:\n\n")
+            f.write('```json\n')
+            f.write(json.dumps(dict_data, indent=4))
+            f.write('\n```\n\n')
+
+    def add_metrics_dict(self, metrics: dict):
+        self._add_dict_in_json("Metrics", metrics)
+
+    def add_result_files(self, result_files: dict):
+        self._add_dict_in_json("Result files", result_files)
+
+    def add_report_txt(self, report_file):
+        with open(report_file, 'r') as f:
+            contents = f.read()
+        with open(self.log_file, 'a') as f:
+            f.write(f"\n\n### Report:\n\n")
+            f.write('```text\n')
+            f.write(contents)
+            f.write('\n```\n\n')
+
+    def add_stat_json(self, stat_file):
+        with open(stat_file, 'r') as f:
+            contents = f.read()
+            stat = json.loads(contents)
+        self._add_dict_in_json("Stat", stat)
+
+    def add_metrics_json(self, metrics_file):
+        with open(metrics_file, 'r') as f:
+            contents = f.read()
+            metrics = json.loads(contents)
+        self.add_metrics_dict(metrics)
+    def add_pr_res_all(self, step: str, res_files: dict):
+        self.add_header(step)
+        self.add_result_files(res_files)
+        self.add_stat_json(res_files["design_stat_json"])
+        if "tool_metrics_json" in res_files:
+            self.add_metrics_json(res_files["tool_metrics_json"])
