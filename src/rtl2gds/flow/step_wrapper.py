@@ -108,9 +108,7 @@ class StepWrapper:
         if not step_obj:
             raise ValueError(f"Unknown PR step: {step_name}")
 
-        step_file_prefix = (
-            f"{self.chip.path_setting.result_dir}/{self.chip.top_name}_{step_name}"
-        )
+        step_file_prefix = f"{self.chip.path_setting.result_dir}/{self.chip.top_name}_{step_name}"
         output_def = f"{step_file_prefix}.def"
         output_verilog = f"{step_file_prefix}.v"
         # Create metrics directory (iEDA issue workaround)
@@ -124,6 +122,17 @@ class StepWrapper:
             output_verilog=output_verilog,
             clk_port_name=self.chip.constrain.clk_port_name,
             clk_freq_mhz=self.chip.constrain.clk_freq_mhz,
+        )
+
+        timing_artifacts = timing_eval(
+            step_name=step_name,
+            top_name=self.chip.top_name,
+            result_dir=self.chip.path_setting.result_dir,
+            sdc_file=self.chip.path_setting.sdc_file,
+            input_netlist=self.chip.path_setting.netlist_file,
+            input_def=self.chip.path_setting.def_file,
+            route_type="HPWL",
+            clock_freq=str(self.chip.constrain.clk_freq_mhz),
         )
 
         self.chip.path_setting.def_file = output_def

@@ -20,6 +20,7 @@ ENV_TOOLS_PATH = {
     "LIBERTY_FILE": f"{R2G_PDK_DIR_IHP130}/ihp-sg13g2/libs.ref/sg13g2_stdcell/lib/sg13g2_stdcell_typ_1p20V_25C.lib",
     "RUST_BACKTRACE": "1",
     "VERILOG_INCLUDE_DIRS": "",
+    "RTL2GDS_DIR": R2G_SRC_DIR,
 }
 
 DEFAULT_SDC_FILE = f"{R2G_TOOL_DIR}/default.sdc"
