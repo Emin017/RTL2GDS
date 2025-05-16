@@ -2,7 +2,8 @@ import os
 
 from .. import step
 from ..chip import Chip
-from ..global_configs import RTL2GDS_FLOW_STEPS, StepName
+from ..global_configs import RTL2GDS_FLOW_STEP, StepName
+from ..evaluation.timing import timing_eval
 
 
 def get_expected_step(finished_step: str) -> str | None:
@@ -83,7 +84,7 @@ class StepWrapper:
         self.chip.constrain.core_bbox = metrics["core_bbox"]
         self.chip.constrain.core_util = metrics["core_util"]
 
-        self.chip.metrics.area.die  = metrics["die_area"]
+        self.chip.metrics.area.die = metrics["die_area"]
         self.chip.metrics.area.core = metrics["core_area"]
 
         self.chip.metrics.area.cell = metrics["cell_area"]
@@ -106,9 +107,7 @@ class StepWrapper:
         if not step_obj:
             raise ValueError(f"Unknown PR step: {step_name}")
 
-        step_file_prefix = (
-            f"{self.chip.path_setting.result_dir}/{self.chip.top_name}_{step_name}"
-        )
+        step_file_prefix = f"{self.chip.path_setting.result_dir}/{self.chip.top_name}_{step_name}"
         output_def = f"{step_file_prefix}.def"
         output_verilog = f"{step_file_prefix}.v"
         # Create metrics directory (iEDA issue workaround)
@@ -122,6 +121,17 @@ class StepWrapper:
             output_verilog = output_verilog,
             clk_port_name  = self.chip.constrain.clk_port_name,
             clk_freq_mhz   = self.chip.constrain.clk_freq_mhz,
+        )
+
+        timing_artifacts = timing_eval(
+            step_name=step_name,
+            top_name=self.chip.top_name,
+            result_dir=self.chip.path_setting.result_dir,
+            sdc_file=self.chip.path_setting.sdc_file,
+            input_netlist=self.chip.path_setting.netlist_file,
+            input_def=self.chip.path_setting.def_file,
+            route_type="HPWL",
+            clock_freq=str(self.chip.constrain.clk_freq_mhz),
         )
 
         self.chip.path_setting.def_file = output_def
@@ -155,9 +165,6 @@ class StepWrapper:
         self.chip.update2config()
 
         if take_snapshot:
-            return dict({
-                "gds_file": gds_file,
-                "snapshot_file": snapshot_file
-            })
+            return dict({"gds_file": gds_file, "snapshot_file": snapshot_file})
         else:
             return dict({"gds_file": gds_file})

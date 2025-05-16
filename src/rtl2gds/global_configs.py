@@ -19,6 +19,7 @@ ENV_TOOLS_PATH = {
     "IEDA_CONFIG_DIR": f"{R2G_TOOL_DIR}/iEDA/iEDA_config",
     "RUST_BACKTRACE": "1",
     "VERILOG_INCLUDE_DIRS": "",
+    "RTL2GDS_DIR": R2G_SRC_DIR,
 }
 
 DEFAULT_SDC_FILE = f"{R2G_TOOL_DIR}/default.sdc"
