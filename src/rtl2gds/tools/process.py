@@ -1,3 +1,5 @@
+import os
+import json
 import subprocess
 import logging
 
@@ -56,3 +58,43 @@ def cmd_run(shell_cmd: list, shell_env: dict, period_name: str, log_path: str):
     except Exception as e:
         logging.error(f"Error command: {shell_cmd}, Error: {e}")
         raise
+
+def merge_timing_reports(result_dir: str, log_path: str, output_file: str = None):
+    """Merge timing reports from multiple files into a single file.
+    Args:
+        result_dir (str): The directory containing the timing reports.
+        log_path (str): The path to the log file.
+        output_file (str, optional): The path to the output file. If None, a default name will be used.
+    Raises:
+        FileNotFoundError: If the timing evaluation directory does not exist.
+    Returns:
+        dict: A dictionary containing the merged timing data.
+    """
+    if output_file is None:
+        output_file = f"{log_path}/timing_power_report.json"
+
+    timing_dir = f"{result_dir}/evaluation/timing"
+    if not os.path.exists(timing_dir):
+        raise FileNotFoundError(f"Failed to find timing evaluation directory: {timing_dir}")
+
+    step_dirs = [d for d in os.listdir(timing_dir) if os.path.isdir(os.path.join(timing_dir, d))]
+
+    merged_data = {}
+    for step_name in step_dirs:
+        report_path = os.path.join(timing_dir, step_name, f"{step_name}_timing_power_report.json")
+        if os.path.exists(report_path):
+            try:
+                with open(report_path, "r") as f:
+                    step_data = json.load(f)
+                merged_data[step_name] = step_data
+            except json.JSONDecodeError:
+                print(f"Warning: {report_path} file format is invalid")
+            except Exception as e:
+                print(f"Error occurred while reading {report_path}: {e}")
+
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+    with open(output_file, "w", encoding="utf-8") as f:
+        json.dump(merged_data, f, indent=2, ensure_ascii=False)
+
+    print(f"Has been merged all timing reports to: {output_file}")
+    return merged_data

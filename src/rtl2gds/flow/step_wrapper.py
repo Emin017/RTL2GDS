@@ -177,3 +177,17 @@ class StepWrapper:
             return dict({"gds_file": gds_file, "snapshot_file": snapshot_file})
         else:
             return dict({"gds_file": gds_file})
+
+    def run_collect_timing_metics(
+        self
+    ) -> dict:
+        """Run collect timing metrics step"""
+
+        output_file = f"{self.chip.path_setting.result_dir}/{self.chip.top_name}.timing.json"
+        process.merge_timing_reports(
+            result_dir=f"{self.chip.path_setting.result_dir}",
+            log_path=f"{self.chip.path_setting.result_dir}/{self.chip.top_name}.log",
+            output_file=output_file,
+        )
+
+        return dict({output_file: output_file})

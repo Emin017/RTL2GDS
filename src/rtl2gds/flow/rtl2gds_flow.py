@@ -27,5 +27,7 @@ def run(chip: Chip):
     assert chip.finished_step == StepName.FILLER
     assert os.path.exists(chip.path_setting.gds_file)
 
+    # Collect timing metrics
+    runner.run_collect_timing_metics()
     end_time = time.perf_counter()
     logging.info("Total elapsed time: %.2f seconds", end_time - start_time)
