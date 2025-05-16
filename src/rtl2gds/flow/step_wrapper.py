@@ -5,6 +5,7 @@ from .. import step
 from ..chip import Chip
 from ..global_configs import RTL2GDS_FLOW_STEP, StepName
 from ..evaluation.timing import timing_eval
+from ..tools import process
 
 
 def get_expected_step(finished_step: str) -> Optional[str]:
@@ -169,3 +170,17 @@ class StepWrapper:
             return dict({"gds_file": gds_file, "snapshot_file": snapshot_file})
         else:
             return dict({"gds_file": gds_file})
+
+    def run_collect_timing_metics(
+        self
+    ) -> dict:
+        """Run collect timing metrics step"""
+
+        output_file = f"{self.chip.path_setting.result_dir}/{self.chip.top_name}.timing.json"
+        process.merge_timing_reports(
+            result_dir=f"{self.chip.path_setting.result_dir}",
+            log_path=f"{self.chip.path_setting.result_dir}/{self.chip.top_name}.log",
+            output_file=output_file,
+        )
+
+        return dict({output_file: output_file})
