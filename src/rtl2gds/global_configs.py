@@ -1,5 +1,6 @@
 import os
 from dataclasses import dataclass
+from enum import Enum
 
 R2G_SRC_DIR = os.path.dirname(os.path.abspath(__file__))
 R2G_BIN_DIR = os.path.abspath(R2G_SRC_DIR + "/../../bin")
@@ -28,8 +29,7 @@ DEFAULT_DEF_FILE = f"{DEFAULT_RESULT_DIR}/rtl2gds_top_step.def"
 DEFAULT_GDS_FILE = f"{DEFAULT_RESULT_DIR}/rtl2gds_top_layout.gds"
 
 # Flow & Step settings
-@dataclass
-class StepName:
+class StepName(Enum):
     """RTL2GDS flow step names"""
 
     RTL2GDS_ALL = "rtl2gds_all"

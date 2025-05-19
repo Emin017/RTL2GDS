@@ -1,6 +1,7 @@
 import os
 import pathlib
 import time
+from pathlib import Path
 from typing import Dict
 
 import yaml
@@ -22,7 +23,7 @@ class Chip:
 
     def __init__(
         self,
-        config_yaml: str = None,
+        config_yaml: str|Path = None,
         config_dict: Dict = None,
         top_name: str = None,
         path_setting: DesignPath = None,
