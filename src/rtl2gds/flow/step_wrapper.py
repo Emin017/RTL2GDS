@@ -2,7 +2,9 @@ import os
 
 from rtl2gds import step
 from rtl2gds.chip import Chip
-from rtl2gds.global_configs import RTL2GDS_FLOW_STEPS, StepName
+from src.rtl2gds.global_configs import RTL2GDS_FLOW_STEPS, StepName
+from src.rtl2gds.utils.time import time_decorator, save_execute_time_data
+from src.rtl2gds.utils import process
 
 
 def get_expected_step(finished_step: str) -> str | None:
@@ -26,7 +28,8 @@ class StepWrapper:
         if expected_step != step_name:
             raise ValueError(f"Expected step: {expected_step}, but got: {step_name}")
 
-    def run_synthesis(self) -> dict[str, object]:
+    @time_decorator
+    def run_synthesis(self) -> dict:
         """Run synthesis step"""
         step_name = StepName.SYNTHESIS
         self._check_expected_step(step_name)
@@ -58,7 +61,8 @@ class StepWrapper:
 
         return artifacts
 
-    def run_floorplan(self) -> dict[str, object]:
+    @time_decorator
+    def run_floorplan(self) -> dict:
         """Run floorplan step"""
         step_name = StepName.FLOORPLAN
         self._check_expected_step(step_name)
@@ -100,7 +104,8 @@ class StepWrapper:
 
         return artifacts
 
-    def run_pr_step(self, step_name: str) -> dict[str, object]:
+    @time_decorator
+    def run_pr_step(self, step_name: str) -> dict:
         """Run a specific place & route step"""
         self._check_expected_step(step_name)
 
@@ -124,6 +129,7 @@ class StepWrapper:
             clk_freq_mhz=self.chip.constrain.clk_freq_mhz,
         )
 
+        # TODO: Is it better to call a function's method in a decorator?
         timing_artifacts = timing_eval(
             step_name=step_name,
             top_name=self.chip.top_name,
@@ -150,9 +156,8 @@ class StepWrapper:
 
         return artifacts
 
-    def run_save_layout_gds(
-        self, step_name: str, take_snapshot: bool = False
-    ) -> dict[str, object]:
+    @time_decorator
+    def run_save_layout_gds(self, step_name: str, take_snapshot: bool = False) -> dict:
         """Run dump layout GDS step"""
         gds_file = (
             f"{self.chip.path_setting.result_dir}/{self.chip.top_name}_{step_name}.gds"
@@ -191,3 +196,10 @@ class StepWrapper:
         )
 
         return dict({output_file: output_file})
+
+    def save_execute_time_report(self):
+        """Save execute time report"""
+        return save_execute_time_data(
+            self.chip.path_setting.result_dir,
+            self.chip.top_name
+        )

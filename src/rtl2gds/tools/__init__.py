@@ -1,5 +1,6 @@
-from . import process
+from . import process, time
 
 __all__ = [
-    "process"
+    "process",
+    "time"
 ]
