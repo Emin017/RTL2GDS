@@ -39,8 +39,6 @@ def main():
     flow.rtl2gds_flow.run(chip_design)
 
     logging.info("rtl2gds finished")
-    # rtl2gds_flow.dump_metrics()
-    # rtl2gds_flow.dump_gds()
 
 
 if __name__ == "__main__":

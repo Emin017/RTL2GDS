@@ -17,7 +17,7 @@ MAX_CELL_AREA = 1_000_000
 STEP_NAME = __file__.rsplit("/", maxsplit=1)[-1].split(".")[0]
 
 
-def dump_module_preview(verilog_file, output_svg=None, module_name=None, flatten=False, 
+def save_module_preview(verilog_file, output_svg=None, module_name=None, flatten=False, 
                           aig=False, skin_file=None):
     """
     Export a Verilog to an SVG diagram preview using **Yosys** and **netlistsvg**.

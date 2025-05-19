@@ -139,7 +139,7 @@ class StepWrapper:
 
         return artifacts
 
-    def run_dump_layout_gds(self, step_name: str, take_snapshot: bool = False) -> dict:
+    def run_save_layout_gds(self, step_name: str, take_snapshot: bool = False) -> dict:
         """Run dump layout GDS step"""
         gds_file = f"{self.chip.path_setting.result_dir}/{self.chip.top_name}_{step_name}.gds"
         snapshot_file = f"{self.chip.path_setting.result_dir}/{self.chip.top_name}_{step_name}.png"

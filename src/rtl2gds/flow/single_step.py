@@ -14,11 +14,11 @@ def run(
     """
     Step Router
     """
-    dump_json = False
+    save_layout_json = False
     result_files = {}
     if expect_step == StepName.RTL2GDS_ALL:
         rtl2gds_flow.run(chip)
-        dump_json = True
+        save_layout_json = True
     else:
         runner = StepWrapper(chip)
 
@@ -26,7 +26,7 @@ def run(
             result_files = runner.run_synthesis()
         elif expect_step == StepName.FLOORPLAN:
             result_files = runner.run_floorplan()
-            dump_json = True
+            save_layout_json = True
         else:
             result_files = runner.run_pr_step(expect_step)
             if cloud_outputs and expect_step == StepName.PLACEMENT:
@@ -40,14 +40,14 @@ def run(
                 StepName.ROUTING,
                 StepName.FILLER,
             ]:
-                dump_json = True
+                save_layout_json = True
 
     if take_snapshot:
-        layout_files = runner.run_dump_layout_gds(step_name=expect_step, take_snapshot=True)
+        layout_files = runner.run_save_layout_gds(step_name=expect_step, take_snapshot=True)
         result_files.update(layout_files)
 
     # Dump and return json files
-    if cloud_outputs and dump_json:
+    if cloud_outputs and save_layout_json:
         json_files = step.layout_json.run(
             input_def=chip.path_setting.def_file,
             result_dir=chip.path_setting.result_dir,
