@@ -1,10 +1,9 @@
+import os
 from dataclasses import dataclass
 from typing import List, Optional
 
 import uvicorn
 from fastapi import FastAPI
-
-# from . import api_config
 
 
 @dataclass
@@ -38,15 +37,13 @@ async def mock_front(r2g_done: Request):
     print(str(r2g_done))
 
 
-# docker run -it --net eda-subnet --ip 192.168.0.10 -p 8083:8083 --rm \
-#  --name mock_front r2gcloud:latest python3 /opt/r2gcloud/mock_front.py
 if __name__ == "__main__":
     # $uvicorn main:app --reload --port 8666 --log-level info (default)
-    front_ip = "192.168.0.10"
-    front_port = 8083
+    front_host = os.getenv("FRONT_SERVICE_HOST", "10.233.50.2")
+    front_port = os.getenv("FRONT_SERVICE_PORT", 8083)
     uvicorn.run(
         app="mock_front:app",
-        host=front_ip,
+        host=front_host,
         port=front_port,
         log_level="info",
         reload=False,
