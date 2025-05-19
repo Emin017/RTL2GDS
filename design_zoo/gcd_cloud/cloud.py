@@ -1,16 +1,16 @@
 import logging
 import os
+import uuid
 from pathlib import Path
 from typing import Optional
 
 import uvicorn
 import yaml
-import uuid
 from call_service import start_rtl2gds_job
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-from rtl2gds.global_configs import RTL2GDS_FLOW_STEP, StepName
+from rtl2gds.global_configs import RTL2GDS_FLOW_STEPS, StepName
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -49,7 +49,7 @@ async def call_ieda(stdin: StdinEDA) -> ResponseModel:
              return ResponseModel(code=400, message="Bad Request: Command must be in format 'run step_name'", data=ResponseData(code="INVALID_COMMAND_FORMAT"))
 
         step_name = command_parts[1]
-        if step_name not in RTL2GDS_FLOW_STEP:
+        if step_name not in RTL2GDS_FLOW_STEPS:
             logging.warning(f"Invalid step name received: {step_name}")
             return ResponseModel(code=404, message=f"Not Found: Step '{step_name}' is not a valid flow step", data=ResponseData(code="INVALID_STEP_NAME"))
 
@@ -101,10 +101,10 @@ async def call_ieda(stdin: StdinEDA) -> ResponseModel:
 
 def get_expected_step(finished_step: str) -> Optional[str]:
     try:
-        index = RTL2GDS_FLOW_STEP.index(finished_step)
-        if index == len(RTL2GDS_FLOW_STEP) - 1:
+        index = RTL2GDS_FLOW_STEPS.index(finished_step)
+        if index == len(RTL2GDS_FLOW_STEPS) - 1:
             return None
-        return RTL2GDS_FLOW_STEP[index + 1]
+        return RTL2GDS_FLOW_STEPS[index + 1]
     except ValueError:
         return None
 

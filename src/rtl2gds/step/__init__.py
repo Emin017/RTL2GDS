@@ -14,34 +14,15 @@ __all__ = [
     "sta",
 ]
 
+from ..global_configs import StepName
 
 pr_step_map = {
-    "netlist_opt": NetlistOpt(),
-    "placement": Placement(),
-    "cts": CTS(),
-    "drv_opt": DrvOpt(),
-    "hold_opt": HoldOpt(),
-    "legalization": Legalization(),
-    "routing": Routing(),
-    "filler": Filler(),
+    StepName.NETLIST_OPT: NetlistOpt(),
+    StepName.PLACEMENT: Placement(),
+    StepName.CTS: CTS(),
+    StepName.DRV_OPT: DrvOpt(),
+    StepName.HOLD_OPT: HoldOpt(),
+    StepName.LEGALIZATION: Legalization(),
+    StepName.ROUTING: Routing(),
+    StepName.FILLER: Filler(),
 }
-
-from ..global_configs import PR_FLOW_STEP
-
-# Verify pr_step_map matches PR_FLOW_STEP
-assert (
-    list(pr_step_map.keys()) == PR_FLOW_STEP
-), f"pr_step_map keys {list(pr_step_map.keys())} do not match PR_FLOW_STEP {PR_FLOW_STEP}"
-
-# "synthesis": synthesis.run,
-# "floorplan": floorplan.run,
-# "fixfanout": fixfanout.run,
-# "place": place.run,
-# "cts": cts.run,
-# "drv_opt": drv_opt.run,
-# "hold_opt": hold_opt.run,
-# "legalize": legalize.run,
-# "route": route.run,
-# "filler": filler.run,
-# "layout_gds": dump_layout_gds.run,
-# "layout_json": dump_layout_json.run,

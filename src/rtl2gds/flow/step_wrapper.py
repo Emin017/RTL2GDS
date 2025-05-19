@@ -1,16 +1,16 @@
 import os
-from typing import List, Optional
+from typing import Optional
 
 from .. import step
 from ..chip import Chip
-from ..global_configs import RTL2GDS_FLOW_STEP, StepName
+from ..global_configs import RTL2GDS_FLOW_STEPS, StepName
 
 
 def get_expected_step(finished_step: str) -> Optional[str]:
     """Get the expected step for the rtl2gds flow"""
-    if finished_step == RTL2GDS_FLOW_STEP[-1]:
+    if finished_step == RTL2GDS_FLOW_STEPS[-1]:
         return None
-    return RTL2GDS_FLOW_STEP[RTL2GDS_FLOW_STEP.index(finished_step) + 1]
+    return RTL2GDS_FLOW_STEPS[RTL2GDS_FLOW_STEPS.index(finished_step) + 1]
 
 
 class StepWrapper:

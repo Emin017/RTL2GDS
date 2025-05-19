@@ -1,11 +1,9 @@
 import logging
 import os
-import shutil
 import time
 
-from .. import step
 from ..chip import Chip
-from ..global_configs import StepName
+from ..global_configs import PR_FLOW_STEPS, StepName
 from .step_wrapper import StepWrapper
 
 
@@ -21,7 +19,7 @@ def run(chip: Chip):
     runner.run_dump_layout_gds(step_name=StepName.FLOORPLAN)
 
     # Run P&R flow
-    for step_name in step.pr_step_map:
+    for step_name in PR_FLOW_STEPS:
         runner.run_pr_step(step_name)
         if step_name in [StepName.PLACEMENT, StepName.FILLER]:
             runner.run_dump_layout_gds(step_name=step_name, take_snapshot=True)

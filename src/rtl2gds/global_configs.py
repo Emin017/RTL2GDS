@@ -1,5 +1,4 @@
 import os
-from dataclasses import dataclass
 from enum import Enum
 
 R2G_SRC_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -51,7 +50,7 @@ class StepName(Enum):
 
 
 # Flow step sequences
-RTL2GDS_FLOW_STEP = [
+RTL2GDS_FLOW_STEPS = [
     StepName.INIT,
     StepName.SYNTHESIS,
     StepName.FLOORPLAN,
@@ -66,4 +65,9 @@ RTL2GDS_FLOW_STEP = [
     StepName.STA
 ]
 
-PR_FLOW_STEP = RTL2GDS_FLOW_STEP[3:-1]
+_start_idx = RTL2GDS_FLOW_STEPS.index(StepName.NETLIST_OPT)
+_end_idx = RTL2GDS_FLOW_STEPS.index(StepName.FILLER)
+
+PR_FLOW_STEPS = RTL2GDS_FLOW_STEPS[_start_idx:_end_idx+1]
+
+assert PR_FLOW_STEPS[0] == StepName.NETLIST_OPT and PR_FLOW_STEPS[-1] == StepName.FILLER
