@@ -129,18 +129,6 @@ class StepWrapper:
             clk_freq_mhz=self.chip.constrain.clk_freq_mhz,
         )
 
-        # TODO: Is it better to call a function's method in a decorator?
-        timing_artifacts = timing_eval(
-            step_name=step_name,
-            top_name=self.chip.top_name,
-            result_dir=self.chip.path_setting.result_dir,
-            sdc_file=self.chip.path_setting.sdc_file,
-            input_netlist=self.chip.path_setting.netlist_file,
-            input_def=self.chip.path_setting.def_file,
-            route_type="HPWL",
-            clock_freq=str(self.chip.constrain.clk_freq_mhz),
-        )
-
         self.chip.path_setting.def_file = output_def
 
         self.chip.finished_step = step_name
