@@ -89,7 +89,6 @@ def run(
         if ret_code != 0:
             raise subprocess.CalledProcessError(ret_code, step_cmd)
     except subprocess.CalledProcessError as e:
-        # Python 3.10 has improved error messages
         raise subprocess.CalledProcessError(
             e.returncode,
             e.cmd,

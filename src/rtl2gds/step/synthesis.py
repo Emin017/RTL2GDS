@@ -207,8 +207,8 @@ def _convert_sv_to_v(rtl_file: str | list[str], result_dir: str, top_name: str) 
         return converted_v_files
     return rtl_file
 
-def _setup_step_env(top_name, rtl_file, netlist_file, sdc_file, yosys_report_dir,
-                   clk_port_name, clk_freq_mhz, die_bbox=None, core_bbox=None, core_util=None):
+def _setup_step_env(top_name, rtl_file, netlist_file, sdc_file, synth_stat_txt, synth_check_txt,
+                   clk_port_name, clk_freq_mhz):
     """Setup environment variables for Yosys synthesis.
 
     Args:
@@ -219,9 +219,6 @@ def _setup_step_env(top_name, rtl_file, netlist_file, sdc_file, yosys_report_dir
         yosys_report_dir (str): Directory for Yosys reports
         clk_port_name (str): Name of the clock port
         clk_freq_mhz (str): Clock frequency in MHz
-        die_bbox (str, optional): Die area coordinates. Defaults to None
-        core_bbox (str, optional): Core area coordinates. Defaults to None
-        core_util (float, optional): Core utilization percentage. Defaults to None
 
     Returns:
         dict: Environment variables for synthesis
@@ -231,18 +228,11 @@ def _setup_step_env(top_name, rtl_file, netlist_file, sdc_file, yosys_report_dir
         "RTL_FILE": str(rtl_file),
         "NETLIST_FILE": str(netlist_file),
         "SDC_FILE": str(sdc_file),
-        "YOSYS_REPORT_DIR": str(yosys_report_dir),
+        "SYNTH_STAT_TXT": str(synth_stat_txt),
+        "SYNTH_CHECK_TXT": str(synth_check_txt),
         "CLK_PORT_NAME": str(clk_port_name),
         "CLK_FREQ_MHZ": str(clk_freq_mhz),
     }
-
-    if die_bbox and core_bbox:
-        step_env.update({"DIE_AREA": str(die_bbox), "CORE_AREA": str(core_bbox)})
-    elif core_util:
-        assert 0 < core_util < 1, f"Core utilization {core_util} out of range (0,1)"
-        step_env.update({"CORE_UTIL": str(core_util)})
-    else:
-        assert core_util is not None, "Either die_bbox/core_bbox or core_util must be provided"
 
     step_env.update(ENV_TOOLS_PATH)
     return step_env
@@ -338,8 +328,7 @@ def run(
 
     # Setup environment variables
     step_env = _setup_step_env(top_name, rtl_file, netlist_file, sdc_file,
-                              yosys_report_dir, clk_port_name, clk_freq_mhz,
-                              die_bbox, core_bbox, core_util)
+        artifacts['synth_stat_txt'], artifacts['synth_check_txt'], clk_port_name, clk_freq_mhz)
 
     # Run synthesis
     logging.info("(step.%s) \n subprocess cmd: %s \n subprocess env: %s",
@@ -350,7 +339,6 @@ def run(
         if ret_code != 0:
             raise subprocess.CalledProcessError(ret_code, step_cmd)
     except subprocess.CalledProcessError as e:
-        # Python 3.10 has improved error messages
         raise subprocess.CalledProcessError(
             e.returncode,
             e.cmd,
