@@ -2,8 +2,7 @@ import os
 
 from .. import step
 from ..chip import Chip
-from ..global_configs import RTL2GDS_FLOW_STEP, StepName
-from ..evaluation.timing import timing_eval
+from ..global_configs import RTL2GDS_FLOW_STEPS, StepName
 from ..tools import process
 from ..tools.time import time_decorator, save_execute_time_data
 
@@ -177,9 +176,15 @@ class StepWrapper:
 
         return dict({output_file: output_file})
 
-    def save_execute_time_report(self):
+    def save_execute_time_report(self) -> str:
         """Save execute time report"""
         return save_execute_time_data(
             self.chip.path_setting.result_dir,
             self.chip.top_name
         )
+
+    def save_merged_metrics(self, execute_time_json: str):
+        """Merge and save the metrics from execution time and timing reports"""
+        from ..tools import time as time_utils
+
+        return time_utils.save_merged_metrics(self.chip, execute_time_json=execute_time_json)

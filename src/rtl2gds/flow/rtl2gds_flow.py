@@ -31,8 +31,11 @@ def run(chip: Chip):
     runner.run_collect_timing_metics()
 
     # Save time report
-    timing_json = runner.save_execute_time_report()
-    logging.info("Execute time report saved to: %s", timing_json)
+    execute_time_json = runner.save_execute_time_report()
+    logging.info("Execute time report saved to: %s", execute_time_json)
+
+    runner.save_merged_metrics(execute_time_json)
+    logging.info("Merged metrics saved to: %s", chip.path_setting.result_dir)
 
     end_time = time.perf_counter()
     logging.info("Total elapsed time: %.2f seconds", end_time - start_time)
