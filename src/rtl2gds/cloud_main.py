@@ -8,7 +8,6 @@ from dataclasses import asdict, dataclass
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import List, Optional
 
 import requests
 import yaml
@@ -20,7 +19,7 @@ from rtl2gds.global_configs import StepName
 
 @dataclass
 class NotifyTaskBody:
-    files: List[str]
+    files: list[str]
     server_timestamp: int
     status: str
     task_id: str

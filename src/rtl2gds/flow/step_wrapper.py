@@ -1,12 +1,11 @@
 import os
-from typing import Optional
 
 from .. import step
 from ..chip import Chip
 from ..global_configs import RTL2GDS_FLOW_STEPS, StepName
 
 
-def get_expected_step(finished_step: str) -> Optional[str]:
+def get_expected_step(finished_step: str) -> str | None:
     """Get the expected step for the rtl2gds flow"""
     if finished_step == RTL2GDS_FLOW_STEPS[-1]:
         return None
@@ -22,12 +21,12 @@ class StepWrapper:
     def __init__(self, chip: Chip):
         self.chip = chip
 
-    def _check_expected_step(self, step_name: str):
+    def _check_expected_step(self, step_name: str) -> None:
         expected_step = get_expected_step(self.chip.finished_step)
         if expected_step != step_name:
             raise ValueError(f"Expected step: {expected_step}, but got: {step_name}")
 
-    def run_synthesis(self) -> dict:
+    def run_synthesis(self) -> dict[str, object]:
         """Run synthesis step"""
         step_name = StepName.SYNTHESIS
         self._check_expected_step(step_name)
@@ -60,7 +59,7 @@ class StepWrapper:
 
         return artifacts
 
-    def run_floorplan(self) -> dict:
+    def run_floorplan(self) -> dict[str, object]:
         """Run floorplan step"""
         step_name = StepName.FLOORPLAN
         self._check_expected_step(step_name)
@@ -99,7 +98,7 @@ class StepWrapper:
 
         return artifacts
 
-    def run_pr_step(self, step_name: str) -> dict:
+    def run_pr_step(self, step_name: str) -> dict[str, object]:
         """Run a specific place & route step"""
         self._check_expected_step(step_name)
 
@@ -139,7 +138,7 @@ class StepWrapper:
 
         return artifacts
 
-    def run_save_layout_gds(self, step_name: str, take_snapshot: bool = False) -> dict:
+    def run_save_layout_gds(self, step_name: str, take_snapshot: bool = False) -> dict[str, object]:
         """Run dump layout GDS step"""
         gds_file = f"{self.chip.path_setting.result_dir}/{self.chip.top_name}_{step_name}.gds"
         snapshot_file = f"{self.chip.path_setting.result_dir}/{self.chip.top_name}_{step_name}.png"
@@ -157,7 +156,7 @@ class StepWrapper:
 
         if take_snapshot:
             return dict({
-                "gds_file": gds_file, 
+                "gds_file": gds_file,
                 "snapshot_file": snapshot_file
             })
         else:

@@ -17,7 +17,7 @@ from rtl2gds.step.configs import SHELL_CMD
 DEFAULT_MAX_FILE_SIZE = 19 * 1024 * 1024  # 19MB in bytes
 
 
-def _save_chunk(data_chunk, file_no_suffix, index) -> str:
+def _save_chunk(data_chunk: list[object], file_no_suffix: str, index: int) -> str:
     """
     Save a chunk of data to a JSON file.
 
@@ -37,7 +37,7 @@ def _save_chunk(data_chunk, file_no_suffix, index) -> str:
     return file_name
 
 
-def _remove_bracket_trailing_commas(json_str):
+def _remove_bracket_trailing_commas(json_str: str) -> str:
     """
     Remove trailing commas before closing square or curly brackets in a JSON string.
 
@@ -50,7 +50,7 @@ def _remove_bracket_trailing_commas(json_str):
     return re.sub(r",\s*([\]}])", r"\1", json_str)
 
 
-def _read_and_validate_json(filename):
+def _read_and_validate_json(filename: str) -> dict:
     """
     Read and validate the JSON file.
 
@@ -69,7 +69,7 @@ def _read_and_validate_json(filename):
     return data
 
 
-def _extract_header(data):
+def _extract_header(data: dict) -> dict:
     """
     Extract header from the JSON data.
 
@@ -82,7 +82,7 @@ def _extract_header(data):
     return {key: value for key, value in data.items() if key != "data"}
 
 
-def _split_data_into_chunks(data, max_file_size):
+def _split_data_into_chunks(data: list[object], max_file_size: int) -> list[list[object]]:
     """
     Split JSON data into smaller chunks.
 
@@ -113,7 +113,7 @@ def _split_data_into_chunks(data, max_file_size):
     return chunks
 
 
-def _split_layout_json(filename: str, max_file_size=DEFAULT_MAX_FILE_SIZE) -> list:
+def _split_layout_json(filename: str, max_file_size=DEFAULT_MAX_FILE_SIZE) -> list[str]:
     """
     Split a Layout JSON file into smaller chunks and save them along with their headers.
 
@@ -154,7 +154,7 @@ def _split_layout_json(filename: str, max_file_size=DEFAULT_MAX_FILE_SIZE) -> li
     return file_names
 
 
-def run(input_def: str, result_dir: str, layout_json_file: str) -> list:
+def run(input_def: str, result_dir: str, layout_json_file: str) -> list[str]:
     """
     in:
     (fix) IEDA_CONFIG_DIR, IEDA_TCL_SCRIPT_DIR, RESULT_DIR

@@ -4,7 +4,6 @@ Dump layout GDS step for RTL2GDS flow.
 
 import logging
 import subprocess
-from typing import Optional
 
 from klayout import lay
 
@@ -47,7 +46,7 @@ def run(
     input_def: str,
     gds_file: str,
     result_dir: str,
-    snapshot_file: Optional[str] = None,
+    snapshot_file: str | None = None,
 ):
     """
     Run the layout GDS dump step.
@@ -55,7 +54,7 @@ def run(
     Args:
         input_def (str): Input DEF file path
         gds_file (str): Output GDS file path
-        snapshot_file (Optional[str], optional): Output snapshot image path. Defaults to None.
+        snapshot_file (str | None, optional): Output snapshot image path. Defaults to None.
 
     Raises:
         subprocess.CalledProcessError: If the GDS dump command fails
@@ -85,9 +84,17 @@ def run(
     )
 
     # Run GDS dump command
-    ret_code = subprocess.call(step_cmd, env=step_env)
-    if ret_code != 0:
-        raise subprocess.CalledProcessError(ret_code, step_cmd)
+    try:
+        ret_code = subprocess.call(step_cmd, env=step_env)
+        if ret_code != 0:
+            raise subprocess.CalledProcessError(ret_code, step_cmd)
+    except subprocess.CalledProcessError as e:
+        # Python 3.10 has improved error messages
+        raise subprocess.CalledProcessError(
+            e.returncode,
+            e.cmd,
+            output=f"GDS dump step failed with return code {e.returncode}"
+        ) from e
 
     # Generate snapshot if requested
     if snapshot_file:

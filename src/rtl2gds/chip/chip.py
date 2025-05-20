@@ -2,7 +2,6 @@ import os
 import pathlib
 import time
 from pathlib import Path
-from typing import Dict
 
 import yaml
 
@@ -23,11 +22,11 @@ class Chip:
 
     def __init__(
         self,
-        config_yaml: str|Path = None,
-        config_dict: Dict = None,
-        top_name: str = None,
-        path_setting: DesignPath = None,
-        constrain: DesignConstrain = None,
+        config_yaml: str | Path | None = None,
+        config_dict: dict[str, object] | None = None,
+        top_name: str | None = None,
+        path_setting: DesignPath | None = None,
+        constrain: DesignConstrain | None = None,
         finished_step: str = global_configs.StepName.INIT,
         expected_step: str = global_configs.StepName.INIT
     ):
@@ -83,10 +82,10 @@ class Chip:
             self.dump_config_yaml(override=True)
 
 
-    def _strtime(self):
+    def _strtime(self) -> str:
         return time.strftime("%Y%m%d_%H%M%S")
 
-    def _init_from_config(self, config: Dict):
+    def _init_from_config(self, config: dict[str, object]) -> None:
         """
         Init a `top_name`, `path_setting` and `constrain` from a config dict
 
@@ -131,7 +130,7 @@ class Chip:
 
         self.config = uc_config
 
-    def update2config(self, save_yaml: bool = False):
+    def update2config(self, save_yaml: bool = False) -> None:
         self.last_update_time = self._strtime()
         self.config.update({
             Keyword.TOP_NAME: self.top_name,
@@ -156,7 +155,7 @@ class Chip:
         if save_yaml:
             self.dump_config_yaml(override=True)
 
-    def to_env(self) -> Dict[str, str]:
+    def to_env(self) -> dict[str, str]:
         """Get environment variables for running tools"""
         io_env = global_configs.ENV_TOOLS_PATH.copy()
         io_env[Keyword.TOP_NAME] = self.top_name
@@ -164,7 +163,7 @@ class Chip:
         io_env.update(self.constrain.to_env_dict())
         return io_env
 
-    def dump_config_yaml(self, config_yaml: str = None, override: bool = False) -> str:
+    def dump_config_yaml(self, config_yaml: str | None = None, override: bool = False) -> str:
         """Dump the config to the yaml file"""
         config_dict = self.config
 

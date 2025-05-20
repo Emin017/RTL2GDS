@@ -1,19 +1,18 @@
 from dataclasses import dataclass
-from typing import Dict, List, Union
 
 from rtl2gds.global_configs import DEFAULT_SDC_FILE
 
 
 @dataclass
 class DesignPath:
-    rtl_file: Union[str, List[str]]
+    rtl_file: str | list[str]
     result_dir: str
     netlist_file: str
     def_file: str
     gds_file: str
     sdc_file: str = DEFAULT_SDC_FILE
 
-    def to_env_dict(self) -> Dict[str, str]:
+    def to_env_dict(self) -> dict[str, str]:
         """Convert to dictionary with uppercase keys for environment variables."""
         if isinstance(self.rtl_file, list):
             # Join with newlines for yosys compatibility

@@ -7,7 +7,6 @@ import math
 import os
 import subprocess
 import tempfile
-from typing import List, Optional, Union
 
 from ..global_configs import ENV_TOOLS_PATH, StepName
 from .configs import SHELL_CMD
@@ -16,11 +15,11 @@ from .synth_util import SynthStatParser
 MAX_CELL_AREA = 1_000_000
 
 
-def save_module_preview(verilog_file, output_svg=None, module_name=None, flatten=False, 
+def save_module_preview(verilog_file, output_svg=None, module_name=None, flatten=False,
                           aig=False, skin_file=None):
     """
     Export a Verilog to an SVG diagram preview using **Yosys** and **netlistsvg**.
-    
+
     Args:
         verilog_file (str): Path to the input Verilog file
         output_svg (str, optional): Path to the output SVG file. Defaults to input filename or module_name with .svg extension.
@@ -28,10 +27,10 @@ def save_module_preview(verilog_file, output_svg=None, module_name=None, flatten
         flatten (bool, optional): If True, flatten the design to basic logic gates. Defaults to False.
         aig (bool, optional): If True, convert to AND-inverter graph representation. Defaults to False.
         skin_file (str, optional): Path to a custom skin file for netlistsvg. Defaults to None.
-    
+
     Returns:
         str: Path to the generated SVG file
-    
+
     Raises:
         FileNotFoundError: If the input Verilog file doesn't exist
         subprocess.CalledProcessError: If Yosys or netlistsvg commands fail
@@ -39,36 +38,36 @@ def save_module_preview(verilog_file, output_svg=None, module_name=None, flatten
     # Check if input file exists
     if not os.path.isfile(verilog_file):
         raise FileNotFoundError(f"Input Verilog file not found: {verilog_file}")
-    
+
     # Set default output SVG filename if not provided
     if output_svg is None:
         base_name = os.path.splitext(verilog_file)[0] if module_name is None else module_name
         output_svg = f"{base_name}.svg"
-    
+
     # Create a temporary JSON file
     with tempfile.NamedTemporaryFile(suffix='.json', delete=False) as temp_json:
         json_file = temp_json.name
-    
+
     try:
         # Construct Yosys command
         yosys_cmd = ["yosys", "-p"]
-        
+
         # Build the prep command
         prep_cmd = "prep"
         if module_name:
             prep_cmd += f" -top {module_name}"
         if flatten:
             prep_cmd += " -flatten"
-        
+
         # Complete Yosys command
         if aig:
             yosys_cmd_str = f"{prep_cmd}; aigmap; write_json {json_file}"
         else:
             yosys_cmd_str = f"{prep_cmd}; write_json {json_file}"
-        
+
         yosys_cmd.append(yosys_cmd_str)
         yosys_cmd.append(verilog_file)
-        
+
         # Run Yosys
         # https://github.com/nturley/netlistsvg/blob/master/README.md#generating-input_json_file-with-yosys
         # yosys -p "prep -top my_top_module; write_json output.json" input.v
@@ -76,20 +75,20 @@ def save_module_preview(verilog_file, output_svg=None, module_name=None, flatten
         # yosys -p "prep -top my_top_module; aigmap; write_json output.json" input.v
         print(f"Running Yosys: {' '.join(yosys_cmd)}")
         subprocess.run(yosys_cmd, check=True, env=ENV_TOOLS_PATH)
-        
+
         # Construct netlistsvg command
         netlistsvg_cmd = ["netlistsvg", json_file, "-o", output_svg]
         if skin_file:
             netlistsvg_cmd.extend(["--skin", skin_file])
-        
+
         # Run netlistsvg
         # netlistsvg input_json_file [-o output_svg_file] [--skin skin_file]
         print(f"Running netlistsvg: {' '.join(netlistsvg_cmd)}")
         subprocess.run(netlistsvg_cmd, check=True)
-        
+
         print(f"SVG diagram generated successfully: {output_svg}")
         return output_svg
-        
+
     finally:
         # Clean up temporary JSON file
         if os.path.exists(json_file):
@@ -152,9 +151,9 @@ def parse_synth_stat(report_path: str):
         for line in file:
             if found_top_summary:
                 if "Chip area for top module" in line:
-                    # Extract the top name and area from the line
+                    # Extract the area from the line
                     parts = line.split(":")
-                    module_name = parts[0].split("'\\")[-1].strip("': ")
+                    # We don't need the module name, just the area
                     stats["cell_area"] = float(parts[1].strip())
                 elif "Number of cells" in line:
                     stats["total_cells"] = int(line.split(":")[1].strip())
@@ -172,17 +171,17 @@ def parse_synth_stat(report_path: str):
 
     return stats
 
-def _convert_sv_to_v(rtl_file, result_dir, top_name):
+def _convert_sv_to_v(rtl_file: str | list[str], result_dir: str, top_name: str) -> str | list[str]:
     """Convert SystemVerilog files to Verilog format if necessary.
-    
+
     Args:
-        rtl_file (Union[str, List[str]]): Path(s) to the input RTL file(s)
-        result_dir (str): Directory to store converted Verilog files
-        top_name (str): Name of the top-level module
-    
+        rtl_file: Path(s) to the input RTL file(s)
+        result_dir: Directory to store converted Verilog files
+        top_name: Name of the top-level module
+
     Returns:
-        Union[str, List[str]]: Path(s) to the converted Verilog file(s)
-    
+        Path(s) to the converted Verilog file(s)
+
     Raises:
         RuntimeError: If SystemVerilog conversion fails
     """
@@ -211,7 +210,7 @@ def _convert_sv_to_v(rtl_file, result_dir, top_name):
 def _setup_step_env(top_name, rtl_file, netlist_file, sdc_file, yosys_report_dir,
                    clk_port_name, clk_freq_mhz, die_bbox=None, core_bbox=None, core_util=None):
     """Setup environment variables for Yosys synthesis.
-    
+
     Args:
         top_name (str): Name of the top-level module
         rtl_file (str): Path to the input RTL file
@@ -223,7 +222,7 @@ def _setup_step_env(top_name, rtl_file, netlist_file, sdc_file, yosys_report_dir
         die_bbox (str, optional): Die area coordinates. Defaults to None
         core_bbox (str, optional): Core area coordinates. Defaults to None
         core_util (float, optional): Core utilization percentage. Defaults to None
-    
+
     Returns:
         dict: Environment variables for synthesis
     """
@@ -250,13 +249,13 @@ def _setup_step_env(top_name, rtl_file, netlist_file, sdc_file, yosys_report_dir
 
 def _calculate_areas(cell_area, core_util, die_bbox=None, core_bbox=None):
     """Calculate die and core areas based on synthesis statistics.
-    
+
     Args:
         stats (dict): Synthesis statistics from Yosys
         core_util (float): Core utilization percentage
         die_bbox (str, optional): Die area coordinates. Defaults to None
         core_bbox (str, optional): Core area coordinates. Defaults to None
-    
+
     Returns:
         tuple: (die_bbox, core_bbox, core_util)
     """
@@ -280,21 +279,21 @@ def _calculate_areas(cell_area, core_util, die_bbox=None, core_bbox=None):
 
 def run(
     top_name: str,
-    rtl_file: Union[str, List[str]],
+    rtl_file: str | list[str],
     netlist_file: str,
     sdc_file: str,
     result_dir: str,
     clk_port_name: str,
     clk_freq_mhz: str,
-    die_bbox: Optional[str] = None,
-    core_bbox: Optional[str] = None,
-    core_util: Optional[float] = None,
+    die_bbox: str | None = None,
+    core_bbox: str | None = None,
+    core_util: float | None = None,
 ):
     """Run synthesis step using Yosys.
-    
+
     Args:
         top_name (str): Name of the top-level module
-        rtl_file (Union[str, List[str]]): Path(s) to the input RTL file(s)
+        rtl_file (str | list[str]): Path(s) to the input RTL file(s)
         netlist_file (str): Path to the output netlist file
         sdc_file (str): Path to the SDC constraint file
         result_dir (str): Directory to store synthesis results
@@ -303,7 +302,7 @@ def run(
         die_bbox (str, optional): Die area coordinates. Defaults to None
         core_bbox (str, optional): Core area coordinates. Defaults to None
         core_util (float, optional): Core utilization percentage. Defaults to None
-    
+
     Returns:
         dict: Dictionary containing synthesis results including:
             - DIE_AREA: Die area coordinates
@@ -312,7 +311,7 @@ def run(
             - TOTAL_CELLS: Total number of cells
             - CELL_AREA: Total cell area
             - CELL_TYPES: Dictionary of cell types and their counts
-    
+
     Raises:
         subprocess.CalledProcessError: If synthesis fails
         AssertionError: If required parameters are missing or invalid
@@ -345,10 +344,18 @@ def run(
     # Run synthesis
     logging.info("(step.%s) \n subprocess cmd: %s \n subprocess env: %s",
                 StepName.SYNTHESIS, str(step_cmd), step_env)
-    
-    ret_code = subprocess.call(step_cmd, env=step_env)
-    if ret_code != 0:
-        raise subprocess.CalledProcessError(ret_code, step_cmd)
+
+    try:
+        ret_code = subprocess.call(step_cmd, env=step_env)
+        if ret_code != 0:
+            raise subprocess.CalledProcessError(ret_code, step_cmd)
+    except subprocess.CalledProcessError as e:
+        # Python 3.10 has improved error messages
+        raise subprocess.CalledProcessError(
+            e.returncode,
+            e.cmd,
+            output=f"Synthesis step failed with return code {e.returncode}"
+        ) from e
 
     # collect results
     synth_stat = artifacts["synth_stat_txt"]

@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Dict
 
 
 @dataclass
@@ -12,10 +11,10 @@ class DesignConstrain:
     `clk_freq_mhz`: float
         Clock frequency in MHz
     `die_bbox`: str
-        Die area in format 
+        Die area in format
         "lower_left_x, lower_left_y, upper_right_x, upper_right_y"
     `core_bbox`: str
-        Core area in format 
+        Core area in format
         "lower_left_x, lower_left_y, upper_right_x, upper_right_y"
     `core_util`: float
         Core utilization in percentage
@@ -24,11 +23,11 @@ class DesignConstrain:
     clk_port_name: str
     clk_freq_mhz: float
     # area constrain
-    die_bbox: str = None
-    core_bbox: str = None
-    core_util: float = None
+    die_bbox: str | None = None
+    core_bbox: str | None = None
+    core_util: float | None = None
 
-    def to_env_dict(self) -> Dict[str, str]:
+    def to_env_dict(self) -> dict[str, str]:
         """Convert to dictionary with uppercase keys for environment variables."""
         return {
             "CLK_PORT_NAME": str(self.clk_port_name),

@@ -71,9 +71,17 @@ class Step:
 
         shell_env.update(ENV_TOOLS_PATH)
 
-        ret_code = subprocess.call(self.shell_cmd, env=shell_env)
-        if ret_code != 0:
-            raise subprocess.CalledProcessError(ret_code, self.shell_cmd)
+        try:
+            ret_code = subprocess.call(self.shell_cmd, env=shell_env)
+            if ret_code != 0:
+                raise subprocess.CalledProcessError(ret_code, self.shell_cmd)
+        except subprocess.CalledProcessError as e:
+            # Python 3.10 has improved error messages
+            raise subprocess.CalledProcessError(
+                e.returncode,
+                e.cmd,
+                output=f"Step {self.step_name} failed with return code {e.returncode}"
+            ) from e
 
         # iterate through artifacts and check if they exist
         for key, value in artifacts.items():
