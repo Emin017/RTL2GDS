@@ -7,7 +7,6 @@ import klayout.rdb
 
 from rtl2gds.global_configs import R2G_PDK_DIR_IHP130, R2G_TOOL_DIR, StepName
 
-STEP_NAME = StepName.DRC
 
 def run(top_name: str, gds_file: str, result_dir: str, tool: str = "klayout"):
     """
@@ -28,6 +27,7 @@ def run(top_name: str, gds_file: str, result_dir: str, tool: str = "klayout"):
         return drc_klayout(top_name, gds_file, result_dir)
     else:
         raise ValueError(f"Unsupported DRC tool: {tool}")
+
 def drc_magic(top_name: str, gds_file: str, result_dir: str):
     
     artifacts = {
@@ -51,7 +51,7 @@ def drc_magic(top_name: str, gds_file: str, result_dir: str):
 
     logging.info(
         "(step.%s) \n subprocess cmd: %s \n subprocess env: %s",
-        STEP_NAME,
+        StepName.DRC,
         str(shell_cmd),
     )
 
@@ -107,7 +107,7 @@ def drc_klayout(
 
     logging.info(
         "(step.%s) \n subprocess cmd: %s \n",
-        STEP_NAME,
+        StepName.DRC,
         str(shell_cmd),
     )
 

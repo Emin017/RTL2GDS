@@ -8,7 +8,7 @@ from typing import Optional
 
 from klayout import lay
 
-from ..global_configs import DEFAULT_SDC_FILE, ENV_TOOLS_PATH
+from ..global_configs import DEFAULT_SDC_FILE, ENV_TOOLS_PATH, StepName
 from .configs import SHELL_CMD
 
 
@@ -60,7 +60,7 @@ def run(
     Raises:
         subprocess.CalledProcessError: If the GDS dump command fails
     """
-    step_name = __file__.rsplit("/", maxsplit=1)[-1].split(".")[0]
+    step_name = StepName.LAYOUT_GDS
     step_cmd = SHELL_CMD[step_name]
 
     # artifacts = {

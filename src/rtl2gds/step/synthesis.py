@@ -9,12 +9,11 @@ import subprocess
 import tempfile
 from typing import List, Optional, Union
 
-from ..global_configs import ENV_TOOLS_PATH
+from ..global_configs import ENV_TOOLS_PATH, StepName
 from .configs import SHELL_CMD
 from .synth_util import SynthStatParser
 
 MAX_CELL_AREA = 1_000_000
-STEP_NAME = __file__.rsplit("/", maxsplit=1)[-1].split(".")[0]
 
 
 def save_module_preview(verilog_file, output_svg=None, module_name=None, flatten=False, 
@@ -326,7 +325,7 @@ def run(
     if isinstance(rtl_file, list):
         rtl_file = " \n ".join(rtl_file)
 
-    step_cmd = SHELL_CMD[STEP_NAME]
+    step_cmd = SHELL_CMD[StepName.SYNTHESIS]
 
     # Setup Yosys report directory
     yosys_report_dir = f"{result_dir}/report"
@@ -345,7 +344,7 @@ def run(
 
     # Run synthesis
     logging.info("(step.%s) \n subprocess cmd: %s \n subprocess env: %s",
-                STEP_NAME, str(step_cmd), step_env)
+                StepName.SYNTHESIS, str(step_cmd), step_env)
     
     ret_code = subprocess.call(step_cmd, env=step_env)
     if ret_code != 0:

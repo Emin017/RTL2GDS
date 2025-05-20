@@ -9,8 +9,6 @@ import subprocess
 from ..global_configs import ENV_TOOLS_PATH, StepName
 from .configs import SHELL_CMD
 
-STEP_NAME = StepName.FLOORPLAN
-
 
 def run(
     top_name: str,
@@ -35,7 +33,7 @@ def run(
     Raises:
         subprocess.CalledProcessError: If floorplan fails
     """
-    shell_cmd = SHELL_CMD[STEP_NAME]
+    shell_cmd = SHELL_CMD[StepName.FLOORPLAN]
 
     artifacts = {
         "def": output_def,
@@ -58,7 +56,7 @@ def run(
 
     logging.info(
         "(step.%s) \n subprocess cmd: %s \n subprocess env: %s",
-        STEP_NAME,
+        StepName.FLOORPLAN,
         str(shell_cmd),
         str(shell_env),
     )

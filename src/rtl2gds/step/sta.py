@@ -5,7 +5,6 @@ import subprocess
 from rtl2gds.global_configs import DEFAULT_SDC_FILE, ENV_TOOLS_PATH, StepName
 from rtl2gds.step.configs import SHELL_CMD
 
-STEP_NAME = StepName.STA
 
 def run(top_name: str,
         input_def: str,
@@ -30,10 +29,10 @@ def run(top_name: str,
         "TOOL_REPORT_DIR": artifacts["sta_report_dir"]
     }
 
-    shell_cmd = SHELL_CMD[STEP_NAME]
+    shell_cmd = SHELL_CMD[StepName.STA]
     logging.info(
         "(step.%s) \n subprocess cmd: %s \n subprocess env: %s",
-        STEP_NAME,
+        StepName.STA,
         str(shell_cmd),
         str(shell_env),
     )
@@ -48,7 +47,7 @@ def run(top_name: str,
     for key, value in artifacts.items():
         if not os.path.exists(value):
             raise FileNotFoundError(
-                f"Step({STEP_NAME}) Expected artifact {key} not found: {value}"
+                f"Step({StepName.STA}) Expected artifact {key} not found: {value}"
             )
     
     metrics = {}

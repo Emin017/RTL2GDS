@@ -11,7 +11,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 import orjson
 
-from rtl2gds.global_configs import DEFAULT_SDC_FILE, ENV_TOOLS_PATH
+from rtl2gds.global_configs import DEFAULT_SDC_FILE, ENV_TOOLS_PATH, StepName
 from rtl2gds.step.configs import SHELL_CMD
 
 DEFAULT_MAX_FILE_SIZE = 19 * 1024 * 1024  # 19MB in bytes
@@ -164,7 +164,7 @@ def run(input_def: str, result_dir: str, layout_json_file: str) -> list:
     Raises:
         subprocess.CalledProcessError: If the GDS dump command fails
     """
-    step_name = __file__.rsplit("/", maxsplit=1)[-1].split(".")[0]
+    step_name = StepName.LAYOUT_JSON
     step_cmd = SHELL_CMD[step_name]
     assert pathlib.Path(input_def).exists()
     step_env = {
