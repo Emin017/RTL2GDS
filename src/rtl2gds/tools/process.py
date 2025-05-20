@@ -5,7 +5,8 @@ import logging
 
 
 def replace_one(text, item):
-    """Replace a placeholder in the text with a value.
+    """
+    Replace a placeholder in the text with a value.
     Args:
         text (str): The text to process.
         item (tuple): A tuple containing the placeholder and the value to replace it with.
@@ -17,7 +18,8 @@ def replace_one(text, item):
 
 
 def cmd_run(shell_cmd: list, shell_env: dict, period_name: str, log_path: str):
-    """Process the shell command and log the output.
+    """
+    Process the shell command and log the output.
     Args:
         shell_cmd (list): The shell command to run.
         shell_env (dict): The environment variables for the shell command.
@@ -53,14 +55,18 @@ def cmd_run(shell_cmd: list, shell_env: dict, period_name: str, log_path: str):
                 logging.error("(%s) \n stderr: %s", period_name, stderr_content)
                 raise subprocess.CalledProcessError(ret_code, shell_cmd)
 
-        logging.info(f"The output of the command has been saved to: {timing_output_path}")
+        logging.info(
+            f"The output of the command has been saved to: {timing_output_path}"
+        )
 
     except Exception as e:
         logging.error(f"Error command: {shell_cmd}, Error: {e}")
         raise
 
+
 def merge_timing_reports(result_dir: str, log_path: str, output_file: str = None):
-    """Merge timing reports from multiple files into a single file.
+    """
+    Merge timing reports from multiple files into a single file.
     Args:
         result_dir (str): The directory containing the timing reports.
         log_path (str): The path to the log file.
@@ -75,13 +81,19 @@ def merge_timing_reports(result_dir: str, log_path: str, output_file: str = None
 
     timing_dir = f"{result_dir}/evaluation/timing"
     if not os.path.exists(timing_dir):
-        raise FileNotFoundError(f"Failed to find timing evaluation directory: {timing_dir}")
+        raise FileNotFoundError(
+            f"Failed to find timing evaluation directory: {timing_dir}"
+        )
 
-    step_dirs = [d for d in os.listdir(timing_dir) if os.path.isdir(os.path.join(timing_dir, d))]
+    step_dirs = [
+        d for d in os.listdir(timing_dir) if os.path.isdir(os.path.join(timing_dir, d))
+    ]
 
     merged_data = {}
     for step_name in step_dirs:
-        report_path = os.path.join(timing_dir, step_name, f"{step_name}_timing_power_report.json")
+        report_path = os.path.join(
+            timing_dir, step_name, f"{step_name}_timing_power_report.json"
+        )
         if os.path.exists(report_path):
             try:
                 with open(report_path, "r") as f:

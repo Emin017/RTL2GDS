@@ -184,9 +184,15 @@ class StepWrapper:
 
         return dict({output_file: output_file})
 
-    def save_execute_time_report(self):
+    def save_execute_time_report(self) -> str:
         """Save execute time report"""
         return save_execute_time_data(
             self.chip.path_setting.result_dir,
             self.chip.top_name
         )
+
+    def save_merged_metrics(self, execute_time_json: str):
+        """Merge and save the metrics from execution time and timing reports"""
+        from ..tools import time as time_utils
+
+        return time_utils.save_merged_metrics(self.chip, execute_time_json=execute_time_json)
