@@ -3,4 +3,5 @@
 !src
 !foundry
 !tools
+!pyproject.toml
 __pycache__
