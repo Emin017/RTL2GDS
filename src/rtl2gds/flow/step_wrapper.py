@@ -180,7 +180,6 @@ class StepWrapper:
         process.merge_timing_reports(
             result_dir=f"{self.chip.path_setting.result_dir}",
             log_path=f"{self.chip.path_setting.result_dir}/{self.chip.top_name}.log",
-            output_file=output_file,
         )
 
         return dict({output_file: output_file})

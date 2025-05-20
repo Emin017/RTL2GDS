@@ -71,7 +71,7 @@ def merge_timing_reports(result_dir: str, log_path: str, output_file: str = None
         dict: A dictionary containing the merged timing data.
     """
     if output_file is None:
-        output_file = f"{log_path}/timing_power_report.json"
+        output_file = f"{result_dir}/evaluation/timing/timing_report.json"
 
     timing_dir = f"{result_dir}/evaluation/timing"
     if not os.path.exists(timing_dir):
