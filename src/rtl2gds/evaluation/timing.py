@@ -5,7 +5,7 @@ from functools import reduce
 
 from ..chip import Chip
 from ..global_configs import ENV_TOOLS_PATH
-from ..tools import process
+from ..utils import process
 
 
 # Uncomment the following lines if you want to run this script directly

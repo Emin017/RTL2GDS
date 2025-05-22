@@ -3,8 +3,8 @@ import os
 from .. import step
 from ..chip import Chip
 from ..global_configs import RTL2GDS_FLOW_STEPS, StepName
-from ..tools import process
-from ..tools.time import time_decorator, save_execute_time_data
+from ..utils import process
+from ..utils.time import time_decorator, save_execute_time_data
 
 
 def get_expected_step(finished_step: str) -> str | None:
@@ -185,6 +185,6 @@ class StepWrapper:
 
     def save_merged_metrics(self, execute_time_json: str):
         """Merge and save the metrics from execution time and timing reports"""
-        from ..tools import time as time_utils
+        from ..utils import time as time_utils
 
         return time_utils.save_merged_metrics(self.chip, execute_time_json=execute_time_json)
