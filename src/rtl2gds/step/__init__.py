@@ -1,8 +1,13 @@
 """ Step runner factory """
 
-from . import drc, floorplan, layout_gds, layout_json, synthesis
-from .step import (CTS, DrvOpt, Filler, HoldOpt, Legalization, NetlistOpt,
-                   Placement, Routing)
+from rtl2gds.global_configs import StepName
+from rtl2gds.step import drc
+from rtl2gds.step import floorplan
+from rtl2gds.step import layout_gds
+from rtl2gds.step import layout_json
+from rtl2gds.step import synthesis
+from rtl2gds.step.step import (CTS, DrvOpt, Filler, HoldOpt, Legalization,
+                               NetlistOpt, Placement, Routing)
 
 __all__ = [
     "synthesis",
@@ -13,8 +18,6 @@ __all__ = [
     "drc",
     "sta",
 ]
-
-from ..global_configs import StepName
 
 pr_step_map = {
     StepName.NETLIST_OPT: NetlistOpt(),

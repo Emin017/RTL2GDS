@@ -4,8 +4,8 @@ import argparse
 import logging
 import pathlib
 
-from . import flow
-from .chip import Chip
+from rtl2gds import flow
+from rtl2gds.chip import Chip
 
 
 def main():

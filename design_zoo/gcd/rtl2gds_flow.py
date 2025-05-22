@@ -1,11 +1,5 @@
 #!/usr/bin/env python3
 """test flow"""
-# # Add Python rtl2gds module path if necessary
-# import os
-# import sys
-# sys.path.insert(
-#     0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "src"))
-# )
 
 from rtl2gds import Chip, flow
 

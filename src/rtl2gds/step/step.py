@@ -7,8 +7,8 @@ import logging
 import os
 import subprocess
 
-from ..global_configs import DEFAULT_SDC_FILE, ENV_TOOLS_PATH, StepName
-from . import configs
+from rtl2gds.global_configs import DEFAULT_SDC_FILE, ENV_TOOLS_PATH, StepName
+from rtl2gds.step import configs
 
 
 class Step:

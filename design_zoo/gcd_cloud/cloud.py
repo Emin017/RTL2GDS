@@ -6,10 +6,10 @@ from typing import Optional
 
 import uvicorn
 import yaml
-from call_service import start_rtl2gds_job
 from fastapi import FastAPI
 from pydantic import BaseModel
 
+from .call_service import start_rtl2gds_job # Assuming gcd_cloud is a package
 from rtl2gds.global_configs import RTL2GDS_FLOW_STEPS, StepName
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

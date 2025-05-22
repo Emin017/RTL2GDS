@@ -1,7 +1,6 @@
 import os
 import pathlib
 import time
-from pathlib import Path
 
 import yaml
 
@@ -22,7 +21,7 @@ class Chip:
 
     def __init__(
         self,
-        config_yaml: str | Path | None = None,
+        config_yaml: str | pathlib.Path | None = None,
         config_dict: dict[str, object] | None = None,
         top_name: str | None = None,
         path_setting: DesignPath | None = None,

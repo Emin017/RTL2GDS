@@ -8,9 +8,9 @@ import os
 import subprocess
 import tempfile
 
-from ..global_configs import ENV_TOOLS_PATH, StepName
-from .configs import SHELL_CMD
-from .synth_util import SynthStatParser
+from rtl2gds.global_configs import ENV_TOOLS_PATH, StepName
+from rtl2gds.step.configs import SHELL_CMD
+from rtl2gds.step.synth_util import SynthStatParser
 
 MAX_CELL_AREA = 1_000_000
 
@@ -394,9 +394,9 @@ if __name__ == "__main__":
 
     shutil.rmtree(RESULT_DIR)
 
-    from ..chip.design_constrain import DesignConstrain
-    from ..chip.design_path import DesignPath
-    from ..global_configs import DEFAULT_SDC_FILE
+    from rtl2gds.chip.design_constrain import DesignConstrain
+    from rtl2gds.chip.design_path import DesignPath
+    from rtl2gds.global_configs import DEFAULT_SDC_FILE
 
     path_setting = DesignPath(
         rtl_file=test_rtl,

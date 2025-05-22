@@ -2,9 +2,9 @@ import logging
 import os
 import time
 
-from ..chip import Chip
-from ..global_configs import PR_FLOW_STEPS, StepName
-from .step_wrapper import StepWrapper
+from rtl2gds.chip import Chip
+from rtl2gds.flow.step_wrapper import StepWrapper
+from rtl2gds.global_configs import PR_FLOW_STEPS, StepName
 
 
 def run(chip: Chip):
