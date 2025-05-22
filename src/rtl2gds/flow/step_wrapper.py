@@ -193,6 +193,6 @@ class StepWrapper:
 
     def save_merged_metrics(self, execute_time_json: str):
         """Merge and save the metrics from execution time and timing reports"""
-        from ..tools import time as time_utils
+        from ..utils import time as time_utils
 
         return time_utils.save_merged_metrics(self.chip, execute_time_json=execute_time_json)
