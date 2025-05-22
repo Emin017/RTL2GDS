@@ -28,7 +28,7 @@ def run(chip: Chip):
     assert os.path.exists(chip.path_setting.gds_file)
 
     # Collect timing metrics
-    runner.run_collect_timing_metics()
+    runner.run_collect_timing_metrics()
 
     # Save time report
     execute_time_json = runner.save_execute_time_report()

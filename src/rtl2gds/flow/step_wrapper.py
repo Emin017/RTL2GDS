@@ -171,7 +171,7 @@ class StepWrapper:
         else:
             return dict({"gds_file": gds_file})
 
-    def run_collect_timing_metics(
+    def run_collect_timing_metrics(
         self
     ) -> dict:
         """Run collect timing metrics step"""
