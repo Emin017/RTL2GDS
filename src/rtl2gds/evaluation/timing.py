@@ -31,7 +31,7 @@ def timing_eval(
 ):
     # Read the db_config template file
     with open(db_config, "r") as f:
-        db_config = f.read()
+        db_config_content = f.read()
 
     output_dir_path = f"{result_dir}/evaluation/timing/{step_name}"
     # Replace placeholders in the db_config template
@@ -47,13 +47,13 @@ def timing_eval(
         "${OUTPUT_DIR_PATH}": f"{result_dir}/evaluation/timing/{step_name}",
     }
 
-    db_config = reduce(process.replace_one, replace_attrs.items(), db_config)
+    db_config_content = reduce(process.replace_one, replace_attrs.items(), db_config_content)
 
     # Write the processed db_config to a new file
     processed_json_path = f"{output_dir_path}/db_config.json"
     os.makedirs(os.path.dirname(processed_json_path), exist_ok=True)
     with open(processed_json_path, "w") as f:
-        f.write(db_config)
+        f.write(db_config_content)
 
     # Define the artifacts to be generated
     artifacts = {
