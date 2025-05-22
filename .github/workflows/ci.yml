@@ -25,9 +25,10 @@ jobs:
       - uses: DeterminateSystems/determinate-nix-action@v3
       - name: Run ${{ matrix.name }} flows
         run: |
-          export PYTHONPATH=${GITHUB_WORKSPACE}/src:${PYTHONPATH}
-          cd design_zoo/${{ matrix.dir }}
-          nix shell nixpkgs#python312Packages.pyyaml nixpkgs#python312Packages.orjson nixpkgs#python312Packages.klayout nixpkgs#python312 nixpkgs#python312Packages.pip nixpkgs#ieda nixpkgs#yosys -c " \\
-              echo '--- Environment in Nix Shell ---' && ls -alh . && \\
-              python3 -m rtl2gds -c ${{ matrix.config_file }} \\
-            "
+          nix build -L
+          cd "design_zoo/${{ matrix.dir }}"
+          ../../result/bin/rtl2gds -c "${{ matrix.config_file }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: "RTL2GDS-results"
+          path: ./results/bin/rtl2gds
