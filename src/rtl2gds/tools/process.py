@@ -100,13 +100,13 @@ def merge_timing_reports(result_dir: str, log_path: str, output_file: str = None
                     step_data = json.load(f)
                 merged_data[step_name] = step_data
             except json.JSONDecodeError:
-                print(f"Warning: {report_path} file format is invalid")
+                logging.warning(f"Warning: {report_path} file format is invalid")
             except Exception as e:
-                print(f"Error occurred while reading {report_path}: {e}")
+                logging.error(f"Error occurred while reading {report_path}: {e}")
 
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
     with open(output_file, "w", encoding="utf-8") as f:
         json.dump(merged_data, f, indent=2, ensure_ascii=False)
 
-    print(f"Has been merged all timing reports to: {output_file}")
+    logging.info(f"Has been merged all timing reports to: {output_file}")
     return merged_data
