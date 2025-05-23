@@ -16,7 +16,7 @@
 }:
 buildPythonPackage {
   pname = "rtl2gds";
-  version = "0.1.0";
+  version = "0.0.1";
   pyproject = true;
 
   src =
@@ -36,8 +36,6 @@ buildPythonPackage {
   propagatedBuildInputs =
     [
       python
-      setuptools
-
       pyyaml
       orjson
       klayout
