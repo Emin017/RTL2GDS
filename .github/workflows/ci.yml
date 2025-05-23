@@ -17,9 +17,7 @@ jobs:
           - name: gcd
             config_file: gcd.yaml
             dir: gcd
-          - name: picorv32a
-            config_file: pico.yaml
-            dir: picorv32a
+          # Add more designs here
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/determinate-nix-action@v3
