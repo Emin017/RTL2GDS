@@ -1,7 +1,7 @@
 {
   lib,
   bash,
-  ieda,
+  iedaUnstable,
   yosys,
   klayout,
   buildPythonPackage,
@@ -33,6 +33,10 @@ buildPythonPackage {
       ];
     };
 
+  patches = [
+    ./patches/rtl2gds.fast.patch
+  ];
+
   propagatedBuildInputs =
     [
       python
@@ -44,7 +48,7 @@ buildPythonPackage {
       ipython
     ]
     ++ [
-      ieda
+      iedaUnstable
       yosys
     ];
 
@@ -58,7 +62,7 @@ buildPythonPackage {
       lib.makeBinPath [
         bash
         yosys
-        ieda
+        iedaUnstable
       ]
     }"
     "--set LD_LIBRARY_PATH ${
