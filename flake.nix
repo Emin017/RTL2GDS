@@ -4,6 +4,7 @@
     parts.url = "github:hercules-ci/flake-parts";
     treefmt-nix.url = "github:numtide/treefmt-nix";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
+    ieda-infra.url = "github:Emin017/ieda-infra";
   };
 
   outputs =
@@ -12,6 +13,7 @@
       nixpkgs,
       parts,
       treefmt-nix,
+      ieda-infra,
       ...
     }:
     parts.lib.mkFlake { inherit inputs; } {
@@ -30,23 +32,16 @@
           system,
           ...
         }:
-        let
-          treefmtEval = treefmt-nix.lib.evalModule pkgs {
-            projectRootFile = "flake.nix";
-            programs = {
-              nixfmt.enable = true;
-              nixfmt.package = pkgs.nixfmt-rfc-style;
-            };
-          };
-        in
         {
+          _module.args.pkgs = import nixpkgs {
+            inherit system;
+            overlays = [
+              ieda-infra.overlays.default
+            ];
+          };
           imports = [
             ./nix
           ];
-          formatter = treefmtEval.config.build.wrapper;
-          checks = {
-            formatting = treefmtEval.config.build.check self;
-          };
         };
     };
 }

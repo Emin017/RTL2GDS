@@ -1,0 +1,22 @@
+diff --git a/src/operation/iIR/api/CMakeLists.txt b/src/operation/iIR/api/CMakeLists.txt
+index 72fc1e286..f48201132 100644
+--- a/src/operation/iIR/api/CMakeLists.txt
++++ b/src/operation/iIR/api/CMakeLists.txt
+@@ -13,4 +13,4 @@ include_directories(${EIGEN3_INCLUDE_DIRS})
+ aux_source_directory(./ SRC)
+ add_library(iir-api ${SRC} )
+ 
+-target_link_libraries(iir-api ir_solver ir-matrix Eigen3::Eigen pg-netlist)
++target_link_libraries(iir-api ir_solver ir-matrix Eigen3::Eigen pg-netlist iIR-Rust)
+diff --git a/src/operation/iIR/api/iIR.cc b/src/operation/iIR/api/iIR.cc
+index 7bb3c0024..2acd939ba 100644
+--- a/src/operation/iIR/api/iIR.cc
++++ b/src/operation/iIR/api/iIR.cc
+@@ -31,6 +31,7 @@
+ #include "log/Log.hh"
+ #include "matrix/IRMatrix.hh"
+ #include "usage/usage.hh"
++#include "iir-rust/IRRustC.hh"
+ 
+ namespace iir {
+ 
