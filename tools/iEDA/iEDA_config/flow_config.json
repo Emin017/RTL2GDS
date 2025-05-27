@@ -19,6 +19,6 @@
         "irt_path": "$IEDA_CONFIG_DIR/rt_default_config.json",
         "idrc_path": "$IEDA_CONFIG_DIR/drc_default_config.json",
         "icts_path": "$IEDA_CONFIG_DIR/cts_default_config.json",
-        "ito_path": "$IEDA_CONFIG_DIR/to_default_config.json"
+        "ito_path": "ERROR_OPTION_DEPRECATED"
     }
 }

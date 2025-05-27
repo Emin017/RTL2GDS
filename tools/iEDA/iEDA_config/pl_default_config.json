@@ -13,7 +13,7 @@
                 "min_wirelength_force_bar": -300
             },
             "Density": {
-                "target_density": 0.8,
+                "target_density": 0.6,
                 "is_adaptive_bin": 1,
                 "bin_cnt_x": 128,
                 "bin_cnt_y": 128
@@ -32,7 +32,7 @@
         "BUFFER": {
             "max_buffer_num": 10000,
             "buffer_type": [
-                "sky130_fd_sc_hs__buf_1"
+                "sg13g2_buf_8"
             ]
         },
         "LG": {
@@ -42,22 +42,25 @@
         "DP": {
             "max_displacement": 1000000,
             "global_right_padding": 0,
-            "enable_networkflow" : 0
+            "enable_networkflow": 0
         },
         "Filler": {
             "first_iter": [
-                "sky130_fd_sc_hs__fill_8",
-                "sky130_fd_sc_hs__fill_4",
-                "sky130_fd_sc_hs__fill_2",
-                "sky130_fd_sc_hs__fill_1"
+                "DCAP64BWP40P140HVT",
+                "DCAP32BWP40P140HVT",
+                "DCAP16BWP40P140HVT",
+                "DCAP8BWP40P140HVT",
+                "DCAP4BWP40P140HVT"
             ],
             "second_iter": [
-                "sky130_fd_sc_hs__fill_8",
-                "sky130_fd_sc_hs__fill_4",
-                "sky130_fd_sc_hs__fill_2",
-                "sky130_fd_sc_hs__fill_1"
+                "HVT_F_FILLHD16",
+                "HVT_F_FILLHD8",
+                "HVT_F_FILLHD4",
+                "HVT_F_FILLHD2",
+                "HVT_F_FILLHD1"
             ],
             "min_filler_width": 1
+            // sg13g2_fill_1 sg13g2_fill_2 sg13g2_decap_4 sg13g2_decap_8
         }
     }
 }

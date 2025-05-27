@@ -69,15 +69,17 @@ source $IEDA_TCL_SCRIPT_DIR/iFP_script/module/create_tracks.tcl
 #===========================================================
 ##   Place IO Port
 #===========================================================
-auto_place_pins -layer met5 -width 2000 -height 2000
+auto_place_pins -layer Metal5 -width 600 -height 600
 
 #===========================================================
 ##   Tap Cell
 #===========================================================
-tapcell \
-   -tapcell sky130_fd_sc_hs__tap_1 \
-   -distance 14 \
-   -endcap sky130_fd_sc_hs__fill_1
+# There are no Endcap and Welltie cells in this PDK, so
+# `cut_rows` has to be called from the tapcell script.
+# tapcell \
+#    -tapcell sky130_fd_sc_hs__tap_1 \
+#    -distance 14 \
+#    -endcap sky130_fd_sc_hs__fill_1
 
 #===========================================================
 ##   PDN 

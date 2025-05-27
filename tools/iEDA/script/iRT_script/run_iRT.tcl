@@ -5,7 +5,7 @@ set RESULT_DIR          "./ieda_results"
 
 # inputs
 set INPUT_DEF           "$RESULT_DIR/iPL_lg_result.def"
-set NUM_THREADS         16
+set NUM_THREADS         64
 
 # output files
 set OUTPUT_DEF          "$RESULT_DIR/iRT_result.def"
@@ -63,8 +63,8 @@ def_init -path $INPUT_DEF
 ##   run Router
 #===========================================================
 init_rt -temp_directory_path $TOOL_REPORT_DIR \
-        -bottom_routing_layer "met1" \
-        -top_routing_layer "met4" \
+        -bottom_routing_layer "Metal2" \
+        -top_routing_layer "Metal5" \
         -thread_number $NUM_THREADS
 
 run_rt
