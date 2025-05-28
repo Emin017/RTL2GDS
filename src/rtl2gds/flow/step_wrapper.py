@@ -1,8 +1,8 @@
 import os
 
-from .. import step
-from ..chip import Chip
-from ..global_configs import RTL2GDS_FLOW_STEPS, StepName
+from rtl2gds import step
+from rtl2gds.chip import Chip
+from rtl2gds.global_configs import RTL2GDS_FLOW_STEPS, StepName
 
 
 def get_expected_step(finished_step: str) -> str | None:

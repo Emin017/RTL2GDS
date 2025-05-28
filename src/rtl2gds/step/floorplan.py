@@ -6,8 +6,8 @@ import json
 import logging
 import subprocess
 
-from ..global_configs import ENV_TOOLS_PATH, StepName
-from .configs import SHELL_CMD
+from rtl2gds.global_configs import ENV_TOOLS_PATH, StepName
+from rtl2gds.step.configs import SHELL_CMD
 
 
 def run(

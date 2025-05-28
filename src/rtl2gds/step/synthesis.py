@@ -12,10 +12,7 @@ import tempfile
 from rtl2gds.global_configs import ENV_TOOLS_PATH, StepName
 from rtl2gds.step.configs import SHELL_CMD
 
-# from .synth_util import SynthStatParser
-
 MAX_CELL_AREA = 1_000_000
-
 
 def save_module_preview(
     verilog_file,
@@ -459,7 +456,6 @@ if __name__ == "__main__":
     OUTPUT_NETLIST = "./results/netlist.v"
 
     import shutil
-
     shutil.rmtree(RESULT_DIR, ignore_errors=True)
     os.makedirs(RESULT_DIR, exist_ok=True)
 

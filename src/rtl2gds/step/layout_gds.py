@@ -7,8 +7,8 @@ import subprocess
 
 from klayout import lay
 
-from ..global_configs import DEFAULT_SDC_FILE, ENV_TOOLS_PATH, StepName
-from .configs import SHELL_CMD
+from rtl2gds.global_configs import DEFAULT_SDC_FILE, ENV_TOOLS_PATH, StepName
+from rtl2gds.step.configs import SHELL_CMD
 
 
 def save_snapshot_image(

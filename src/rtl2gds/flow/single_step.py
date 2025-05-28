@@ -1,8 +1,8 @@
-from .. import step
-from ..chip import Chip
-from ..global_configs import StepName
-from . import rtl2gds_flow
-from .step_wrapper import StepWrapper
+from rtl2gds import step
+from rtl2gds.chip import Chip
+from rtl2gds.flow import rtl2gds_flow
+from rtl2gds.flow.step_wrapper import StepWrapper
+from rtl2gds.global_configs import StepName
 
 
 def run(

@@ -1,6 +1,6 @@
-from .md_logger import MDLogger
+from rtl2gds.utils.md_logger import MDLogger
 
-all = [
+__all__ = [
     # Classes
     "MDLogger",
 ]

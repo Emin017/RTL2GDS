@@ -13,7 +13,6 @@ rtl2gds:latest
 
 import logging
 import os
-import sys
 from pathlib import Path
 
 from kubernetes import client, config
