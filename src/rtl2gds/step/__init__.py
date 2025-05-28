@@ -1,8 +1,7 @@
-""" Step runner factory """
+"""Step runner factory"""
 
 from . import drc, floorplan, layout_gds, layout_json, synthesis
-from .step import (CTS, DrvOpt, Filler, HoldOpt, Legalization, NetlistOpt,
-                   Placement, Routing)
+from .step import CTS, Filler, Legalization, NetlistOpt, Placement, Routing
 
 __all__ = [
     "synthesis",
@@ -20,8 +19,6 @@ pr_step_map = {
     StepName.NETLIST_OPT: NetlistOpt(),
     StepName.PLACEMENT: Placement(),
     StepName.CTS: CTS(),
-    StepName.DRV_OPT: DrvOpt(),
-    StepName.HOLD_OPT: HoldOpt(),
     StepName.LEGALIZATION: Legalization(),
     StepName.ROUTING: Routing(),
     StepName.FILLER: Filler(),

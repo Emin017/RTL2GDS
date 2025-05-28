@@ -3,7 +3,7 @@
 from rtl2gds.global_configs import ENV_TOOLS_PATH, R2G_TOOL_DIR, StepName
 
 SHELL_CMD = {
-    StepName.SYNTHESIS: ["yosys", f"{R2G_TOOL_DIR}/yosys/yosys.tcl"],
+    StepName.SYNTHESIS: ["yosys", f"{R2G_TOOL_DIR}/yosys/scripts/yosys_synthesis.tcl"],
     StepName.FLOORPLAN: [
         "iEDA",
         "-script",
@@ -23,16 +23,6 @@ SHELL_CMD = {
         "iEDA",
         "-script",
         f'{ENV_TOOLS_PATH["IEDA_TCL_SCRIPT_DIR"]}/iCTS_script/run_iCTS.tcl',
-    ],
-    StepName.DRV_OPT: [
-        "iEDA",
-        "-script",
-        f'{ENV_TOOLS_PATH["IEDA_TCL_SCRIPT_DIR"]}/iTO_script/run_iTO_drv.tcl',
-    ],
-    StepName.HOLD_OPT: [
-        "iEDA",
-        "-script",
-        f'{ENV_TOOLS_PATH["IEDA_TCL_SCRIPT_DIR"]}/iTO_script/run_iTO_hold.tcl',
     ],
     StepName.LEGALIZATION: [
         "iEDA",

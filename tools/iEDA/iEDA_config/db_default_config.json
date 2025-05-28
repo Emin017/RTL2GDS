@@ -1,22 +1,16 @@
 {
     "INPUT": {
-        "tech_lef_path": "/home/user/RTL2GDS/foundry/ihp130/ihp-sg13g2/libs.ref/sg13g2_stdcell/lef/sg13g2_tech.lef",
-        "lef_paths": [
-            "/home/user/RTL2GDS/foundry/ihp130/ihp-sg13g2/libs.ref/sg13g2_stdcell/lef/sg13g2_stdcell.lef",
-            "/home/user/RTL2GDS/foundry/ihp130/ihp-sg13g2/libs.ref/sg13g2_io/lef/sg13g2_io.lef"
-        ],
+        "tech_lef_path": "",
+        "lef_paths": "",
         "def_path": "",
         "verilog_path": "",
-        "lib_path": [
-            "/home/user/RTL2GDS/foundry/ihp130/ihp-sg13g2/libs.ref/sg13g2_stdcell/lib/sg13g2_stdcell_typ_1p20V_25C.lib",
-            "/home/user/RTL2GDS/foundry/ihp130/ihp-sg13g2/libs.ref/sg13g2_io/lib/sg13g2_io_typ_1p2V_3p3V_25C.lib"
-        ],
+        "lib_path": "",
         "sdc_path": ""
     },
     "OUTPUT": {
         "output_dir_path": "${RESULT_DIR}"
     },
     "LayerSettings": {
-        "routing_layer_1st": "METAL1"
+        "routing_layer_1st": "METAL2"
     }
 }

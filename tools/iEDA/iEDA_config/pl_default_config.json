@@ -5,7 +5,7 @@
         "is_timing_effort": 0,
         "is_congestion_effort": 0,
         "ignore_net_degree": 100,
-        "num_threads": 8,
+        "num_threads": 16,
         "GP": {
             "Wirelength": {
                 "init_wirelength_coef": 0.25,
@@ -32,7 +32,7 @@
         "BUFFER": {
             "max_buffer_num": 10000,
             "buffer_type": [
-                "sg13g2_buf_8"
+                "sg13g2_buf_1"
             ]
         },
         "LG": {
@@ -46,21 +46,18 @@
         },
         "Filler": {
             "first_iter": [
-                "DCAP64BWP40P140HVT",
-                "DCAP32BWP40P140HVT",
-                "DCAP16BWP40P140HVT",
-                "DCAP8BWP40P140HVT",
-                "DCAP4BWP40P140HVT"
+                "sg13g2_decap_8",
+                "sg13g2_decap_4",
+                "sg13g2_fill_2",
+                "sg13g2_fill_1"
             ],
             "second_iter": [
-                "HVT_F_FILLHD16",
-                "HVT_F_FILLHD8",
-                "HVT_F_FILLHD4",
-                "HVT_F_FILLHD2",
-                "HVT_F_FILLHD1"
+                "sg13g2_decap_8",
+                "sg13g2_decap_4",
+                "sg13g2_fill_2",
+                "sg13g2_fill_1"
             ],
             "min_filler_width": 1
-            // sg13g2_fill_1 sg13g2_fill_2 sg13g2_decap_4 sg13g2_decap_8
         }
     }
 }

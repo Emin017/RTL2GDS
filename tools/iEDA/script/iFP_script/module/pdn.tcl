@@ -11,7 +11,7 @@ global_net_connect  -net_name VSS  -instance_pin_name vss    -is_power 0
 
 create_grid -layer_name "Metal1" -net_name_power VDD -net_name_ground VSS -width 0.44 -offset 0
 
-create_stripe -layer_name "Metal5"    -net_name_power VDD -net_name_ground VSS -width 2.200 -pitch 75.6 -offset 13.600
+create_stripe -layer_name "Metal5"    -net_name_power VDD -net_name_ground VSS -width 2.700 -pitch 75.6 -offset 13.600
 create_stripe -layer_name "TopMetal1" -net_name_power VDD -net_name_ground VSS -width 1.800 -pitch 75.6 -offset 13.570
 
 set connect1 "Metal1 Metal5"

@@ -17,9 +17,13 @@
         6
     ],
     "buffer_type": [
-        "sg13g2_buf_8"
+        "sg13g2_buf_1",
+        "sg13g2_buf_2",
+        "sg13g2_buf_4",
+        "sg13g2_buf_8",
+        "sg13g2_buf_16"
     ],
-    "root_buffer_type": "sg13g2_buf_8",
+    "root_buffer_type": "sg13g2_buf_16",
     "root_buffer_required": "OFF",
     "inherit_root": "OFF",
     "break_long_wire": "OFF",

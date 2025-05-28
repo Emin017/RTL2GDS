@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from rtl2gds.global_configs import DEFAULT_SDC_FILE
+from rtl2gds.global_configs import DEFAULT_DEF_FILE, DEFAULT_GDS_FILE, DEFAULT_SDC_FILE
 
 
 @dataclass
@@ -8,8 +8,8 @@ class DesignPath:
     rtl_file: str | list[str]
     result_dir: str
     netlist_file: str
-    def_file: str
-    gds_file: str
+    def_file: str = DEFAULT_DEF_FILE
+    gds_file: str = DEFAULT_GDS_FILE
     sdc_file: str = DEFAULT_SDC_FILE
 
     def to_env_dict(self) -> dict[str, str]:
