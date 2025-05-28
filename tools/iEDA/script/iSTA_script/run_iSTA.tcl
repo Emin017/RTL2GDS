@@ -12,7 +12,7 @@ set IEDA_CONFIG_DIR     "$::env(IEDA_CONFIG_DIR)"
 set IEDA_TCL_SCRIPT_DIR "$::env(IEDA_TCL_SCRIPT_DIR)"
 
 #===========================================================
-#   environment variables
+#   override variables from env
 #===========================================================
 source $IEDA_TCL_SCRIPT_DIR/DB_script/env_var_setup.tcl
 

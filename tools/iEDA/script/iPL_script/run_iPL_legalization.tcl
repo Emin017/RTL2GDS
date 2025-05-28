@@ -4,7 +4,7 @@
 set RESULT_DIR          "./ieda_results"
 
 # input files
-set INPUT_DEF           "$RESULT_DIR/iTO_hold_result.def"
+set INPUT_DEF           "$RESULT_DIR/iCTS_result.def"
 
 # output files
 set OUTPUT_DEF          "$RESULT_DIR/iPL_lg_result.def"
@@ -17,7 +17,7 @@ set IEDA_CONFIG_DIR     "$::env(IEDA_CONFIG_DIR)"
 set IEDA_TCL_SCRIPT_DIR "$::env(IEDA_TCL_SCRIPT_DIR)"
 
 #===========================================================
-#   environment variables
+#   override variables from env
 #===========================================================
 source $IEDA_TCL_SCRIPT_DIR/DB_script/env_var_setup.tcl
 

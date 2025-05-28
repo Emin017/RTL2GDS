@@ -5,7 +5,7 @@ set RESULT_DIR          "./ieda_results"
 
 # inputs
 set INPUT_DEF           "$RESULT_DIR/iPL_lg_result.def"
-set NUM_THREADS         16
+set NUM_THREADS         64
 
 # output files
 set OUTPUT_DEF          "$RESULT_DIR/iRT_result.def"
@@ -20,7 +20,7 @@ set IEDA_CONFIG_DIR     "$::env(IEDA_CONFIG_DIR)"
 set IEDA_TCL_SCRIPT_DIR "$::env(IEDA_TCL_SCRIPT_DIR)"
 
 #===========================================================
-#   environment variables
+#   override variables from env
 #===========================================================
 source $IEDA_TCL_SCRIPT_DIR/DB_script/env_var_setup.tcl
 
@@ -63,13 +63,15 @@ def_init -path $INPUT_DEF
 ##   run Router
 #===========================================================
 init_rt -temp_directory_path $TOOL_REPORT_DIR \
-        -bottom_routing_layer "met1" \
-        -top_routing_layer "met4" \
-        -thread_number $NUM_THREADS
+        -bottom_routing_layer "Metal2" \
+        -top_routing_layer "Metal5" \
+        -thread_number $NUM_THREADS \
+        -output_inter_result 0 \
+        -enable_timing 0 \
+        -enable_fast_mode 0
 
 run_rt
 
-# init_sta -output $RESULT_DIR/rt/sta/
 # report_timing -stage "dr"
 feature_tool -path $TOOL_METRICS_JSON -step route
 

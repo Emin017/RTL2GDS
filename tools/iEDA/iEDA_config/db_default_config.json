@@ -11,6 +11,6 @@
         "output_dir_path": "${RESULT_DIR}"
     },
     "LayerSettings": {
-        "routing_layer_1st": "met1"
+        "routing_layer_1st": "METAL2"
     }
 }

@@ -2,6 +2,7 @@
 
 #===========================================================
 set RESULT_DIR          "./ieda_results"
+# override by "$::env(RESULT_DIR)" if exist
 
 # input files
 set NETLIST_FILE        "$::env(NETLIST_FILE)"
@@ -15,19 +16,24 @@ set CORE_AREA           "$::env(CORE_AREA)"
 set OUTPUT_DEF          "$RESULT_DIR/iFP_result.def"
 set DESIGN_STAT_TEXT    "$RESULT_DIR/report/floorplan_stat.rpt"
 set DESIGN_STAT_JSON    "$RESULT_DIR/report/floorplan_stat.json"
+# override by :
+# "$::env(OUTPUT_DEF)" 
+# "$::env(DESIGN_STAT_TEXT)" 
+# "$::env(DESIGN_STAT_JSON)" 
+# if exist
 
 # script path
 set IEDA_CONFIG_DIR     "$::env(IEDA_CONFIG_DIR)"
 set IEDA_TCL_SCRIPT_DIR "$::env(IEDA_TCL_SCRIPT_DIR)"
 
 #===========================================================
-#   environment variables
+#   override variables from env
 #===========================================================
 source $IEDA_TCL_SCRIPT_DIR/DB_script/env_var_setup.tcl
 
 #===========================================================
 ##   init flow config
-#===========================================================
+#===========================================================Standard Cell Rows
 flow_init -config $IEDA_CONFIG_DIR/flow_config.json
 
 #===========================================================
@@ -53,9 +59,9 @@ verilog_init -path $NETLIST_FILE -top $TOP_NAME
 #===========================================================
 ##   init floorplan
 #===========================================================
-set PLACE_SITE unit 
-set IO_SITE unit
-set CORNER_SITE unit
+set PLACE_SITE CoreSite 
+set IO_SITE sg13g2_ioSite
+set CORNER_SITE sg13g2_ioSite
 
 init_floorplan \
    -die_area $DIE_AREA \
@@ -69,15 +75,18 @@ source $IEDA_TCL_SCRIPT_DIR/iFP_script/module/create_tracks.tcl
 #===========================================================
 ##   Place IO Port
 #===========================================================
-auto_place_pins -layer met5 -width 2000 -height 2000
+auto_place_pins -layer Metal5 -width 1000 -height 1000
 
 #===========================================================
 ##   Tap Cell
 #===========================================================
-tapcell \
-   -tapcell sky130_fd_sc_hs__tap_1 \
-   -distance 14 \
-   -endcap sky130_fd_sc_hs__fill_1
+# There are no Endcap and Welltie cells in this PDK, so
+# `cut_rows` has to be called from the tapcell script.
+# But yet iFP has no cut_rows support.
+# tapcell \
+#    -tapcell sky130_fd_sc_hs__tap_1 \
+#    -distance 14 \
+#    -endcap sky130_fd_sc_hs__fill_1
 
 #===========================================================
 ##   PDN 

@@ -11,7 +11,7 @@ set VERILOG_FILES           "$::env(RTL_FILE)"
 set VERILOG_INCLUDE_DIRS    "$::env(VERILOG_INCLUDE_DIRS)"
 set CLOCK_PERIOD_PS         [expr 1000000.0 / $::env(CLK_FREQ_MHZ)]
 
-set MERGED_LIB_FILE         "$FOUNDRY_DIR/lib/merged.lib"
+set LIBERTY_FILE            "$FOUNDRY_DIR/lib/merged.lib"
 set BLACKBOX_V_FILE         "$FOUNDRY_DIR/verilog/blackbox.v" 
 set CLKGATE_MAP_FILE        "$FOUNDRY_DIR/verilog/cells_clkgate.v" 
 set LATCH_MAP_FILE          "$FOUNDRY_DIR/verilog/cells_latch.v" 
@@ -80,13 +80,13 @@ if {[info exist LATCH_MAP_FILE]} {
 }
 
 # technology mapping of flip-flops
-dfflibmap -liberty $MERGED_LIB_FILE
+dfflibmap -liberty $LIBERTY_FILE
 opt -undriven
 
 # Technology mapping for cells
 abc -D $CLOCK_PERIOD_PS \
     -constr "$SDC_FILE" \
-    -liberty $MERGED_LIB_FILE \
+    -liberty $LIBERTY_FILE \
     -showtmp \
     -script $abc_script 
 
@@ -109,7 +109,7 @@ opt_clean -purge
 
 # reports
 tee -o $SYNTH_CHECK_TXT check
-tee -o $SYNTH_STAT_TXT stat -liberty $MERGED_LIB_FILE
+tee -o $SYNTH_STAT_TXT stat -liberty $LIBERTY_FILE
 
 # write synthesized design
 write_verilog -noattr -noexpr -nohex -nodec $NETLIST_FILE

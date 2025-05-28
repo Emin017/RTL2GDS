@@ -8,6 +8,6 @@
         "output_def": "unused",
         "report_file": "${RESULT_DIR}/no/report.txt"
     },
-    "insert_buffer": "sky130_fd_sc_hs__buf_8",
+    "insert_buffer": "sg13g2_buf_8",
     "max_fanout": 30
 }

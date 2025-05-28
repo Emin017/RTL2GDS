@@ -5,7 +5,7 @@
         "is_timing_effort": 0,
         "is_congestion_effort": 0,
         "ignore_net_degree": 100,
-        "num_threads": 8,
+        "num_threads": 16,
         "GP": {
             "Wirelength": {
                 "init_wirelength_coef": 0.25,
@@ -13,7 +13,7 @@
                 "min_wirelength_force_bar": -300
             },
             "Density": {
-                "target_density": 0.8,
+                "target_density": 0.6,
                 "is_adaptive_bin": 1,
                 "bin_cnt_x": 128,
                 "bin_cnt_y": 128
@@ -32,7 +32,7 @@
         "BUFFER": {
             "max_buffer_num": 10000,
             "buffer_type": [
-                "sky130_fd_sc_hs__buf_1"
+                "sg13g2_buf_1"
             ]
         },
         "LG": {
@@ -42,20 +42,20 @@
         "DP": {
             "max_displacement": 1000000,
             "global_right_padding": 0,
-            "enable_networkflow" : 0
+            "enable_networkflow": 0
         },
         "Filler": {
             "first_iter": [
-                "sky130_fd_sc_hs__fill_8",
-                "sky130_fd_sc_hs__fill_4",
-                "sky130_fd_sc_hs__fill_2",
-                "sky130_fd_sc_hs__fill_1"
+                "sg13g2_decap_8",
+                "sg13g2_decap_4",
+                "sg13g2_fill_2",
+                "sg13g2_fill_1"
             ],
             "second_iter": [
-                "sky130_fd_sc_hs__fill_8",
-                "sky130_fd_sc_hs__fill_4",
-                "sky130_fd_sc_hs__fill_2",
-                "sky130_fd_sc_hs__fill_1"
+                "sg13g2_decap_8",
+                "sg13g2_decap_4",
+                "sg13g2_fill_2",
+                "sg13g2_fill_1"
             ],
             "min_filler_width": 1
         }

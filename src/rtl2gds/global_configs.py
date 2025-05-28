@@ -14,9 +14,10 @@ _LIB_ENV = os.environ["LD_LIBRARY_PATH"] if "LD_LIBRARY_PATH" in os.environ else
 ENV_TOOLS_PATH = {
     "PATH": f"{R2G_BIN_DIR}/iEDA:{R2G_BIN_DIR}/yosys/bin:{R2G_BIN_DIR}/sv2v-Linux:{_BIN_ENV}",
     "LD_LIBRARY_PATH": f"{R2G_BIN_DIR}/lib:{_LIB_ENV}",
-    "FOUNDRY_DIR": R2G_PDK_DIR_SKY130,
+    "FOUNDRY_DIR": R2G_PDK_DIR_IHP130,
     "IEDA_TCL_SCRIPT_DIR": f"{R2G_TOOL_DIR}/iEDA/script",
     "IEDA_CONFIG_DIR": f"{R2G_TOOL_DIR}/iEDA/iEDA_config",
+    "LIBERTY_FILE": f"{R2G_PDK_DIR_IHP130}/ihp-sg13g2/libs.ref/sg13g2_stdcell/lib/sg13g2_stdcell_typ_1p20V_25C.lib",
     "RUST_BACKTRACE": "1",
     "VERILOG_INCLUDE_DIRS": "",
 }
@@ -26,6 +27,7 @@ DEFAULT_RESULT_DIR = "rtl2gds_result"
 DEFAULT_NETLIST_FILE = f"{DEFAULT_RESULT_DIR}/rtl2gds_top_netlist.v"
 DEFAULT_DEF_FILE = f"{DEFAULT_RESULT_DIR}/rtl2gds_top_step.def"
 DEFAULT_GDS_FILE = f"{DEFAULT_RESULT_DIR}/rtl2gds_top_layout.gds"
+
 
 # Flow & Step settings
 @dataclass
@@ -39,8 +41,6 @@ class StepName:
     NETLIST_OPT = "netlist_opt"
     PLACEMENT = "placement"
     CTS = "cts"
-    DRV_OPT = "drv_opt"
-    HOLD_OPT = "hold_opt"
     LEGALIZATION = "legalization"
     ROUTING = "routing"
     FILLER = "filler"
@@ -58,17 +58,15 @@ RTL2GDS_FLOW_STEPS = [
     StepName.NETLIST_OPT,
     StepName.PLACEMENT,
     StepName.CTS,
-    StepName.DRV_OPT,
-    StepName.HOLD_OPT,
     StepName.LEGALIZATION,
     StepName.ROUTING,
     StepName.FILLER,
-    StepName.STA
+    StepName.STA,
 ]
 
 _start_idx = RTL2GDS_FLOW_STEPS.index(StepName.NETLIST_OPT)
 _end_idx = RTL2GDS_FLOW_STEPS.index(StepName.FILLER)
 
-PR_FLOW_STEPS = RTL2GDS_FLOW_STEPS[_start_idx:_end_idx+1]
+PR_FLOW_STEPS = RTL2GDS_FLOW_STEPS[_start_idx : _end_idx + 1]
 
 assert PR_FLOW_STEPS[0] == StepName.NETLIST_OPT and PR_FLOW_STEPS[-1] == StepName.FILLER

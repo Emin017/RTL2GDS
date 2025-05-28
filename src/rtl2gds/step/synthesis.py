@@ -2,6 +2,7 @@
 Synthesis step implementation using yosys
 """
 
+import json
 import logging
 import math
 import os
@@ -10,13 +11,17 @@ import tempfile
 
 from rtl2gds.global_configs import ENV_TOOLS_PATH, StepName
 from rtl2gds.step.configs import SHELL_CMD
-from rtl2gds.step.synth_util import SynthStatParser
 
 MAX_CELL_AREA = 1_000_000
 
-
-def save_module_preview(verilog_file, output_svg=None, module_name=None, flatten=False,
-                          aig=False, skin_file=None):
+def save_module_preview(
+    verilog_file,
+    output_svg=None,
+    module_name=None,
+    flatten=False,
+    aig=False,
+    skin_file=None,
+):
     """
     Export a Verilog to an SVG diagram preview using **Yosys** and **netlistsvg**.
 
@@ -41,11 +46,13 @@ def save_module_preview(verilog_file, output_svg=None, module_name=None, flatten
 
     # Set default output SVG filename if not provided
     if output_svg is None:
-        base_name = os.path.splitext(verilog_file)[0] if module_name is None else module_name
+        base_name = (
+            os.path.splitext(verilog_file)[0] if module_name is None else module_name
+        )
         output_svg = f"{base_name}.svg"
 
     # Create a temporary JSON file
-    with tempfile.NamedTemporaryFile(suffix='.json', delete=False) as temp_json:
+    with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as temp_json:
         json_file = temp_json.name
 
     try:
@@ -94,6 +101,7 @@ def save_module_preview(verilog_file, output_svg=None, module_name=None, flatten
         if os.path.exists(json_file):
             os.remove(json_file)
 
+
 def convert_sv2v(input_sv, output_v, top=None, write=None, incdir=None, define=None):
     """
     Converts a SystemVerilog file to Verilog using sv2v.
@@ -109,7 +117,7 @@ def convert_sv2v(input_sv, output_v, top=None, write=None, incdir=None, define=N
     """
 
     # import shutil; shutil.which("sv2v")
-    sv2v_executable = 'sv2v'
+    sv2v_executable = "sv2v"
     if not sv2v_executable:
         print("Error: sv2v is not installed or not in PATH.")
         return False
@@ -127,51 +135,46 @@ def convert_sv2v(input_sv, output_v, top=None, write=None, incdir=None, define=N
         cmd.extend(["-w", write])
 
     try:
-        subprocess.run(cmd, check=True, capture_output=True, text=True, env=ENV_TOOLS_PATH)
+        subprocess.run(
+            cmd, check=True, capture_output=True, text=True, env=ENV_TOOLS_PATH
+        )
         return True
     except subprocess.CalledProcessError as e:
         print(f"Error running sv2v: {e}")
-        print(f"sv2v stdout: {e.stdout}")  # Capture and print stdout/stderr for debugging
+        print(
+            f"sv2v stdout: {e.stdout}"
+        )  # Capture and print stdout/stderr for debugging
         print(f"sv2v stderr: {e.stderr}")
         return False
 
-def parse_synth_stat(report_path: str):
+
+def parse_synth_stat(synth_stat_json: str):
     """Extract top module area and name from yosys report and simplify cell names"""
-    found_top_summary = False
     stats = {
-        "total_cells": 0,
+        "num_cells": 0,
         "cell_area": 0.0,
         "sequential_ratio": 0.0,
-        "cell_types": {}
+        "cell_types": {},
     }
-    cell_prefix = "sky130_fd_sc_hs__"
-    cell_prefix_match_pattern = f"     {cell_prefix}"
+    # cell_prefix = "sg13g2_"
+    # cell_prefix_match_pattern = f"     {cell_prefix}"
 
-    with open(report_path, "r", encoding="utf-8") as file:
-        for line in file:
-            if found_top_summary:
-                if "Chip area for top module" in line:
-                    # Extract the area from the line
-                    parts = line.split(":")
-                    # We don't need the module name, just the area
-                    stats["cell_area"] = float(parts[1].strip())
-                elif "Number of cells" in line:
-                    stats["total_cells"] = int(line.split(":")[1].strip())
-                elif line.startswith(cell_prefix_match_pattern):
-                    cell_type, count = line.strip().rsplit(" ", 1)
-                    cell_name = cell_type.strip().replace(cell_prefix, "")
-                    cell_count = int(count)
-                    stats["cell_types"][cell_name] = cell_count
-
-            if "=== design hierarchy ===" in line:
-                found_top_summary = True
-
-    if not found_top_summary:
-        raise RuntimeError("Missing top module in synthesis report")
+    with open(
+        synth_stat_json,
+        "r",
+        encoding="utf-8",
+    ) as f:
+        summary = json.load(f)
+        print(summary)
+        stats["num_cells"] = int(summary["design"]["num_cells"])
+        stats["cell_area"] = float(summary["design"]["area"])
 
     return stats
 
-def _convert_sv_to_v(rtl_file: str | list[str], result_dir: str, top_name: str) -> str | list[str]:
+
+def _convert_sv_to_v(
+    rtl_file: str | list[str], result_dir: str, top_name: str
+) -> str | list[str]:
     """Convert SystemVerilog files to Verilog format if necessary.
 
     Args:
@@ -185,39 +188,53 @@ def _convert_sv_to_v(rtl_file: str | list[str], result_dir: str, top_name: str) 
     Raises:
         RuntimeError: If SystemVerilog conversion fails
     """
-    if isinstance(rtl_file, str) and rtl_file.endswith('.sv'):
+    if isinstance(rtl_file, str) and rtl_file.endswith(".sv"):
         if not os.path.exists(rtl_file):
             raise FileNotFoundError(f"RTL file {rtl_file} not found")
-        converted_v_file = f"{result_dir}/{os.path.basename(rtl_file).replace('.sv', '.v')}"
+        converted_v_file = (
+            f"{result_dir}/{os.path.basename(rtl_file).replace('.sv', '.v')}"
+        )
         if not convert_sv2v(rtl_file, converted_v_file, top=top_name):
-            raise RuntimeError(f"Failed to convert SystemVerilog file {rtl_file} to Verilog")
+            raise RuntimeError(
+                f"Failed to convert SystemVerilog file {rtl_file} to Verilog"
+            )
         return converted_v_file
-    elif isinstance(rtl_file, list) and any(file.endswith('.sv') for file in rtl_file):
+    elif isinstance(rtl_file, list) and any(file.endswith(".sv") for file in rtl_file):
         converted_v_files = []
         for file in rtl_file:
             if not os.path.exists(file):
                 raise FileNotFoundError(f"RTL file {file} not found")
-            if file.endswith('.sv'):
-                converted_v_file = f"{result_dir}/{os.path.basename(file).replace('.sv', '.v')}"
+            if file.endswith(".sv"):
+                converted_v_file = (
+                    f"{result_dir}/{os.path.basename(file).replace('.sv', '.v')}"
+                )
                 if not convert_sv2v(file, converted_v_file, top=top_name):
-                    raise RuntimeError(f"Failed to convert SystemVerilog file {file} to Verilog")
+                    raise RuntimeError(
+                        f"Failed to convert SystemVerilog file {file} to Verilog"
+                    )
                 converted_v_files.append(converted_v_file)
             else:
                 converted_v_files.append(file)
         return converted_v_files
     return rtl_file
 
-def _setup_step_env(top_name, rtl_file, netlist_file, sdc_file, synth_stat_txt, synth_check_txt,
-                   clk_port_name, clk_freq_mhz):
+
+def _setup_step_env(
+    top_name,
+    rtl_file,
+    netlist_file,
+    synth_stat_json,
+    synth_check_txt,
+    clk_freq_mhz,
+    result_dir,
+):
     """Setup environment variables for Yosys synthesis.
 
     Args:
         top_name (str): Name of the top-level module
         rtl_file (str): Path to the input RTL file
         netlist_file (str): Path to the output netlist file
-        sdc_file (str): Path to the SDC constraint file
         yosys_report_dir (str): Directory for Yosys reports
-        clk_port_name (str): Name of the clock port
         clk_freq_mhz (str): Clock frequency in MHz
 
     Returns:
@@ -227,15 +244,15 @@ def _setup_step_env(top_name, rtl_file, netlist_file, sdc_file, synth_stat_txt, 
         "TOP_NAME": str(top_name),
         "RTL_FILE": str(rtl_file),
         "NETLIST_FILE": str(netlist_file),
-        "SDC_FILE": str(sdc_file),
-        "SYNTH_STAT_TXT": str(synth_stat_txt),
+        "SYNTH_STAT_JSON": str(synth_stat_json),
         "SYNTH_CHECK_TXT": str(synth_check_txt),
-        "CLK_PORT_NAME": str(clk_port_name),
         "CLK_FREQ_MHZ": str(clk_freq_mhz),
+        "RESULT_DIR": str(result_dir),
     }
 
     step_env.update(ENV_TOOLS_PATH)
     return step_env
+
 
 def _calculate_areas(cell_area, core_util, die_bbox=None, core_bbox=None):
     """Calculate die and core areas based on synthesis statistics.
@@ -267,13 +284,12 @@ def _calculate_areas(cell_area, core_util, die_bbox=None, core_bbox=None):
 
     return die_bbox, core_bbox, core_util
 
+
 def run(
     top_name: str,
     rtl_file: str | list[str],
     netlist_file: str,
-    sdc_file: str,
     result_dir: str,
-    clk_port_name: str,
     clk_freq_mhz: str,
     die_bbox: str | None = None,
     core_bbox: str | None = None,
@@ -285,9 +301,7 @@ def run(
         top_name (str): Name of the top-level module
         rtl_file (str | list[str]): Path(s) to the input RTL file(s)
         netlist_file (str): Path to the output netlist file
-        sdc_file (str): Path to the SDC constraint file
         result_dir (str): Directory to store synthesis results
-        clk_port_name (str): Name of the clock port
         clk_freq_mhz (str): Clock frequency in MHz
         die_bbox (str, optional): Die area coordinates. Defaults to None
         core_bbox (str, optional): Core area coordinates. Defaults to None
@@ -298,7 +312,7 @@ def run(
             - DIE_AREA: Die area coordinates
             - CORE_AREA: Core area coordinates
             - CORE_UTIL: Core utilization percentage
-            - TOTAL_CELLS: Total number of cells
+            - NUM_CELLS: Total number of cells
             - CELL_AREA: Total cell area
             - CELL_TYPES: Dictionary of cell types and their counts
 
@@ -308,6 +322,8 @@ def run(
         RuntimeError: If SystemVerilog conversion fails
     """
     # Convert SystemVerilog files if necessary and also check RTL file existence
+    result_dir = os.path.abspath(result_dir)
+    netlist_file = os.path.abspath(netlist_file)
     rtl_file = _convert_sv_to_v(rtl_file, result_dir, top_name)
 
     # flatten rtl_file if it is a list (pass ENV var to yosys.tcl)
@@ -321,52 +337,61 @@ def run(
     os.makedirs(yosys_report_dir, exist_ok=True)
 
     artifacts = {
-        "synth_stat_txt": f"{yosys_report_dir}/synth_stat.txt",
+        "synth_stat_json": f"{yosys_report_dir}/synth_stat.json",
         "synth_check_txt": f"{yosys_report_dir}/synth_check.txt",
         "netlist": netlist_file,
     }
 
     # Setup environment variables
-    step_env = _setup_step_env(top_name, rtl_file, netlist_file, sdc_file,
-        artifacts['synth_stat_txt'], artifacts['synth_check_txt'], clk_port_name, clk_freq_mhz)
+    step_env = _setup_step_env(
+        top_name,
+        rtl_file,
+        netlist_file,
+        artifacts["synth_stat_json"],
+        artifacts["synth_check_txt"],
+        clk_freq_mhz,
+        result_dir,
+    )
 
     # Run synthesis
-    logging.info("(step.%s) \n subprocess cmd: %s \n subprocess env: %s",
-                StepName.SYNTHESIS, str(step_cmd), step_env)
+    logging.info(
+        "(step.%s) \n subprocess cmd: %s \n subprocess env: %s",
+        StepName.SYNTHESIS,
+        str(step_cmd),
+        step_env,
+    )
 
-    try:
-        ret_code = subprocess.call(step_cmd, env=step_env)
-        if ret_code != 0:
-            raise subprocess.CalledProcessError(ret_code, step_cmd)
-    except subprocess.CalledProcessError as e:
-        raise subprocess.CalledProcessError(
-            e.returncode,
-            e.cmd,
-            output=f"Synthesis step failed with return code {e.returncode}"
-        ) from e
+    ret_code = subprocess.call(step_cmd, env=step_env)
+    if ret_code != 0:
+        raise subprocess.CalledProcessError(ret_code, step_cmd)
 
     # collect results
-    synth_stat = artifacts["synth_stat_txt"]
+    synth_stat = artifacts["synth_stat_json"]
     assert os.path.exists(synth_stat), "Synthesis statistic file not found"
     assert os.path.exists(netlist_file), "Netlist file not found"
 
     stats = parse_synth_stat(synth_stat)
     cell_area = stats["cell_area"]
-    assert 0 < cell_area < MAX_CELL_AREA, "Cell area exceeds processing limit"
+    assert 0 < cell_area
+    assert (
+        cell_area < MAX_CELL_AREA
+    ), f"Cell area ({cell_area}) exceeds processing limit ({MAX_CELL_AREA})"
 
     # Calculate areas
-    die_bbox, core_bbox, core_util = _calculate_areas(cell_area, core_util, die_bbox, core_bbox)
+    die_bbox, core_bbox, core_util = _calculate_areas(
+        cell_area, core_util, die_bbox, core_bbox
+    )
 
     metrics = {
         "die_bbox": die_bbox,
         "core_bbox": core_bbox,
         "core_util": core_util,
-        "total_cells": stats["total_cells"],
+        "num_cells": stats["num_cells"],
         "cell_area": cell_area,
-        # "cell_types": stats["cell_types"]
     }
 
     return metrics, artifacts
+
 
 if __name__ == "__main__":
     logging.basicConfig(
@@ -377,41 +402,75 @@ if __name__ == "__main__":
     logging.info("Testing synthesis...")
 
     # Setup test design
-    TEST_DESIGN_TOP = "aes_cipher_top"
-    test_rtl = [
-        "/home/wsl/rtl2gds/design_zoo/aes/aes_cipher_top.v",
-        "/home/wsl/rtl2gds/design_zoo/aes/aes_inv_cipher_top.v",
-        "/home/wsl/rtl2gds/design_zoo/aes/aes_inv_sbox.v",
-        "/home/wsl/rtl2gds/design_zoo/aes/aes_key_expand_128.v",
-        "/home/wsl/rtl2gds/design_zoo/aes/aes_rcon.v",
-        "/home/wsl/rtl2gds/design_zoo/aes/aes_sbox.v",
-        "/home/wsl/rtl2gds/design_zoo/aes/timescale.v",
+    aes_top = "aes_cipher_top"
+    aes_rtl = [
+        "/home/user/RTL2GDS/design_zoo/aes/aes_cipher_top.v",
+        "/home/user/RTL2GDS/design_zoo/aes/aes_inv_cipher_top.v",
+        "/home/user/RTL2GDS/design_zoo/aes/aes_inv_sbox.v",
+        "/home/user/RTL2GDS/design_zoo/aes/aes_key_expand_128.v",
+        "/home/user/RTL2GDS/design_zoo/aes/aes_rcon.v",
+        "/home/user/RTL2GDS/design_zoo/aes/aes_sbox.v",
+        "/home/user/RTL2GDS/design_zoo/aes/timescale.v",
     ]
+
+    kianv_top = "tt_um_kianV_rv32ima_uLinux_SoC"
+    kianv_rtl = [
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/spi.v",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/divider.v",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/rx_uart.v",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/defines_soc.vh",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/csr_exception_handler.v",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/riscv_defines.vh",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/rv32_amo_opcodes.vh",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/design_elements.v",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/fifo.v",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/mcause.vh",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/soc.v",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/alu_decoder.v",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/datapath_unit.v",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/extend.v",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/load_alignment.v",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/alu.v",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/csr_utilities.vh",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/qqspi.v",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/load_decoder.v",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/riscv_priv_csr_status.vh",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/multiplier_decoder.v",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/csr_decoder.v",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/clint.v",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/register_file.v",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/misa.vh",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/tx_uart.v",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/tt_um_kianV_rv32ima_uLinux_SoC.v",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/main_fsm.v",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/divider_decoder.v",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/multiplier_extension_decoder.v",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/multiplier.v",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/store_alignment.v",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/store_decoder.v",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/control_unit.v",
+        "/home/user/demo/KianV-RV32IMA-RISC-V-uLinux-SoC/src/kianv_harris_mc_edition.v",
+    ]
+
     RESULT_DIR = "./results"
-    OUTPUT_NETLIST = "./results/aes_netlist.v"
+    OUTPUT_NETLIST = "./results/netlist.v"
 
     import shutil
+    shutil.rmtree(RESULT_DIR, ignore_errors=True)
+    os.makedirs(RESULT_DIR, exist_ok=True)
 
-    shutil.rmtree(RESULT_DIR)
-
-    from rtl2gds.chip.design_constrain import DesignConstrain
-    from rtl2gds.chip.design_path import DesignPath
-    from rtl2gds.global_configs import DEFAULT_SDC_FILE
-
-    path_setting = DesignPath(
-        rtl_file=test_rtl,
-        result_dir=RESULT_DIR,
+    metrics, artifacts = run(
+        top_name="picorv32a",
+        rtl_file="/home/user/RTL2GDS/design_zoo/picorv32a/picorv32a.v",
         netlist_file=OUTPUT_NETLIST,
-        sdc_file=DEFAULT_SDC_FILE,
-    )
-    constrain = DesignConstrain(clk_port_name="clk", clk_freq_mhz="100", core_util=0.5)
-
-    env = run(
-        top_name=TEST_DESIGN_TOP, design_path=path_setting, design_constrain=constrain
+        result_dir=RESULT_DIR,
+        clk_freq_mhz=100,
+        core_util=0.5,
     )
 
     logging.info("Synthesis completed successfully")
-    logging.info("Generated netlist: %s", env["NETLIST_FILE"])
-    logging.info("Die area: %s", env["DIE_AREA"])
-    logging.info("Core area: %s", env["CORE_AREA"])
-    logging.info("env: %s", env)
+    logging.info("Generated netlist: %s", artifacts["netlist"])
+    logging.info("Die area: %s", metrics["die_bbox"])
+    logging.info("Core area: %s", metrics["core_bbox"])
+    logging.info("metrics: %s", str(metrics))
+    logging.info("artifacts: %s", str(artifacts))
