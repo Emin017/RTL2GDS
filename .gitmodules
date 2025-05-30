@@ -1,0 +1,4 @@
+[submodule "foundry/ihp130"]
+	path = foundry/ihp130
+	url = https://githubfast.com/IHP-GmbH/IHP-Open-PDK.git
+	branch = main
