@@ -40,7 +40,7 @@ source $IEDA_TCL_SCRIPT_DIR/DB_script/db_path_setting.tcl
 #===========================================================
 ##   reset lib
 #===========================================================
-source $IEDA_TCL_SCRIPT_DIR/DB_script/db_init_lib_fixfanout.tcl
+source $IEDA_TCL_SCRIPT_DIR/DB_script/db_init_lib.tcl
 
 #===========================================================
 ##   reset sdc
