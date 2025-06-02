@@ -63,6 +63,10 @@ def timing_eval(
     # Prepare environment variables
     # Need to set the environment variables for the variables used in the tcl scripts
     shell_env = {
+        "CONFIG_FILE": processed_json_path,
+        "TCL_SCRIPT_DIR": f'{ENV_TOOLS_PATH["IEDA_TCL_SCRIPT_DIR"]}',
+        "OUTPUT_DIR_PATH": f"{result_dir}/evaluation/timing/{step_name}",
+        "ROUTING_TYPE": route_type,
         "TOP_NAME": top_name,
         "RESULT_DIR": result_dir,
         "SDC_FILE": sdc_file,
@@ -74,11 +78,9 @@ def timing_eval(
     }
 
     shell_cmd = [
-        "timing_app",
-        processed_json_path,
-        route_type,
-        "-o",
-        artifacts["report"],
+        "iEDA",
+        "-script",
+        f'{ENV_TOOLS_PATH["IEDA_TCL_SCRIPT_DIR"]}/evaluation/run_timing_eval.tcl',
     ]
 
     logging.info(

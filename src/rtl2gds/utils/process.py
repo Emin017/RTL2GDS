@@ -92,7 +92,7 @@ def merge_timing_reports(result_dir: str, log_path: str, output_file: str = None
     merged_data = {}
     for step_name in step_dirs:
         report_path = os.path.join(
-            timing_dir, step_name, f"{step_name}_timing_power_report.json"
+            timing_dir, step_name, f"timing_result.json"
         )
         if os.path.exists(report_path):
             try:

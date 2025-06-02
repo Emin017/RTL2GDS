@@ -110,7 +110,7 @@ def save_execute_time_data(result_dir: str, chip_name: str) -> str:
     return json_file
 
 
-from src.rtl2gds.chip import Chip
+from rtl2gds.chip import Chip
 
 
 def save_merged_metrics(chip: Chip, execute_time_json: str):
