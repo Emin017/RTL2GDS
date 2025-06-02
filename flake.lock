@@ -7,11 +7,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1748856881,
-        "narHash": "sha256-x/SSzFWpdQHQR+R6G0TKFJhHWMbBPTHTzVQ6/2ejTPs=",
+        "lastModified": 1748875225,
+        "narHash": "sha256-C6HpvldnHsy7Q+mu98sNCfkDAYz9Kvm2ILgkKjJfocM=",
         "owner": "Emin017",
         "repo": "ieda-infra",
-        "rev": "48ced66690c716e8fa039fa4db80af70e892dfb6",
+        "rev": "f2e67be556b42a2d78fa7ee6981db51a60b09b36",
         "type": "github"
       },
       "original": {

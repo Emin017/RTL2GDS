@@ -1,13 +1,10 @@
 {
   pkgs,
+  inputs',
   ...
 }:
 let
-  iedaUnstable =
-    with pkgs;
-    ieda.overrideAttrs (oldAttrs: {
-      src = pkgs.callPackage ./iedaSrc.nix { };
-    });
+  iedaUnstable = inputs'.ieda-infra.packages.ieda;
 in
 {
   packages = {

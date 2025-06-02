@@ -27,6 +27,7 @@
       ];
       perSystem =
         {
+          inputs',
           self',
           pkgs,
           system,
