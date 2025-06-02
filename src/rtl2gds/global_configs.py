@@ -24,7 +24,7 @@ else:
 ENV_TOOLS_PATH = {
     "PATH": _TOOL_PATH,
     "LD_LIBRARY_PATH": _TOOL_LIB,
-    "FOUNDRY_DIR": R2G_PDK_DIR_SKY130,
+    "FOUNDRY_DIR": R2G_PDK_DIR_IHP130,
     "IEDA_TCL_SCRIPT_DIR": f"{R2G_TOOL_DIR}/iEDA/script",
     "IEDA_CONFIG_DIR": f"{R2G_TOOL_DIR}/iEDA/iEDA_config",
     "LIBERTY_FILE": f"{R2G_PDK_DIR_IHP130}/ihp-sg13g2/libs.ref/sg13g2_stdcell/lib/sg13g2_stdcell_typ_1p20V_25C.lib",
