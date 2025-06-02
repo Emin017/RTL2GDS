@@ -25,6 +25,8 @@ jobs:
       - uses: DeterminateSystems/determinate-nix-action@v3
       - name: Run ${{ matrix.name }} flows
         run: |
+          sed -i 's/githubfast\.com/github.com/g' .gitmodules
+          git submodule update --init
           nix build -L
           cd "design_zoo/${{ matrix.dir }}"
           ../../result/bin/rtl2gds -c "${{ matrix.config_file }}"
