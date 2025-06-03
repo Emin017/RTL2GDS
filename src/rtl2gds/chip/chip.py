@@ -196,7 +196,11 @@ class Chip:
         if config_yaml is None:
             if override:
                 config_yaml = self.config_yaml
+                if not isinstance(config_yaml, str) or not config_yaml.strip():
+                    raise ValueError("self.config_yaml must be a non-empty string representing a valid file path.")
             else:
+                if not isinstance(self.config_yaml, str) or not self.config_yaml.strip():
+                    raise ValueError("self.config_yaml must be a non-empty string representing a valid file path.")
                 config_yaml = f"{pathlib.Path(self.config_yaml).stem}_checkpoint_{self.last_update_time}_{self.finished_step}.yaml"
                 path = pathlib.Path(config_yaml)
                 path.parent.mkdir(parents=True, exist_ok=True)
