@@ -49,10 +49,6 @@ def cmd_run(shell_cmd: list, shell_env: dict, period_name: str, log_path: str):
                 logging.error("(%s) \n stderr: %s", period_name, stderr_content)
                 output_file.write(stderr_content)
 
-            if stderr_content:
-                logging.error("(%s) \n stderr: %s", period_name, stderr_content)
-                output_file.write(stderr_content)
-
             ret_code = process.returncode
             if ret_code != 0:
                 logging.error("(%s) \n stderr: %s", period_name, stderr_content)
