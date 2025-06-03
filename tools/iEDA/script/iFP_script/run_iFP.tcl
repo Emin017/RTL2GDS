@@ -16,6 +16,7 @@ set CORE_AREA           "$::env(CORE_AREA)"
 set OUTPUT_DEF          "$RESULT_DIR/iFP_result.def"
 set DESIGN_STAT_TEXT    "$RESULT_DIR/report/floorplan_stat.rpt"
 set DESIGN_STAT_JSON    "$RESULT_DIR/report/floorplan_stat.json"
+set DESIGN_TIMING_EVAL  "$RESULT_DIR/timing_result.json"
 # override by :
 # "$::env(OUTPUT_DEF)" 
 # "$::env(DESIGN_STAT_TEXT)" 
@@ -108,6 +109,14 @@ def_save -path $OUTPUT_DEF
 #===========================================================
 report_db -path $DESIGN_STAT_TEXT
 feature_summary -step floorplan -path $DESIGN_STAT_JSON
+
+#===========================================================
+##   run timing evaluation
+#===========================================================
+source $IEDA_TCL_SCRIPT_DIR/DB_script/db_init_lib.tcl
+source $IEDA_TCL_SCRIPT_DIR/DB_script/db_init_sdc.tcl
+
+run_timing_eval -eval_output_path $::env(DESIGN_TIMING_EVAL_REPORT) -routing_type $::env(ROUTING_TYPE)
 
 #===========================================================
 ##   Exit 

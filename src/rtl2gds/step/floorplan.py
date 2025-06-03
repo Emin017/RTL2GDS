@@ -18,6 +18,8 @@ def run(
     output_def: str,
     die_bbox: str,
     core_bbox: str,
+    clk_port_name: str,
+    clk_freq_mhz: float,
 ):
     """
     Run floorplan step using iEDA-iFP.
@@ -39,6 +41,7 @@ def run(
         "def": output_def,
         "design_stat_text": f"{result_dir}/report/floorplan_stat.rpt",
         "design_stat_json": f"{result_dir}/report/floorplan_stat.json",
+        "timing_eval_report": f"{result_dir}/evaluation/{StepName.FLOORPLAN}",
     }
 
     # Prepare environment variables
@@ -52,6 +55,10 @@ def run(
         "CORE_AREA": core_bbox,
         "DESIGN_STAT_TEXT": artifacts["design_stat_text"],
         "DESIGN_STAT_JSON": artifacts["design_stat_json"],
+        "DESIGN_TIMING_EVAL_REPORT": artifacts["timing_eval_report"],
+        "CLK_PORT_NAME": clk_port_name,
+        "CLK_FREQ_MHZ": str(clk_freq_mhz),
+        "ROUTING_TYPE": "HPWL",
     }
 
     logging.info(

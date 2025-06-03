@@ -131,7 +131,7 @@ def save_merged_metrics(chip: Chip, execute_time_json: str):
     # Define the paths for the merged report and other reports
     merged_report_path = f"{chip.path_setting.result_dir}/evaluation/final_metrics.json"
     timing_report_path = (
-        f"{chip.path_setting.result_dir}/evaluation/timing/timing_report.json"
+        f"{chip.path_setting.result_dir}/evaluation/timing_report.json"
     )
     execute_time_report_path = execute_time_json
 

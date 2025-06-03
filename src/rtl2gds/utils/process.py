@@ -44,13 +44,16 @@ def cmd_run(shell_cmd: list, shell_env: dict, period_name: str, log_path: str):
                 print(line, end="")
                 output_file.write(line)
 
-            stderr_content = process.stderr.read()
+            stdout_content, stderr_content = process.communicate()
             if stderr_content:
                 logging.error("(%s) \n stderr: %s", period_name, stderr_content)
                 output_file.write(stderr_content)
 
-            ret_code = process.wait()
+            if stderr_content:
+                logging.error("(%s) \n stderr: %s", period_name, stderr_content)
+                output_file.write(stderr_content)
 
+            ret_code = process.returncode
             if ret_code != 0:
                 logging.error("(%s) \n stderr: %s", period_name, stderr_content)
                 raise subprocess.CalledProcessError(ret_code, shell_cmd)
@@ -77,9 +80,9 @@ def merge_timing_reports(result_dir: str, log_path: str, output_file: str = None
         dict: A dictionary containing the merged timing data.
     """
     if output_file is None:
-        output_file = f"{result_dir}/evaluation/timing/timing_report.json"
+        output_file = f"{result_dir}/evaluation/timing_report.json"
 
-    timing_dir = f"{result_dir}/evaluation/timing"
+    timing_dir = f"{result_dir}/evaluation"
     if not os.path.exists(timing_dir):
         raise FileNotFoundError(
             f"Failed to find timing evaluation directory: {timing_dir}"

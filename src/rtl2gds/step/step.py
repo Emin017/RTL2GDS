@@ -39,6 +39,7 @@ class Step:
             "verilog": output_verilog,
             "design_stat_text": f"{result_dir}/{self.filename_stat_text}",
             "design_stat_json": f"{result_dir}/{self.filename_stat_json}",
+            "timing_eval_report": f"{result_dir}/evaluation/{self.step_name}",
         }
 
         shell_env = {
@@ -48,10 +49,12 @@ class Step:
             "OUTPUT_VERILOG": artifacts["verilog"],
             "DESIGN_STAT_TEXT": artifacts["design_stat_text"],
             "DESIGN_STAT_JSON": artifacts["design_stat_json"],
+            "DESIGN_TIMING_EVAL_REPORT": artifacts["timing_eval_report"],
             "RESULT_DIR": result_dir,
             "SDC_FILE": DEFAULT_SDC_FILE,
             "CLK_PORT_NAME": clk_port_name,
             "CLK_FREQ_MHZ": str(clk_freq_mhz),
+            "ROUTING_TYPE": "HPWL",
         }
 
         if self.filename_metrics_json:

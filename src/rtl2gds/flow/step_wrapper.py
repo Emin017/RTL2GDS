@@ -2,9 +2,9 @@ import os
 
 from rtl2gds import step
 from rtl2gds.chip import Chip
-from src.rtl2gds.global_configs import RTL2GDS_FLOW_STEPS, StepName
-from src.rtl2gds.utils.time import time_decorator, save_execute_time_data
-from src.rtl2gds.utils import process
+from rtl2gds.global_configs import RTL2GDS_FLOW_STEPS, StepName
+from rtl2gds.utils.time import save_execute_time_data
+from rtl2gds.utils import process
 
 
 def get_expected_step(finished_step: str) -> str | None:
@@ -28,7 +28,6 @@ class StepWrapper:
         if expected_step != step_name:
             raise ValueError(f"Expected step: {expected_step}, but got: {step_name}")
 
-    @time_decorator
     def run_synthesis(self) -> dict:
         """Run synthesis step"""
         step_name = StepName.SYNTHESIS
@@ -61,7 +60,6 @@ class StepWrapper:
 
         return artifacts
 
-    @time_decorator
     def run_floorplan(self) -> dict:
         """Run floorplan step"""
         step_name = StepName.FLOORPLAN
@@ -82,6 +80,8 @@ class StepWrapper:
             output_def=self.chip.path_setting.def_file,
             die_bbox=self.chip.constrain.die_bbox,
             core_bbox=self.chip.constrain.core_bbox,
+            clk_port_name=self.chip.constrain.clk_port_name,
+            clk_freq_mhz=self.chip.constrain.clk_freq_mhz,
         )
 
         self.chip.constrain.die_bbox = metrics["die_bbox"]
@@ -104,7 +104,6 @@ class StepWrapper:
 
         return artifacts
 
-    @time_decorator
     def run_pr_step(self, step_name: str) -> dict:
         """Run a specific place & route step"""
         self._check_expected_step(step_name)
@@ -144,7 +143,6 @@ class StepWrapper:
 
         return artifacts
 
-    @time_decorator
     def run_save_layout_gds(self, step_name: str, take_snapshot: bool = False) -> dict:
         """Run dump layout GDS step"""
         gds_file = (
