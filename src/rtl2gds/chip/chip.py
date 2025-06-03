@@ -1,6 +1,6 @@
 import os
-import pathlib
 import time
+from pathlib import Path
 
 import yaml
 
@@ -21,7 +21,7 @@ class Chip:
 
     def __init__(
         self,
-        config_yaml: str | pathlib.Path | None = None,
+        config_yaml: str | Path | None = None,
         config_dict: dict[str, object] | None = None,
         top_name: str | None = None,
         path_setting: DesignPath | None = None,
@@ -48,7 +48,7 @@ class Chip:
                 raise FileNotFoundError(f"Config file {config_yaml} does not exist. ")
             with open(config_yaml, "r", encoding="utf-8") as f:
                 config_dict = yaml.safe_load(f)
-            self.config_yaml = config_yaml
+            self.config_yaml = Path(config_yaml)
         elif config_dict:
             if (Keyword.TOP_NAME not in config_dict) and (
                 Keyword.TOP_NAME.lower() not in config_dict
@@ -68,7 +68,7 @@ class Chip:
         self.metrics = DesignMetrics()
         # Contexts
         self.config = config_dict
-        self.config_yaml = config_yaml
+        self.config_yaml = Path(config_yaml)
         self.finished_step = finished_step
         self.expected_step = expected_step
         self.init_time = self._strtime()
@@ -87,7 +87,7 @@ class Chip:
             self.config_yaml = (
                 f"{self.path_setting.result_dir}/rtl2gds_{self.top_name}.yaml"
             )
-            path = pathlib.Path(self.config_yaml)
+            path = Path(self.config_yaml)
             path.parent.mkdir(parents=True, exist_ok=True)
             path.touch()
             self.dump_config_yaml(override=True)
@@ -188,24 +188,35 @@ class Chip:
         return io_env
 
     def dump_config_yaml(
-        self, config_yaml: str | None = None, override: bool = False
-    ) -> str:
-        """Dump the config to the yaml file"""
+        self, config_yaml: Path | None = None, override: bool = False
+    ) -> Path:
+        """
+        Dumps the configuration dictionary to a YAML file.
+
+        Args:
+            config_yaml: The optional path to save the config file.
+            override: If True and config_yaml is None, overwrites the original file.
+
+        Returns:
+            The path of the saved YAML file.
+        """
         config_dict = self.config
 
-        if config_yaml is None:
-            if override:
-                config_yaml = self.config_yaml
-            else:
-                config_yaml = f"{self.config_yaml.split('.')[0]}_checkpoint_{self.last_update_time}_{self.finished_step}.yaml"
-                path = pathlib.Path(config_yaml)
-                path.parent.mkdir(parents=True, exist_ok=True)
-                path.touch()
+        if config_yaml:
+            target_path = config_yaml
+        elif override:
+            target_path = self.config_yaml
+        else:
+            base_name = self.config_yaml.stem
+            checkpoint_filename = f"{base_name}_checkpoint_{self.last_update_time}_{self.finished_step}.yaml"
+            target_path = self.config_yaml.with_name(checkpoint_filename)
 
-        with open(config_yaml, "w", encoding="utf-8") as f:
+        target_path.parent.mkdir(parents=True, exist_ok=True)
+
+        with open(target_path, "w", encoding="utf-8") as f:
             yaml.dump(config_dict, f)
 
-        return config_yaml
+        return target_path
 
 
 if __name__ == "__main__":
