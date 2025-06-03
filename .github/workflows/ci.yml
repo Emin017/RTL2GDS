@@ -1,0 +1,86 @@
+name: "Build and check RTL2GDS"
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Build RTL2GDS
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/determinate-nix-action@v3
+      - name: Setup Cachix
+        run: |
+          # Install cachix
+          nix profile install github:nixos/nixpkgs/nixos-unstable#cachix
+
+          cachix use emin
+      - name: Build RTL2GDS
+        run: |
+          sed -i 's/githubfast\.com/github.com/g' .gitmodules
+          git submodule update --init
+          export IHP130_PDK_DIR="${{ github.workspace }}/foundry/ihp130"
+          nix build -L
+      - name: Push to Cachix
+        run: |
+          # Install cachix if not already available
+          if ! command -v cachix &> /dev/null; then
+            nix profile install github:nixos/nixpkgs/nixos-unstable#cachix
+          fi
+
+          # Push build results to cachix
+          if [ -d "result" ]; then
+            echo "Pushing build results to Cachix cache: emin"
+            realpath result | cachix push emin
+          else
+            echo "No build results found to push"
+          fi
+        env:
+          CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          CACHIX_SIGNING_KEY: ${{ secrets.CACHIX_SIGNING_KEY }}
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rtl2gds-build
+          path: result/
+
+  test-designs:
+    name: test RTL2GDS - ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    needs: build
+    strategy:
+      matrix:
+        include:
+          - name: gcd
+            config_file: gcd.yaml
+            dir: gcd
+          - name: picorv32a
+            config_file: pico.yaml
+            dir: picorv32a
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: rtl2gds-build
+          path: result/
+      - name: Set execute permissions
+        run: chmod +x result/bin/rtl2gds
+      - name: Verify Downloaded Artifacts
+        run: ls -R result/
+      - name: Verify File Permissions
+        run: ls -l result/bin/rtl2gds
+      - name: Run ${{ matrix.name }} flow
+        run: |
+          cd "design_zoo/${{ matrix.dir }}"
+          ls -al ../../
+          ../../result/bin/rtl2gds -c "${{ matrix.config_file }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: "RTL2GDS-results-${{ matrix.name }}"
+          path: design_zoo/${{ matrix.dir }}/results/
