@@ -4,7 +4,7 @@ from rtl2gds import Chip, StepName, flow
 from rtl2gds.utils import MDLogger
 
 # 配置输入信息
-design_base = "/home/user/RTL2GDS/demo/spm"
+design_base = "/opt/rtl2gds/demo/spm"
 design_result = f"{design_base}/spm_result"
 
 configs = {
@@ -17,9 +17,7 @@ configs = {
     "core_util": 0.5,
 }
 
-spm = Chip(
-    config_dict=configs
-)
+spm = Chip(config_dict=configs)
 
 
 # # 预览模块结构
@@ -39,10 +37,7 @@ logger = MDLogger(f"{design_result}/r2g_log.md")
 # ---------------------------------------------------------------- #
 # 1. RTL综合
 
-synth_res_files = flow.single_step.run(
-    chip=spm,
-    expect_step=StepName.SYNTHESIS
-)
+synth_res_files = flow.single_step.run(chip=spm, expect_step=StepName.SYNTHESIS)
 
 spm.dump_config_yaml()
 pprint(synth_res_files)
@@ -62,9 +57,7 @@ logger.add_report_txt(synth_res_files["synth_stat_txt"])
 # ---------------------------------------------------------------- #
 # 2: 布图规划
 fp_res_files = flow.single_step.run(
-    chip=spm,
-    expect_step=StepName.FLOORPLAN,
-    take_snapshot=True
+    chip=spm, expect_step=StepName.FLOORPLAN, take_snapshot=True
 )
 
 spm.dump_config_yaml()
@@ -87,9 +80,7 @@ logger.add_pr_res_all(StepName.NETLIST_OPT, no_res_files)
 # ---------------------------------------------------------------- #
 # 4、布局
 pl_res_files = flow.single_step.run(
-    chip=spm,
-    expect_step=StepName.PLACEMENT,
-    take_snapshot=True
+    chip=spm, expect_step=StepName.PLACEMENT, take_snapshot=True
 )
 
 spm.dump_config_yaml()
@@ -98,10 +89,7 @@ logger.add_pr_res_all(StepName.PLACEMENT, pl_res_files)
 
 # ---------------------------------------------------------------- #
 # 5、时钟树综合
-cts_res_files = flow.single_step.run(
-    chip=spm,
-    expect_step=StepName.CTS
-)
+cts_res_files = flow.single_step.run(chip=spm, expect_step=StepName.CTS)
 
 spm.dump_config_yaml()
 logger.add_pr_res_all(StepName.CTS, cts_res_files)
@@ -109,10 +97,7 @@ logger.add_pr_res_all(StepName.CTS, cts_res_files)
 
 # ---------------------------------------------------------------- #
 # 6、时序优化drv
-drv_res_files = flow.single_step.run(
-    chip=spm,
-    expect_step=StepName.DRV_OPT
-)
+drv_res_files = flow.single_step.run(chip=spm, expect_step=StepName.DRV_OPT)
 
 spm.dump_config_yaml()
 logger.add_pr_res_all(StepName.DRV_OPT, drv_res_files)
@@ -120,10 +105,7 @@ logger.add_pr_res_all(StepName.DRV_OPT, drv_res_files)
 
 # ---------------------------------------------------------------- #
 # 7、时序优化hold
-hold_res_files = flow.single_step.run(
-    chip=spm,
-    expect_step=StepName.HOLD_OPT
-)
+hold_res_files = flow.single_step.run(chip=spm, expect_step=StepName.HOLD_OPT)
 
 spm.dump_config_yaml()
 logger.add_pr_res_all(StepName.HOLD_OPT, hold_res_files)
@@ -131,10 +113,7 @@ logger.add_pr_res_all(StepName.HOLD_OPT, hold_res_files)
 
 # ---------------------------------------------------------------- #
 # 7、增量式布局合法化（合法化cts/timing优化时插入的新单元）
-lg_res_files = flow.single_step.run(
-    chip=spm,
-    expect_step=StepName.LEGALIZATION
-)
+lg_res_files = flow.single_step.run(chip=spm, expect_step=StepName.LEGALIZATION)
 
 spm.dump_config_yaml()
 logger.add_pr_res_all(StepName.LEGALIZATION, lg_res_files)
@@ -143,9 +122,7 @@ logger.add_pr_res_all(StepName.LEGALIZATION, lg_res_files)
 # ---------------------------------------------------------------- #
 # 8: 布线
 rt_res_files = flow.single_step.run(
-    chip=spm,
-    expect_step=StepName.ROUTING,
-    take_snapshot=True
+    chip=spm, expect_step=StepName.ROUTING, take_snapshot=True
 )
 
 spm.dump_config_yaml()
@@ -155,9 +132,7 @@ logger.add_pr_res_all(StepName.ROUTING, rt_res_files)
 # ---------------------------------------------------------------- #
 # 9: 填充单元
 fill_res_files = flow.single_step.run(
-    chip=spm,
-    expect_step=StepName.FILLER,
-    take_snapshot=True
+    chip=spm, expect_step=StepName.FILLER, take_snapshot=True
 )
 
 spm.dump_config_yaml()

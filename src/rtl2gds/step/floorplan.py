@@ -85,8 +85,8 @@ def run(
         cell_area = float(summary["Instances"]["total"]["area"])
         num_instances = int(summary["Design Statis"]["num_instances"])
 
-        margin_width = float(die_width - core_width)/2
-        margin_height = float(die_height - core_height)/2
+        margin_width = float(die_width - core_width) / 2
+        margin_height = float(die_height - core_height) / 2
 
         # @TODO: collect core_bbox from summary.json
         # core_lower_left_x = summary["Design Layout"]["core_lower_left_x"]
@@ -107,7 +107,6 @@ def run(
     }
 
     return metrics, artifacts
-
 
 
 # if __name__ == "__main__":

@@ -6,18 +6,17 @@ from rtl2gds.global_configs import DEFAULT_SDC_FILE, ENV_TOOLS_PATH, StepName
 from rtl2gds.step.configs import SHELL_CMD
 
 
-def run(top_name: str,
-        input_def: str,
-        result_dir: str,
-        clk_port_name: str,
-        clk_freq_mhz: float,
-        sta_report_dirname: str = "sta",
-    ):
+def run(
+    top_name: str,
+    input_def: str,
+    result_dir: str,
+    clk_port_name: str,
+    clk_freq_mhz: float,
+    sta_report_dirname: str = "sta",
+):
     assert os.path.exists(input_def)
 
-    artifacts = {
-        "sta_report_dir": f"{result_dir}/{sta_report_dirname}"
-    }
+    artifacts = {"sta_report_dir": f"{result_dir}/{sta_report_dirname}"}
 
     shell_env = {
         "TOP_NAME": top_name,
@@ -26,7 +25,7 @@ def run(top_name: str,
         "SDC_FILE": DEFAULT_SDC_FILE,
         "CLK_PORT_NAME": clk_port_name,
         "CLK_FREQ_MHZ": str(clk_freq_mhz),
-        "TOOL_REPORT_DIR": artifacts["sta_report_dir"]
+        "TOOL_REPORT_DIR": artifacts["sta_report_dir"],
     }
 
     shell_cmd = SHELL_CMD[StepName.STA]
@@ -49,9 +48,10 @@ def run(top_name: str,
             raise FileNotFoundError(
                 f"Step({StepName.STA}) Expected artifact {key} not found: {value}"
             )
-    
+
     metrics = {}
     return metrics, artifacts
+
 
 if __name__ == "__main__":
     # Example usage
@@ -59,5 +59,7 @@ if __name__ == "__main__":
     top_name = "picorv32a"
     result_dir = "."
     sta_report_dirname = "sta_report"
-    def_file = "/home/user/RTL2GDS/design_zoo/picorv32a/pico_results/picorv32a_cts.def"
-    _, sta_res_files = run(top_name, def_file, result_dir, "clk", 100, sta_report_dirname)
+    def_file = "/opt/rtl2gds/design_zoo/picorv32a/pico_results/picorv32a_cts.def"
+    _, sta_res_files = run(
+        top_name, def_file, result_dir, "clk", 100, sta_report_dirname
+    )

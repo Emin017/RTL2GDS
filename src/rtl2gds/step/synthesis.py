@@ -405,13 +405,13 @@ if __name__ == "__main__":
     # Setup test design
     aes_top = "aes_cipher_top"
     aes_rtl = [
-        "/home/user/RTL2GDS/design_zoo/aes/aes_cipher_top.v",
-        "/home/user/RTL2GDS/design_zoo/aes/aes_inv_cipher_top.v",
-        "/home/user/RTL2GDS/design_zoo/aes/aes_inv_sbox.v",
-        "/home/user/RTL2GDS/design_zoo/aes/aes_key_expand_128.v",
-        "/home/user/RTL2GDS/design_zoo/aes/aes_rcon.v",
-        "/home/user/RTL2GDS/design_zoo/aes/aes_sbox.v",
-        "/home/user/RTL2GDS/design_zoo/aes/timescale.v",
+        "/opt/rtl2gds/design_zoo/aes/aes_cipher_top.v",
+        "/opt/rtl2gds/design_zoo/aes/aes_inv_cipher_top.v",
+        "/opt/rtl2gds/design_zoo/aes/aes_inv_sbox.v",
+        "/opt/rtl2gds/design_zoo/aes/aes_key_expand_128.v",
+        "/opt/rtl2gds/design_zoo/aes/aes_rcon.v",
+        "/opt/rtl2gds/design_zoo/aes/aes_sbox.v",
+        "/opt/rtl2gds/design_zoo/aes/timescale.v",
     ]
 
     kianv_top = "tt_um_kianV_rv32ima_uLinux_SoC"
@@ -463,7 +463,7 @@ if __name__ == "__main__":
 
     metrics, artifacts = run(
         top_name="picorv32a",
-        rtl_file="/home/user/RTL2GDS/design_zoo/picorv32a/picorv32a.v",
+        rtl_file="/opt/rtl2gds/design_zoo/picorv32a/picorv32a.v",
         netlist_file=OUTPUT_NETLIST,
         result_dir=RESULT_DIR,
         clk_freq_mhz=100,

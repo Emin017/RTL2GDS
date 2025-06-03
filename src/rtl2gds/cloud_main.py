@@ -25,21 +25,28 @@ class NotifyTaskBody:
     task_id: str
     task_type: str
 
-class NotifyStatus(Enum):
-    CREATED = 'created'
-    RUNNING = 'running'
-    SUCCESS = 'success'
-    FAIL = 'fail'
-    QUEUEING = 'queueing'
-    STOPPING = 'stopping'
-    STOPPED = 'stopped'
 
-def _notify_task(result_files: dict, status: NotifyStatus = NotifyStatus.SUCCESS, task_id: str = None, task_type: str = "RTL2GDS_STEP"):
+class NotifyStatus(Enum):
+    CREATED = "created"
+    RUNNING = "running"
+    SUCCESS = "success"
+    FAIL = "fail"
+    QUEUEING = "queueing"
+    STOPPING = "stopping"
+    STOPPED = "stopped"
+
+
+def _notify_task(
+    result_files: dict,
+    status: NotifyStatus = NotifyStatus.SUCCESS,
+    task_id: str = None,
+    task_type: str = "RTL2GDS_STEP",
+):
     notify_url = os.getenv("FRONT_URL")
     if not notify_url:
         logging.error("FRONT_URL environment variable not set. Cannot notify.")
         # notify_url = "http://mock-front-svc.default.svc.cluster.local:8083/apis/v1/notify/task"
-        return # 决定不发送通知
+        return  # 决定不发送通知
 
     logging.info(f"Sending notification to: {notify_url}")
 
@@ -75,12 +82,14 @@ def main():
     """
     logging.basicConfig(
         format="[%(asctime)s - %(levelname)s - %(filename)s:%(lineno)d]: %(message)s",
-        level=os.getenv("LOG_LEVEL", "INFO").upper()
+        level=os.getenv("LOG_LEVEL", "INFO").upper(),
     )
     logging.info(f"Starting cloud_main.py with args: {sys.argv}")
 
     if len(sys.argv) < 4:
-        logging.error("Insufficient arguments. Usage: python cloud_main.py <rtl_path> <config_yaml> <workspace_path> [step_name]")
+        logging.error(
+            "Insufficient arguments. Usage: python cloud_main.py <rtl_path> <config_yaml> <workspace_path> [step_name]"
+        )
         sys.exit(1)
 
     rtl_path = Path(sys.argv[1])
@@ -94,7 +103,9 @@ def main():
         logging.error(f"Config file not found: {config_yaml}")
         sys.exit(1)
     if not workspace_path.is_dir():
-        logging.error(f"Workspace path is not a directory or does not exist: {workspace_path}")
+        logging.error(
+            f"Workspace path is not a directory or does not exist: {workspace_path}"
+        )
         sys.exit(1)
 
     step = StepName.RTL2GDS_ALL
@@ -107,7 +118,7 @@ def main():
         generate_complete_config(config_yaml, rtl_path, workspace_path)
 
         logging.info("Initializing Chip design...")
-        chip_design = Chip(config_yaml = config_yaml)
+        chip_design = Chip(config_yaml=config_yaml)
 
         logging.info(f"Running flow step: {step}")
         result_files = single_step.run(chip_design, expect_step=step)
@@ -122,7 +133,12 @@ def main():
 
     except Exception as e:
         logging.exception(f"An error occurred during the RTL2GDS process: {e}")
-        _notify_task([], status=NotifyStatus.FAIL, task_id=str(uuid.uuid4()), task_type="RTL2GDS_STEP")
+        _notify_task(
+            [],
+            status=NotifyStatus.FAIL,
+            task_id=str(uuid.uuid4()),
+            task_type="RTL2GDS_STEP",
+        )
         sys.exit(1)
 
     logging.info("cloud_main.py finished successfully.")

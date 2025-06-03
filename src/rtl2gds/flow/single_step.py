@@ -6,10 +6,10 @@ from rtl2gds.global_configs import StepName
 
 
 def run(
-    chip: Chip, 
-    expect_step: str, 
+    chip: Chip,
+    expect_step: str,
     take_snapshot: bool = False,
-    cloud_outputs: bool = False, 
+    cloud_outputs: bool = False,
 ) -> dict:
     """
     Step Router
@@ -30,9 +30,11 @@ def run(
         else:
             result_files = runner.run_pr_step(expect_step)
             if cloud_outputs and expect_step == StepName.PLACEMENT:
-                result_files.update({
-                    "congestion map": f"{chip.path_setting.result_dir}/report/iEDA-iPL/rt/place_egr_union_overflow.csv"
-                })
+                result_files.update(
+                    {
+                        "congestion map": f"{chip.path_setting.result_dir}/report/iEDA-iPL/rt/place_egr_union_overflow.csv"
+                    }
+                )
             if expect_step in [
                 StepName.PLACEMENT,
                 StepName.CTS,
@@ -43,7 +45,9 @@ def run(
                 save_layout_json = True
 
     if take_snapshot:
-        layout_files = runner.run_save_layout_gds(step_name=expect_step, take_snapshot=True)
+        layout_files = runner.run_save_layout_gds(
+            step_name=expect_step, take_snapshot=True
+        )
         result_files.update(layout_files)
 
     # Dump and return json files

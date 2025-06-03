@@ -12,7 +12,12 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.10",
 ]
-dependencies = ["pyyaml", "orjson", "klayout", "IPython"]
+dependencies = [
+    "pyyaml",
+    "orjson",
+    "klayout",
+    "IPython",
+]
 
 [tool.pylint]
 extension-pkg-whitelist = ["orjson"]

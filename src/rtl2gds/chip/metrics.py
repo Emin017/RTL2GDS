@@ -13,12 +13,14 @@ class TimingMetrics:
     wns: float = 0.0
     tns: float = 0.0
 
+
 @dataclass
 class PowerMetrics:
     total: float = 0.0
     leakage: float = 0.0
     switch: float = 0.0
     internal: float = 0.0
+
 
 @dataclass
 class AreaMetrics:
@@ -28,9 +30,11 @@ class AreaMetrics:
     core_util: float = 0.0
     die_util: float = 0.0
 
+
 @dataclass
 class DesignMetrics:
     """Store and manipulate design PPA (Power, Performance, Area) metrics"""
+
     # Technology info
     tech: str = "skywater130"
 
@@ -56,9 +60,11 @@ class DesignMetrics:
         """Convert metrics to a flat dictionary structure."""
         metrics_dict = asdict(self)
         # Flatten nested dataclasses
-        metrics_dict.update(metrics_dict.pop('performance'))
-        metrics_dict.update(metrics_dict.pop('power'))
-        metrics_dict.update({f"area_{k}": v for k, v in metrics_dict.pop('area').items()})
+        metrics_dict.update(metrics_dict.pop("performance"))
+        metrics_dict.update(metrics_dict.pop("power"))
+        metrics_dict.update(
+            {f"area_{k}": v for k, v in metrics_dict.pop("area").items()}
+        )
         return metrics_dict
 
     def to_yaml(self, pretty: bool = True) -> str:
@@ -80,10 +86,20 @@ class DesignMetrics:
         sections = {
             "Technology Info": ["tech"],
             "Design Statistics": ["instance", "wirelength", "stdcell"],
-            "Performance Metrics": ["main_freq_mhz", "critical_path", "longest_logic_level"],
+            "Performance Metrics": [
+                "main_freq_mhz",
+                "critical_path",
+                "longest_logic_level",
+            ],
             "Power Metrics": ["total", "leakage", "switch", "internal"],
-            "Area Metrics": ["area_die", "area_core", "area_core_value", "area_stdcell", "area_utilization"],
-            "Signoff Status": ["drc", "lvs", "sta"]
+            "Area Metrics": [
+                "area_die",
+                "area_core",
+                "area_core_value",
+                "area_stdcell",
+                "area_utilization",
+            ],
+            "Signoff Status": ["drc", "lvs", "sta"],
         }
 
         yaml_str = []
@@ -97,8 +113,10 @@ class DesignMetrics:
     def print(self) -> None:
         print(self.to_dict())
 
+
 @dataclass
 class EDAMetrics:
     """Store and manipulate EDA tool metrics"""
+
     tool: str = ""
     version: str = ""

@@ -6,8 +6,7 @@ from rtl2gds.step import floorplan
 from rtl2gds.step import layout_gds
 from rtl2gds.step import layout_json
 from rtl2gds.step import synthesis
-from rtl2gds.step.step import (CTS, Filler, Legalization,
-                               NetlistOpt, Placement, Routing)
+from rtl2gds.step.step import CTS, Filler, Legalization, NetlistOpt, Placement, Routing
 
 
 __all__ = [

@@ -82,7 +82,9 @@ def _extract_header(data: dict) -> dict:
     return {key: value for key, value in data.items() if key != "data"}
 
 
-def _split_data_into_chunks(data: list[object], max_file_size: int) -> list[list[object]]:
+def _split_data_into_chunks(
+    data: list[object], max_file_size: int
+) -> list[list[object]]:
     """
     Split JSON data into smaller chunks.
 

@@ -55,7 +55,9 @@ class Step:
         }
 
         if self.filename_metrics_json:
-            artifacts["tool_metrics_json"] = f"{result_dir}/{self.filename_metrics_json}"
+            artifacts["tool_metrics_json"] = (
+                f"{result_dir}/{self.filename_metrics_json}"
+            )
             shell_env["TOOL_METRICS_JSON"] = artifacts["tool_metrics_json"]
 
         if self.dirname_tool_report:
@@ -79,7 +81,7 @@ class Step:
             raise subprocess.CalledProcessError(
                 e.returncode,
                 e.cmd,
-                output=f"Step {self.step_name} failed with return code {e.returncode}"
+                output=f"Step {self.step_name} failed with return code {e.returncode}",
             ) from e
 
         # iterate through artifacts and check if they exist
@@ -104,6 +106,7 @@ class Step:
             }
 
         return metrics, artifacts
+
 
 class NetlistOpt(Step):
     def __init__(self):
@@ -141,6 +144,7 @@ class CTS(Step):
         self.filename_stat_json = f"report/{self.step_name}_stat.json"
         self.filename_metrics_json = f"metrics/{self.tool_name}_{self.step_name}.json"
         self.dirname_tool_report = f"report/{self.tool_name}/"
+
 
 class DrvOpt(Step):
     def __init__(self):

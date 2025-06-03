@@ -1,4 +1,9 @@
-"""step shell commands"""
+"""
+step shell commands
+
+only for **simple** tcl script
+if you want to pass arguments or use complex logic, implement a step_name.py instead
+"""
 
 from rtl2gds.global_configs import ENV_TOOLS_PATH, R2G_TOOL_DIR, StepName
 

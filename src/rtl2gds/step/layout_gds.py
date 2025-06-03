@@ -92,7 +92,7 @@ def run(
         raise subprocess.CalledProcessError(
             e.returncode,
             e.cmd,
-            output=f"GDS dump step failed with return code {e.returncode}"
+            output=f"GDS dump step failed with return code {e.returncode}",
         ) from e
 
     # Generate snapshot if requested

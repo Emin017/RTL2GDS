@@ -19,6 +19,7 @@ class DesignConstrain:
     `core_util`: float
         Core utilization in percentage
     """
+
     # timing constrain (sdc)
     clk_port_name: str
     clk_freq_mhz: float
@@ -32,7 +33,7 @@ class DesignConstrain:
         return {
             "CLK_PORT_NAME": str(self.clk_port_name),
             "CLK_FREQ_MHZ": str(self.clk_freq_mhz),
-            "DIE_AREA": str(self.die_bbox),   # without `xywh`!
-            "CORE_AREA": str(self.core_bbox),   # without `xywh`!
+            "DIE_AREA": str(self.die_bbox),  # without `xywh`!
+            "CORE_AREA": str(self.core_bbox),  # without `xywh`!
             "CORE_UTIL": str(self.core_util),
         }

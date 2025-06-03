@@ -5,6 +5,7 @@ import re
 
 class HierarchyNode:
     """Represents a node in the design hierarchy."""
+
     def __init__(self, name, count=1):
         # Sanitize name on creation
         self.name = self._sanitize_name(name)
@@ -15,7 +16,7 @@ class HierarchyNode:
         """Removes potentially problematic characters like leading/trailing quotes or backslashes."""
         name = name.strip()
         # Remove leading/trailing backslash common in some tools
-        if name.startswith('\\'):
+        if name.startswith("\\"):
             name = name[1:]
         # Remove leading/trailing single quotes
         name = name.strip("'")
@@ -32,30 +33,35 @@ class HierarchyNode:
         return {
             "module_name": self.name,
             "instance_count": self.count,
-            "submodules": [child.to_dict() for child in self.children]
+            "submodules": [child.to_dict() for child in self.children],
         }
+
 
 class SynthStatParser:
     """
     Parses a logic synthesis statistics file (synth_stat.txt)
     to extract module statistics and design hierarchy. Handles complex module names.
     """
+
     # Regex patterns pre-compiled for efficiency
     # Match module headers like === module_name ===
-    _RE_MODULE_HEADER = re.compile(r'^=== (.*) ===$')
+    _RE_MODULE_HEADER = re.compile(r"^=== (.*) ===$")
     # Match key-value lines, allowing floats and optional percentage
-    _RE_KV_LINE = re.compile(r'^\s*(.*?):\s+([\d.]+)\s*(\(.*\))?$')
+    _RE_KV_LINE = re.compile(r"^\s*(.*?):\s+([\d.]+)\s*(\(.*\))?$")
     # Match cell count lines (handles complex names with $, \, ', = etc.)
-    _RE_CELL_LINE = re.compile(r'^\s+([$a-zA-Z0-9_\\~.\'=\\]+)\s+(\d+)$')
-     # Match area lines (handles optional quotes and 'top module')
-    _RE_AREA_LINE = re.compile(r"^\s*Chip area for (?:module|top module)\s+'?([^']*)'?:\s+([\d.]+)")
+    _RE_CELL_LINE = re.compile(r"^\s+([$a-zA-Z0-9_\\~.\'=\\]+)\s+(\d+)$")
+    # Match area lines (handles optional quotes and 'top module')
+    _RE_AREA_LINE = re.compile(
+        r"^\s*Chip area for (?:module|top module)\s+'?([^']*)'?:\s+([\d.]+)"
+    )
     # Match sequential area lines
-    _RE_SEQ_AREA_LINE = re.compile(r'^\s*of which used for sequential elements:\s+([\d.]+)\s+\(([\d.]+)%\)')
+    _RE_SEQ_AREA_LINE = re.compile(
+        r"^\s*of which used for sequential elements:\s+([\d.]+)\s+\(([\d.]+)%\)"
+    )
     # Match hierarchy lines (handles complex names)
-    _RE_HIERARCHY_LINE = re.compile(r'^(\s*)([$a-zA-Z0-9_\\~.\'=\\]+)\s+(\d+)$')
+    _RE_HIERARCHY_LINE = re.compile(r"^(\s*)([$a-zA-Z0-9_\\~.\'=\\]+)\s+(\d+)$")
     # Match ignored "Area unknown" lines
     _RE_AREA_UNKNOWN = re.compile(r"^\s*Area for cell type .* is unknown!")
-
 
     def __init__(self, file_path):
         self.file_path = file_path
@@ -68,7 +74,7 @@ class SynthStatParser:
         """Removes potentially problematic characters like leading/trailing quotes or backslashes."""
         name = name.strip()
         # Remove leading/trailing backslash common in some tools
-        if name.startswith('\\'):
+        if name.startswith("\\"):
             name = name[1:]
         # Remove leading/trailing single quotes (often seen in area lines)
         name = name.strip("'")
@@ -79,7 +85,7 @@ class SynthStatParser:
         """Parses a key-value line like 'Number of wires: 123'."""
         match = self._RE_KV_LINE.match(line)
         if match:
-            key = match.group(1).strip().lower().replace(' ', '_').replace('\\', '')
+            key = match.group(1).strip().lower().replace(" ", "_").replace("\\", "")
             value_str = match.group(2).strip()
             try:
                 # Try converting to int, then float if it fails
@@ -90,28 +96,30 @@ class SynthStatParser:
                 stats_dict[key] = value
                 # Check for percentage in parenthesis (like sequential area)
                 if match.group(3):
-                    percent_match = re.search(r'\(([\d.]+)%\)', match.group(3))
+                    percent_match = re.search(r"\(([\d.]+)%\)", match.group(3))
                     if percent_match:
-                        stats_dict[key + '_percent'] = float(percent_match.group(1))
+                        stats_dict[key + "_percent"] = float(percent_match.group(1))
                 return True
             except ValueError:
-                print(f"Warning: Could not parse value '{value_str}' for key '{key}' in line: {line}")
+                print(
+                    f"Warning: Could not parse value '{value_str}' for key '{key}' in line: {line}"
+                )
         return False
 
     def _parse_cell_line(self, line, stats_dict):
         """Parses an indented cell line like '  sky130_...  123'."""
         # Cell lines must start with significant indentation
-        if not line.startswith(' ' * 5): # Heuristic: require at least 5 spaces
-             return False
+        if not line.startswith(" " * 5):  # Heuristic: require at least 5 spaces
+            return False
         match = self._RE_CELL_LINE.match(line)
         if match:
-            cell_name = self._sanitize_name(match.group(1)) # Sanitize here
+            cell_name = self._sanitize_name(match.group(1))  # Sanitize here
             count = int(match.group(2))
-            if 'cells' not in stats_dict:
-                stats_dict['cells'] = {}
-            stats_dict['cells'][cell_name] = count
+            if "cells" not in stats_dict:
+                stats_dict["cells"] = {}
+            stats_dict["cells"][cell_name] = count
             return True
-        #else:
+        # else:
         #    if line.strip() and line[0].isspace(): # Debugging unmatched indented lines
         #        print(f"Debug: Did not match cell line regex: '{line}'")
         return False
@@ -124,10 +132,12 @@ class SynthStatParser:
             # We don't strictly need the name here as we get it from the header,
             # but could be used for verification if needed.
             try:
-                stats_dict['chip_area'] = float(match.group(2))
+                stats_dict["chip_area"] = float(match.group(2))
                 return True
             except ValueError:
-                print(f"Warning: Could not parse area value '{match.group(2)}' in line: {line}")
+                print(
+                    f"Warning: Could not parse area value '{match.group(2)}' in line: {line}"
+                )
         return False
 
     def _parse_sequential_area_line(self, line, stats_dict):
@@ -135,11 +145,13 @@ class SynthStatParser:
         match = self._RE_SEQ_AREA_LINE.match(line)
         if match:
             try:
-                stats_dict['sequential_area'] = float(match.group(1))
-                stats_dict['sequential_area_percent'] = float(match.group(2))
+                stats_dict["sequential_area"] = float(match.group(1))
+                stats_dict["sequential_area_percent"] = float(match.group(2))
                 return True
             except ValueError:
-                 print(f"Warning: Could not parse sequential area values in line: {line}")
+                print(
+                    f"Warning: Could not parse sequential area values in line: {line}"
+                )
         return False
 
     def _parse_hierarchy_line(self, line):
@@ -148,7 +160,7 @@ class SynthStatParser:
         if match:
             indentation = len(match.group(1))
             # Name is sanitized when creating the HierarchyNode object
-            module_name = match.group(2).strip() # Keep original for Node creation
+            module_name = match.group(2).strip()  # Keep original for Node creation
             count = int(match.group(3))
             return indentation, module_name, count
         return None, None, None
@@ -157,12 +169,12 @@ class SynthStatParser:
         """Main parsing logic."""
         current_module_name_sanitized = None
         current_stats = None
-        mode = "start" # Modes: start, module_stats, hierarchy_tree, hierarchy_summary
-        indent_stack = [] # Stores (indentation_level, node) pairs for hierarchy
-        pending_line = None # Holds the next line if not processed after area line
+        mode = "start"  # Modes: start, module_stats, hierarchy_tree, hierarchy_summary
+        indent_stack = []  # Stores (indentation_level, node) pairs for hierarchy
+        pending_line = None  # Holds the next line if not processed after area line
 
         try:
-            with open(self.file_path, 'r') as f:
+            with open(self.file_path, "r") as f:
                 # Use an iterator for easier handling of lookahead/pending lines
                 line_iter = iter(f)
 
@@ -170,12 +182,12 @@ class SynthStatParser:
                     # --- Get the next line to process ---
                     if pending_line is not None:
                         line = pending_line.rstrip()
-                        pending_line = None # Consume the pending line
+                        pending_line = None  # Consume the pending line
                     else:
                         try:
                             line = next(line_iter).rstrip()
                         except StopIteration:
-                            break # End of file
+                            break  # End of file
 
                     # print(f"Debug - Mode: {mode}, Line: '{line}'") # Debug print
 
@@ -187,51 +199,58 @@ class SynthStatParser:
 
                         if sanitized_name == "design hierarchy":
                             mode = "hierarchy_tree"
-                            if current_stats: # Save last module before hierarchy
-                                self.module_stats[current_module_name_sanitized] = current_stats
+                            if current_stats:  # Save last module before hierarchy
+                                self.module_stats[current_module_name_sanitized] = (
+                                    current_stats
+                                )
                             current_module_name_sanitized = None
                             current_stats = None
-                            indent_stack = [] # Reset hierarchy stack
+                            indent_stack = []  # Reset hierarchy stack
                             # print(f"Debug - Switched to mode: {mode}") # Debug print
                         else:
                             mode = "module_stats"
-                            if current_stats: # Save previous module's stats
-                                self.module_stats[current_module_name_sanitized] = current_stats
+                            if current_stats:  # Save previous module's stats
+                                self.module_stats[current_module_name_sanitized] = (
+                                    current_stats
+                                )
                             current_module_name_sanitized = sanitized_name
-                            current_stats = {'name': current_module_name_sanitized}
+                            current_stats = {"name": current_module_name_sanitized}
                             # print(f"Debug - Parsing module: {current_module_name_sanitized}") # Debug print
-                        continue # Move to next line after header
+                        continue  # Move to next line after header
 
                     # Skip blank lines
                     if not line.strip():
-                       continue
+                        continue
 
                     # --- Parsing based on Mode ---
                     if mode == "module_stats":
-                        if current_stats is None: continue # Should not happen
+                        if current_stats is None:
+                            continue  # Should not happen
 
                         # Check for specific lines first
                         if self._RE_AREA_UNKNOWN.match(line):
                             # print(f"Debug - Ignoring unknown area line: {line}") # Debug print
-                            continue # Ignore these specific warning lines
+                            continue  # Ignore these specific warning lines
 
                         if self._parse_area_line(line, current_stats):
                             # Check immediately for sequential area on the *next* line
                             try:
                                 next_line_content = next(line_iter)
                                 # Temporarily strip for matching, but keep original if needed elsewhere
-                                if not self._parse_sequential_area_line(next_line_content.rstrip(), current_stats):
+                                if not self._parse_sequential_area_line(
+                                    next_line_content.rstrip(), current_stats
+                                ):
                                     # If it wasn't sequential area, save it for the next iteration
                                     pending_line = next_line_content
                             except StopIteration:
-                                pass # End of file after area line
-                            continue # Area line (and maybe seq area) processed
+                                pass  # End of file after area line
+                            continue  # Area line (and maybe seq area) processed
 
                         if self._parse_kv_line(line, current_stats):
-                            continue # Key-value line processed
+                            continue  # Key-value line processed
 
                         if self._parse_cell_line(line, current_stats):
-                            continue # Cell line processed
+                            continue  # Cell line processed
 
                         # If none of the above matched, it might be noise or unexpected format
                         # print(f"Warning: Unparsed line in module_stats: '{line}'")
@@ -258,33 +277,36 @@ class SynthStatParser:
                             # Push the new node and its indentation level onto the stack
                             indent_stack.append((indent, new_node))
                         else:
-                             # If line doesn't match hierarchy format, assume it's the start
-                             # of the hierarchy summary statistics section
-                             mode = "hierarchy_summary"
-                             self.total_stats = {}
-                             # print(f"Debug - Switched to mode: {mode}") # Debug print
-                             # Re-process the current line in the new mode
-                             # Use a temporary dict for parsing attempts
-                             temp_stats = {}
-                             if self._parse_kv_line(line, temp_stats):
-                                 self.total_stats.update(temp_stats)
-                                 continue
-                             if self._parse_cell_line(line, temp_stats):
-                                 # Handle merging cell dicts
-                                 if 'cells' not in self.total_stats: self.total_stats['cells'] = {}
-                                 self.total_stats['cells'].update(temp_stats['cells'])
-                                 continue
-                             if self._parse_area_line(line, temp_stats):
+                            # If line doesn't match hierarchy format, assume it's the start
+                            # of the hierarchy summary statistics section
+                            mode = "hierarchy_summary"
+                            self.total_stats = {}
+                            # print(f"Debug - Switched to mode: {mode}") # Debug print
+                            # Re-process the current line in the new mode
+                            # Use a temporary dict for parsing attempts
+                            temp_stats = {}
+                            if self._parse_kv_line(line, temp_stats):
+                                self.total_stats.update(temp_stats)
+                                continue
+                            if self._parse_cell_line(line, temp_stats):
+                                # Handle merging cell dicts
+                                if "cells" not in self.total_stats:
+                                    self.total_stats["cells"] = {}
+                                self.total_stats["cells"].update(temp_stats["cells"])
+                                continue
+                            if self._parse_area_line(line, temp_stats):
                                 self.total_stats.update(temp_stats)
                                 # Check immediately for sequential area on the *next* line
                                 try:
                                     next_line_content = next(line_iter)
-                                    if not self._parse_sequential_area_line(next_line_content.rstrip(), self.total_stats):
+                                    if not self._parse_sequential_area_line(
+                                        next_line_content.rstrip(), self.total_stats
+                                    ):
                                         pending_line = next_line_content
-                                except StopIteration: pass
+                                except StopIteration:
+                                    pass
                                 continue
-                             # else: print(f"Warning: Unparsed line at start of hierarchy_summary: '{line}'")
-
+                            # else: print(f"Warning: Unparsed line at start of hierarchy_summary: '{line}'")
 
                     elif mode == "hierarchy_summary":
                         # Parse remaining lines as key-value or cell counts for total stats
@@ -294,27 +316,29 @@ class SynthStatParser:
                             self.total_stats.update(temp_stats)
                             continue
                         if self._parse_cell_line(line, temp_stats):
-                             # Handle merging cell dicts
-                            if 'cells' not in self.total_stats: self.total_stats['cells'] = {}
-                            self.total_stats['cells'].update(temp_stats['cells'])
+                            # Handle merging cell dicts
+                            if "cells" not in self.total_stats:
+                                self.total_stats["cells"] = {}
+                            self.total_stats["cells"].update(temp_stats["cells"])
                             continue
                         if self._parse_area_line(line, temp_stats):
                             self.total_stats.update(temp_stats)
-                             # Check immediately for sequential area on the *next* line
+                            # Check immediately for sequential area on the *next* line
                             try:
                                 next_line_content = next(line_iter)
-                                if not self._parse_sequential_area_line(next_line_content.rstrip(), self.total_stats):
+                                if not self._parse_sequential_area_line(
+                                    next_line_content.rstrip(), self.total_stats
+                                ):
                                     pending_line = next_line_content
-                            except StopIteration: pass
+                            except StopIteration:
+                                pass
                             continue
                         # else: print(f"Warning: Unparsed line in hierarchy_summary: '{line}'")
 
-
                 # End of loop
-                if current_stats: # Save the very last module's stats
+                if current_stats:  # Save the very last module's stats
                     self.module_stats[current_module_name_sanitized] = current_stats
                 # print("Debug - Reached end of file processing.") # Debug print
-
 
         except FileNotFoundError:
             print(f"Error: File not found at {self.file_path}")
@@ -324,8 +348,8 @@ class SynthStatParser:
         except Exception as e:
             print(f"An unexpected error occurred during parsing: {e}")
             import traceback
-            traceback.print_exc()
 
+            traceback.print_exc()
 
     def get_module_stats(self, module_name=None):
         """Returns statistics for a specific module or all modules."""
@@ -366,26 +390,32 @@ class SynthStatParser:
             print(f"  Found {len(self.module_stats)} modules.")
             if detail_level >= 1:
                 for name, stats in sorted(self.module_stats.items()):
-                    area = stats.get('chip_area', 'N/A')
-                    seq_area = stats.get('sequential_area', 'N/A')
-                    num_cells_key = 'number_of_cells' # Primary key
-                    if num_cells_key not in stats and 'cells' in stats:
-                        cells_val = sum(stats.get('cells', {}).values())
+                    area = stats.get("chip_area", "N/A")
+                    seq_area = stats.get("sequential_area", "N/A")
+                    num_cells_key = "number_of_cells"  # Primary key
+                    if num_cells_key not in stats and "cells" in stats:
+                        cells_val = sum(stats.get("cells", {}).values())
                     elif num_cells_key in stats:
                         cells_val = stats[num_cells_key]
                     else:
-                        cells_val = 'N/A'
+                        cells_val = "N/A"
 
                     print(f"  Module: {name}")
                     print(f"    Cells: {cells_val}, Area: {area}, Seq Area: {seq_area}")
                     if detail_level >= 2:
                         for k, v in stats.items():
-                            if k not in ['name', 'chip_area', 'sequential_area', 'number_of_cells', 'cells'] and not k.endswith('_percent'):
+                            if k not in [
+                                "name",
+                                "chip_area",
+                                "sequential_area",
+                                "number_of_cells",
+                                "cells",
+                            ] and not k.endswith("_percent"):
                                 print(f"      {k}: {v}")
-                        if 'cells' in stats:
+                        if "cells" in stats:
                             print(f"      Cell Counts: {len(stats['cells'])} types")
                             if detail_level >= 3:
-                                for cell, count in stats['cells'].items():
+                                for cell, count in stats["cells"].items():
                                     print(f"        {cell}: {count}")
         print("-" * 20)
 
@@ -393,33 +423,40 @@ class SynthStatParser:
         if not self.hierarchy_root:
             print("  (Hierarchy not found or parsed)")
         else:
+
             def print_node(node, indent=2):
                 print(f"{' ' * indent}Module: {node.name}, Instances: {node.count}")
                 for child in node.children:
                     print_node(child, indent + 2)
+
             print_node(self.hierarchy_root)
         print("-" * 20)
 
         print("Total Design Statistics (Hierarchy Summary Section):")
         if not self.total_stats:
-             print("  (Total statistics not found or parsed)")
+            print("  (Total statistics not found or parsed)")
         else:
             for key, value in self.total_stats.items():
-                 if key == 'cells':
-                      print(f"  Total Cell Types: {len(value)}")
-                      print(f"  Total Cell Instances: {sum(value.values())}")
-                 elif isinstance(value, dict): # Should not happen with current parsing for totals
-                     print(f"  {key.replace('_', ' ').title()}: [Dictionary with {len(value)} items]")
-                 else:
-                     print(f"  {key.replace('_', ' ').title()}: {value}")
+                if key == "cells":
+                    print(f"  Total Cell Types: {len(value)}")
+                    print(f"  Total Cell Instances: {sum(value.values())}")
+                elif isinstance(
+                    value, dict
+                ):  # Should not happen with current parsing for totals
+                    print(
+                        f"  {key.replace('_', ' ').title()}: [Dictionary with {len(value)} items]"
+                    )
+                else:
+                    print(f"  {key.replace('_', ' ').title()}: {value}")
         print("-" * 20)
 
+
 if __name__ == "__main__":
-    synth_stat_file_path = "/home/user/RTL2GDS/kianv_results/yosys/synth_stat.txt"
+    synth_stat_file_path = "/opt/rtl2gds/kianv_results/yosys/synth_stat.txt"
 
     if not os.path.exists(synth_stat_file_path):
-         print(f"Error: Input file '{synth_stat_file_path}' not found.")
-         print("Please create the file or update the 'synth_stat_file_path' variable.")
+        print(f"Error: Input file '{synth_stat_file_path}' not found.")
+        print("Please create the file or update the 'synth_stat_file_path' variable.")
     else:
         # --- Parse the file ---
         print(f"Parsing file: {synth_stat_file_path}...")
@@ -437,13 +474,21 @@ if __name__ == "__main__":
         complex_module_name = "$paramod\\register_file\\REGISTER_DEPTH=s32'00000000000000000000000000100000"
         specific_stats = parser.get_module_stats(complex_module_name)
         if specific_stats:
-            print(f"\nStats for '{complex_module_name}':") # Print original requested name
-            print(f"  (Parsed Name: {specific_stats.get('name')})") # Show how it was stored
-            print(f"  Number of Cells: {specific_stats.get('number_of_cells', sum(specific_stats.get('cells', {}).values()))}")
+            print(
+                f"\nStats for '{complex_module_name}':"
+            )  # Print original requested name
+            print(
+                f"  (Parsed Name: {specific_stats.get('name')})"
+            )  # Show how it was stored
+            print(
+                f"  Number of Cells: {specific_stats.get('number_of_cells', sum(specific_stats.get('cells', {}).values()))}"
+            )
             print(f"  Chip Area: {specific_stats.get('chip_area')}")
-            print(f"  Cell sky130_fd_sc_hs__dfxtp_1 count: {specific_stats.get('cells', {}).get('sky130_fd_sc_hs__dfxtp_1', 'N/A')}")
+            print(
+                f"  Cell sky130_fd_sc_hs__dfxtp_1 count: {specific_stats.get('cells', {}).get('sky130_fd_sc_hs__dfxtp_1', 'N/A')}"
+            )
         else:
-             print(f"\nStats for '{complex_module_name}' not found.")
+            print(f"\nStats for '{complex_module_name}' not found.")
 
         # Get the hierarchy root
         hierarchy = parser.get_hierarchy()
@@ -451,16 +496,29 @@ if __name__ == "__main__":
             print(f"\nHierarchy Root Node: {hierarchy.name} (Count: {hierarchy.count})")
             # Example: Accessing a specific child path if known (error prone if structure changes)
             try:
-                soc_node = next(c for c in hierarchy.children if c.name == 'soc')
-                kianv_node = next(c for c in soc_node.children if c.name.startswith('$paramod\\kianv_harris_mc_edition'))
-                datapath_node = next(c for c in kianv_node.children if c.name.startswith('$paramod$24d21e9bf399c82f9599919af6e14cda3f6192c2'))
-                print(f"  Found datapath node: {datapath_node.name} (Instance count: {datapath_node.count})")
-                alu_node = next((c for c in datapath_node.children if c.name == 'alu'), None)
+                soc_node = next(c for c in hierarchy.children if c.name == "soc")
+                kianv_node = next(
+                    c
+                    for c in soc_node.children
+                    if c.name.startswith("$paramod\\kianv_harris_mc_edition")
+                )
+                datapath_node = next(
+                    c
+                    for c in kianv_node.children
+                    if c.name.startswith(
+                        "$paramod$24d21e9bf399c82f9599919af6e14cda3f6192c2"
+                    )
+                )
+                print(
+                    f"  Found datapath node: {datapath_node.name} (Instance count: {datapath_node.count})"
+                )
+                alu_node = next(
+                    (c for c in datapath_node.children if c.name == "alu"), None
+                )
                 if alu_node:
                     print(f"    ALU instances under datapath: {alu_node.count}")
             except (StopIteration, AttributeError):
-                 print("  Could not traverse hierarchy to find specific example child.")
-
+                print("  Could not traverse hierarchy to find specific example child.")
 
         # Get hierarchy as dictionary (useful for JSON export etc.)
         hierarchy_dict = parser.hierarchy_to_dict()
@@ -468,31 +526,39 @@ if __name__ == "__main__":
             print("\nHierarchy as Dictionary (showing root level):")
             # Limit printing depth for very large hierarchies
             # print(json.dumps(hierarchy_dict, indent=2)) # Full dump can be huge
-            print(f"  Root: {hierarchy_dict.get('module_name')}, Instances: {hierarchy_dict.get('instance_count')}")
-            print(f"  Submodules: {len(hierarchy_dict.get('submodules', []))} direct children")
-
+            print(
+                f"  Root: {hierarchy_dict.get('module_name')}, Instances: {hierarchy_dict.get('instance_count')}"
+            )
+            print(
+                f"  Submodules: {len(hierarchy_dict.get('submodules', []))} direct children"
+            )
 
         # Get total design stats from the summary section
         totals = parser.get_total_stats()
         print("\nTotal Design Stats (from Hierarchy Summary section):")
         if totals:
-             # The key for total area might vary based on the top module name
-             area_key = next((k for k in totals if k.startswith('chip_area_for_top_module')), 'chip_area') # Fallback
-             print(f"  Total Area: {totals.get(area_key, 'N/A')}")
-             print(f"  Total Sequential Area: {totals.get('sequential_area', 'N/A')}")
-             print(f"  Total Cell Instances: {totals.get('number_of_cells', sum(totals.get('cells', {}).values()))}")
+            # The key for total area might vary based on the top module name
+            area_key = next(
+                (k for k in totals if k.startswith("chip_area_for_top_module")),
+                "chip_area",
+            )  # Fallback
+            print(f"  Total Area: {totals.get(area_key, 'N/A')}")
+            print(f"  Total Sequential Area: {totals.get('sequential_area', 'N/A')}")
+            print(
+                f"  Total Cell Instances: {totals.get('number_of_cells', sum(totals.get('cells', {}).values()))}"
+            )
         else:
-             print("  Total stats section not found or empty.")
+            print("  Total stats section not found or empty.")
 
         # Example: Save parsed data to JSON
         output_data = {
             "module_stats": parser.get_module_stats(),
             "hierarchy": parser.hierarchy_to_dict(),
-            "total_stats": parser.get_total_stats()
+            "total_stats": parser.get_total_stats(),
         }
         json_output_path = "parsed_synth_stat.json"
         try:
-            with open(json_output_path, 'w') as jf:
+            with open(json_output_path, "w") as jf:
                 json.dump(output_data, jf, indent=2)
             print(f"\nSaved parsed data to {json_output_path}")
         except Exception as e:

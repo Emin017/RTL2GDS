@@ -213,7 +213,7 @@ if __name__ == "__main__":
     # minimal config
     config = {
         "top_name": "picorv32a",
-        "rtl_file": "/home/user/RTL2GDS/design_zoo/picorv32a/picorv32a.v",
+        "rtl_file": "/opt/rtl2gds/design_zoo/picorv32a/picorv32a.v",
         "clk_port_name": "clk",
         "clk_freq_mhz": 100,
         "core_util": 0.6,
