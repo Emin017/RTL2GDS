@@ -8,9 +8,28 @@ on:
       - master
 
 jobs:
+  build:
+    name: Build RTL2GDS
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/determinate-nix-action@v3
+      - name: Build RTL2GDS
+        run: |
+          sed -i 's/githubfast\.com/github.com/g' .gitmodules
+          git submodule update --init
+          export IHP130_PDK_DIR="${{ github.workspace }}/foundry/ihp130"
+          nix build -L
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rtl2gds-build
+          path: result/
+
   test-designs:
     name: test RTL2GDS - ${{ matrix.name }}
     runs-on: ubuntu-latest
+    needs: build
     strategy:
       matrix:
         include:
@@ -22,16 +41,18 @@ jobs:
             dir: picorv32a
     steps:
       - uses: actions/checkout@v4
-      - uses: DeterminateSystems/determinate-nix-action@v3
-      - name: Run ${{ matrix.name }} flows
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: rtl2gds-build
+          path: result/
+      - name: Set execute permissions
+        run: chmod +x result/bin/rtl2gds
+      - name: Run ${{ matrix.name }} flow
         run: |
-          sed -i 's/githubfast\.com/github.com/g' .gitmodules
-          git submodule update --init
-          export IHP130_PDK_DIR="${{ github.workspace }}/foundry/ihp130"
-          nix build -L
           cd "design_zoo/${{ matrix.dir }}"
           ../../result/bin/rtl2gds -c "${{ matrix.config_file }}"
       - uses: actions/upload-artifact@v4
         with:
-          name: "RTL2GDS-results"
-          path: ./results/bin/rtl2gds
+          name: "RTL2GDS-results-${{ matrix.name }}"
+          path: design_zoo/${{ matrix.dir }}/results/
