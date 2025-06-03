@@ -35,6 +35,7 @@ buildPythonPackage {
 
   patches = [
     ./patches/rtl2gds.fast.patch
+    ./patches/rtl2gds.pdk.patch
   ];
 
   propagatedBuildInputs =

@@ -27,6 +27,7 @@ jobs:
         run: |
           sed -i 's/githubfast\.com/github.com/g' .gitmodules
           git submodule update --init
+          export IHP130_PDK_DIR="${{ github.workspace }}/foundry/ihp130"
           nix build -L
           cd "design_zoo/${{ matrix.dir }}"
           ../../result/bin/rtl2gds -c "${{ matrix.config_file }}"
