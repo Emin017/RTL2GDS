@@ -76,9 +76,7 @@ def drc_magic(top_name: str, gds_file: str, result_dir: str):
             raise subprocess.CalledProcessError(ret_code, shell_cmd)
 
     except subprocess.CalledProcessError as e:
-        print(
-            f"@@@Command '{e.cmd}' failed with signal or non-zero exit code {e.returncode}."
-        )
+        print(f"@@@Command '{e.cmd}' failed with signal or non-zero exit code {e.returncode}.")
 
     metrics = {}
 
@@ -110,7 +108,9 @@ def drc_klayout(
         "drc_report_json": f"{result_dir}/drc_{drc_rule_set}_{top_name}.json",
     }
 
-    lydrc_script = f"{R2G_PDK_DIR_IHP130}/ihp-sg13g2/libs.tech/klayout/tech/drc/{drc_rule_set}.lydrc"
+    lydrc_script = (
+        f"{R2G_PDK_DIR_IHP130}/ihp-sg13g2/libs.tech/klayout/tech/drc/{drc_rule_set}.lydrc"
+    )
     active_module = f"{top_name}"
     shell_cmd = [
         "klayout",
@@ -150,9 +150,7 @@ def drc_klayout(
         drc_categories[category.name()] = category.num_items()
 
     # klayout_rdb.description: 'design rules: design_rule_name | layout cell: top_name'
-    rule_actually_use = (
-        klayout_rdb.description.split("|")[0].strip().split(":", 1)[1].strip()
-    )
+    rule_actually_use = klayout_rdb.description.split("|")[0].strip().split(":", 1)[1].strip()
     assert (
         rule_actually_use == drc_rule_set
     ), f"DRC rule set mismatch: {rule_actually_use} != {drc_rule_set}"

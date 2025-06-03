@@ -42,6 +42,7 @@ exclude = '''
   | \.mypy_cache
   | \.tox
   | \.venv
+  | bin
   | _build
   | buck-out
   | build

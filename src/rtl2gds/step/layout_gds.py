@@ -11,9 +11,7 @@ from rtl2gds.global_configs import DEFAULT_SDC_FILE, ENV_TOOLS_PATH, StepName
 from rtl2gds.step.configs import SHELL_CMD
 
 
-def save_snapshot_image(
-    gds_file: str, img_file: str, weight: int = 800, height: int = 800
-):
+def save_snapshot_image(gds_file: str, img_file: str, weight: int = 800, height: int = 800):
     """
     Takes a screenshot of a GDS file and saves it as an image.
     @Reference: https://gist.github.com/sequoiap/48af5f611cca838bb1ebc3008eef3a6e

@@ -56,9 +56,7 @@ logger.add_report_txt(synth_res_files["synth_stat_txt"])
 
 # ---------------------------------------------------------------- #
 # 2: 布图规划
-fp_res_files = flow.single_step.run(
-    chip=spm, expect_step=StepName.FLOORPLAN, take_snapshot=True
-)
+fp_res_files = flow.single_step.run(chip=spm, expect_step=StepName.FLOORPLAN, take_snapshot=True)
 
 spm.dump_config_yaml()
 logger.add_pr_res_all(StepName.FLOORPLAN, fp_res_files)
@@ -79,9 +77,7 @@ logger.add_pr_res_all(StepName.NETLIST_OPT, no_res_files)
 
 # ---------------------------------------------------------------- #
 # 4、布局
-pl_res_files = flow.single_step.run(
-    chip=spm, expect_step=StepName.PLACEMENT, take_snapshot=True
-)
+pl_res_files = flow.single_step.run(chip=spm, expect_step=StepName.PLACEMENT, take_snapshot=True)
 
 spm.dump_config_yaml()
 logger.add_pr_res_all(StepName.PLACEMENT, pl_res_files)
@@ -121,9 +117,7 @@ logger.add_pr_res_all(StepName.LEGALIZATION, lg_res_files)
 
 # ---------------------------------------------------------------- #
 # 8: 布线
-rt_res_files = flow.single_step.run(
-    chip=spm, expect_step=StepName.ROUTING, take_snapshot=True
-)
+rt_res_files = flow.single_step.run(chip=spm, expect_step=StepName.ROUTING, take_snapshot=True)
 
 spm.dump_config_yaml()
 logger.add_pr_res_all(StepName.ROUTING, rt_res_files)
@@ -131,9 +125,7 @@ logger.add_pr_res_all(StepName.ROUTING, rt_res_files)
 
 # ---------------------------------------------------------------- #
 # 9: 填充单元
-fill_res_files = flow.single_step.run(
-    chip=spm, expect_step=StepName.FILLER, take_snapshot=True
-)
+fill_res_files = flow.single_step.run(chip=spm, expect_step=StepName.FILLER, take_snapshot=True)
 
 spm.dump_config_yaml()
 logger.add_pr_res_all(StepName.FILLER, fill_res_files)

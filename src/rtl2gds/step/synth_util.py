@@ -51,9 +51,7 @@ class SynthStatParser:
     # Match cell count lines (handles complex names with $, \, ', = etc.)
     _RE_CELL_LINE = re.compile(r"^\s+([$a-zA-Z0-9_\\~.\'=\\]+)\s+(\d+)$")
     # Match area lines (handles optional quotes and 'top module')
-    _RE_AREA_LINE = re.compile(
-        r"^\s*Chip area for (?:module|top module)\s+'?([^']*)'?:\s+([\d.]+)"
-    )
+    _RE_AREA_LINE = re.compile(r"^\s*Chip area for (?:module|top module)\s+'?([^']*)'?:\s+([\d.]+)")
     # Match sequential area lines
     _RE_SEQ_AREA_LINE = re.compile(
         r"^\s*of which used for sequential elements:\s+([\d.]+)\s+\(([\d.]+)%\)"
@@ -135,9 +133,7 @@ class SynthStatParser:
                 stats_dict["chip_area"] = float(match.group(2))
                 return True
             except ValueError:
-                print(
-                    f"Warning: Could not parse area value '{match.group(2)}' in line: {line}"
-                )
+                print(f"Warning: Could not parse area value '{match.group(2)}' in line: {line}")
         return False
 
     def _parse_sequential_area_line(self, line, stats_dict):
@@ -149,9 +145,7 @@ class SynthStatParser:
                 stats_dict["sequential_area_percent"] = float(match.group(2))
                 return True
             except ValueError:
-                print(
-                    f"Warning: Could not parse sequential area values in line: {line}"
-                )
+                print(f"Warning: Could not parse sequential area values in line: {line}")
         return False
 
     def _parse_hierarchy_line(self, line):
@@ -200,9 +194,7 @@ class SynthStatParser:
                         if sanitized_name == "design hierarchy":
                             mode = "hierarchy_tree"
                             if current_stats:  # Save last module before hierarchy
-                                self.module_stats[current_module_name_sanitized] = (
-                                    current_stats
-                                )
+                                self.module_stats[current_module_name_sanitized] = current_stats
                             current_module_name_sanitized = None
                             current_stats = None
                             indent_stack = []  # Reset hierarchy stack
@@ -210,9 +202,7 @@ class SynthStatParser:
                         else:
                             mode = "module_stats"
                             if current_stats:  # Save previous module's stats
-                                self.module_stats[current_module_name_sanitized] = (
-                                    current_stats
-                                )
+                                self.module_stats[current_module_name_sanitized] = current_stats
                             current_module_name_sanitized = sanitized_name
                             current_stats = {"name": current_module_name_sanitized}
                             # print(f"Debug - Parsing module: {current_module_name_sanitized}") # Debug print
@@ -440,9 +430,7 @@ class SynthStatParser:
                 if key == "cells":
                     print(f"  Total Cell Types: {len(value)}")
                     print(f"  Total Cell Instances: {sum(value.values())}")
-                elif isinstance(
-                    value, dict
-                ):  # Should not happen with current parsing for totals
+                elif isinstance(value, dict):  # Should not happen with current parsing for totals
                     print(
                         f"  {key.replace('_', ' ').title()}: [Dictionary with {len(value)} items]"
                     )
@@ -471,15 +459,13 @@ if __name__ == "__main__":
 
         # Get stats for a specific module (use sanitized name if needed, but lookup handles it)
         # Example using a complex name:
-        complex_module_name = "$paramod\\register_file\\REGISTER_DEPTH=s32'00000000000000000000000000100000"
+        complex_module_name = (
+            "$paramod\\register_file\\REGISTER_DEPTH=s32'00000000000000000000000000100000"
+        )
         specific_stats = parser.get_module_stats(complex_module_name)
         if specific_stats:
-            print(
-                f"\nStats for '{complex_module_name}':"
-            )  # Print original requested name
-            print(
-                f"  (Parsed Name: {specific_stats.get('name')})"
-            )  # Show how it was stored
+            print(f"\nStats for '{complex_module_name}':")  # Print original requested name
+            print(f"  (Parsed Name: {specific_stats.get('name')})")  # Show how it was stored
             print(
                 f"  Number of Cells: {specific_stats.get('number_of_cells', sum(specific_stats.get('cells', {}).values()))}"
             )
@@ -505,16 +491,12 @@ if __name__ == "__main__":
                 datapath_node = next(
                     c
                     for c in kianv_node.children
-                    if c.name.startswith(
-                        "$paramod$24d21e9bf399c82f9599919af6e14cda3f6192c2"
-                    )
+                    if c.name.startswith("$paramod$24d21e9bf399c82f9599919af6e14cda3f6192c2")
                 )
                 print(
                     f"  Found datapath node: {datapath_node.name} (Instance count: {datapath_node.count})"
                 )
-                alu_node = next(
-                    (c for c in datapath_node.children if c.name == "alu"), None
-                )
+                alu_node = next((c for c in datapath_node.children if c.name == "alu"), None)
                 if alu_node:
                     print(f"    ALU instances under datapath: {alu_node.count}")
             except (StopIteration, AttributeError):
@@ -529,9 +511,7 @@ if __name__ == "__main__":
             print(
                 f"  Root: {hierarchy_dict.get('module_name')}, Instances: {hierarchy_dict.get('instance_count')}"
             )
-            print(
-                f"  Submodules: {len(hierarchy_dict.get('submodules', []))} direct children"
-            )
+            print(f"  Submodules: {len(hierarchy_dict.get('submodules', []))} direct children")
 
         # Get total design stats from the summary section
         totals = parser.get_total_stats()
