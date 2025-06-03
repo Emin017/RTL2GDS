@@ -1,9 +1,10 @@
 import json
-import os
 import logging
+import os
 from datetime import datetime
 from typing import Callable
-from .json_helper import load_json, dump_json
+
+from .json_helper import dump_json, load_json
 
 # Save all step timing data in a global dictionary
 time_data = {
@@ -21,8 +22,8 @@ def time_decorator(func: Callable) -> Callable:
         Callable: The wrapped function with timing functionality.
     """
 
-    import time
     import functools
+    import time
 
     @functools.wraps(func)
     def wrapper(self, *args, **kwargs):

@@ -1,7 +1,7 @@
-import os
 import json
-import subprocess
 import logging
+import os
+import subprocess
 
 
 def replace_one(text, item):

@@ -3,8 +3,8 @@ import os
 from rtl2gds import step
 from rtl2gds.chip import Chip
 from rtl2gds.global_configs import RTL2GDS_FLOW_STEPS, StepName
-from rtl2gds.utils.time import save_execute_time_data
 from rtl2gds.utils import process
+from rtl2gds.utils.time import save_execute_time_data
 
 
 def get_expected_step(finished_step: str) -> str | None:
