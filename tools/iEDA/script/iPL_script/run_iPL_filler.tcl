@@ -69,6 +69,14 @@ report_db -path $DESIGN_STAT_TEXT
 feature_summary -path $DESIGN_STAT_JSON -step filler
 
 #===========================================================
+##   run timing evaluation
+#===========================================================
+source $IEDA_TCL_SCRIPT_DIR/DB_script/db_init_lib.tcl
+source $IEDA_TCL_SCRIPT_DIR/DB_script/db_init_sdc.tcl
+
+run_timing_eval -eval_output_path $::env(DESIGN_TIMING_EVAL_REPORT) -routing_type $::env(ROUTING_TYPE)
+
+#===========================================================
 ##   Exit 
 #===========================================================
 flow_exit

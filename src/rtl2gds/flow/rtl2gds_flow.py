@@ -27,5 +27,15 @@ def run(chip: Chip):
     assert chip.finished_step == StepName.FILLER
     assert os.path.exists(chip.path_setting.gds_file)
 
+    # Collect timing metrics
+    runner.run_collect_timing_metrics()
+
+    # Save time report
+    execute_time_json = runner.save_execute_time_report()
+    logging.info("Execute time report saved to: %s", execute_time_json)
+
+    runner.save_merged_metrics(execute_time_json)
+    logging.info("Merged metrics saved to: %s", chip.path_setting.result_dir)
+
     end_time = time.perf_counter()
     logging.info("Total elapsed time: %.2f seconds", end_time - start_time)
