@@ -62,9 +62,7 @@ class DesignMetrics:
         # Flatten nested dataclasses
         metrics_dict.update(metrics_dict.pop("performance"))
         metrics_dict.update(metrics_dict.pop("power"))
-        metrics_dict.update(
-            {f"area_{k}": v for k, v in metrics_dict.pop("area").items()}
-        )
+        metrics_dict.update({f"area_{k}": v for k, v in metrics_dict.pop("area").items()})
         return metrics_dict
 
     def to_yaml(self, pretty: bool = True) -> str:

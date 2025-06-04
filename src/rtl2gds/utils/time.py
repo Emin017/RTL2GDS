@@ -1,9 +1,10 @@
 import json
-import os
 import logging
+import os
 from datetime import datetime
 from typing import Callable
-from .json_helper import load_json, dump_json
+
+from .json_helper import dump_json, load_json
 
 # Save all step timing data in a global dictionary
 time_data = {
@@ -21,8 +22,8 @@ def time_decorator(func: Callable) -> Callable:
         Callable: The wrapped function with timing functionality.
     """
 
-    import time
     import functools
+    import time
 
     @functools.wraps(func)
     def wrapper(self, *args, **kwargs):
@@ -103,9 +104,7 @@ def save_execute_time_data(result_dir: str, chip_name: str) -> str:
     """
     os.makedirs(result_dir, exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    json_file = os.path.join(
-        result_dir, f"evaluation/{chip_name}_execution_time_{timestamp}.json"
-    )
+    json_file = os.path.join(result_dir, f"evaluation/{chip_name}_execution_time_{timestamp}.json")
     dump_json(json_file=json_file, data=time_data)
     return json_file
 
@@ -130,9 +129,7 @@ def save_merged_metrics(chip: Chip, execute_time_json: str):
 
     # Define the paths for the merged report and other reports
     merged_report_path = f"{chip.path_setting.result_dir}/evaluation/final_metrics.json"
-    timing_report_path = (
-        f"{chip.path_setting.result_dir}/evaluation/timing_report.json"
-    )
+    timing_report_path = f"{chip.path_setting.result_dir}/evaluation/timing_report.json"
     execute_time_report_path = execute_time_json
 
     # Ensure the directory exists

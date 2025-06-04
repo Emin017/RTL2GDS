@@ -103,9 +103,7 @@ def main():
         logging.error(f"Config file not found: {config_yaml}")
         sys.exit(1)
     if not workspace_path.is_dir():
-        logging.error(
-            f"Workspace path is not a directory or does not exist: {workspace_path}"
-        )
+        logging.error(f"Workspace path is not a directory or does not exist: {workspace_path}")
         sys.exit(1)
 
     step = StepName.RTL2GDS_ALL

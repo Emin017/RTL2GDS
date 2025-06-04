@@ -60,6 +60,4 @@ if __name__ == "__main__":
     result_dir = "."
     sta_report_dirname = "sta_report"
     def_file = "/opt/rtl2gds/design_zoo/picorv32a/pico_results/picorv32a_cts.def"
-    _, sta_res_files = run(
-        top_name, def_file, result_dir, "clk", 100, sta_report_dirname
-    )
+    _, sta_res_files = run(top_name, def_file, result_dir, "clk", 100, sta_report_dirname)

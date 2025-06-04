@@ -1,13 +1,8 @@
 """Step runner factory"""
 
 from rtl2gds.global_configs import StepName
-from rtl2gds.step import drc
-from rtl2gds.step import floorplan
-from rtl2gds.step import layout_gds
-from rtl2gds.step import layout_json
-from rtl2gds.step import synthesis
+from rtl2gds.step import drc, floorplan, layout_gds, layout_json, synthesis
 from rtl2gds.step.step import CTS, Filler, Legalization, NetlistOpt, Placement, Routing
-
 
 __all__ = [
     "synthesis",

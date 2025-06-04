@@ -47,9 +47,7 @@ def save_module_preview(
 
     # Set default output SVG filename if not provided
     if output_svg is None:
-        base_name = (
-            os.path.splitext(verilog_file)[0] if module_name is None else module_name
-        )
+        base_name = os.path.splitext(verilog_file)[0] if module_name is None else module_name
         output_svg = f"{base_name}.svg"
 
     # Create a temporary JSON file
@@ -136,15 +134,11 @@ def convert_sv2v(input_sv, output_v, top=None, write=None, incdir=None, define=N
         cmd.extend(["-w", write])
 
     try:
-        subprocess.run(
-            cmd, check=True, capture_output=True, text=True, env=ENV_TOOLS_PATH
-        )
+        subprocess.run(cmd, check=True, capture_output=True, text=True, env=ENV_TOOLS_PATH)
         return True
     except subprocess.CalledProcessError as e:
         print(f"Error running sv2v: {e}")
-        print(
-            f"sv2v stdout: {e.stdout}"
-        )  # Capture and print stdout/stderr for debugging
+        print(f"sv2v stdout: {e.stdout}")  # Capture and print stdout/stderr for debugging
         print(f"sv2v stderr: {e.stderr}")
         return False
 
@@ -173,9 +167,7 @@ def parse_synth_stat(synth_stat_json: str):
     return stats
 
 
-def _convert_sv_to_v(
-    rtl_file: str | list[str], result_dir: str, top_name: str
-) -> str | list[str]:
+def _convert_sv_to_v(rtl_file: str | list[str], result_dir: str, top_name: str) -> str | list[str]:
     """Convert SystemVerilog files to Verilog format if necessary.
 
     Args:
@@ -192,13 +184,9 @@ def _convert_sv_to_v(
     if isinstance(rtl_file, str) and rtl_file.endswith(".sv"):
         if not os.path.exists(rtl_file):
             raise FileNotFoundError(f"RTL file {rtl_file} not found")
-        converted_v_file = (
-            f"{result_dir}/{os.path.basename(rtl_file).replace('.sv', '.v')}"
-        )
+        converted_v_file = f"{result_dir}/{os.path.basename(rtl_file).replace('.sv', '.v')}"
         if not convert_sv2v(rtl_file, converted_v_file, top=top_name):
-            raise RuntimeError(
-                f"Failed to convert SystemVerilog file {rtl_file} to Verilog"
-            )
+            raise RuntimeError(f"Failed to convert SystemVerilog file {rtl_file} to Verilog")
         return converted_v_file
     elif isinstance(rtl_file, list) and any(file.endswith(".sv") for file in rtl_file):
         converted_v_files = []
@@ -206,13 +194,9 @@ def _convert_sv_to_v(
             if not os.path.exists(file):
                 raise FileNotFoundError(f"RTL file {file} not found")
             if file.endswith(".sv"):
-                converted_v_file = (
-                    f"{result_dir}/{os.path.basename(file).replace('.sv', '.v')}"
-                )
+                converted_v_file = f"{result_dir}/{os.path.basename(file).replace('.sv', '.v')}"
                 if not convert_sv2v(file, converted_v_file, top=top_name):
-                    raise RuntimeError(
-                        f"Failed to convert SystemVerilog file {file} to Verilog"
-                    )
+                    raise RuntimeError(f"Failed to convert SystemVerilog file {file} to Verilog")
                 converted_v_files.append(converted_v_file)
             else:
                 converted_v_files.append(file)
@@ -271,9 +255,7 @@ def _calculate_areas(cell_area, core_util, die_bbox=None, core_bbox=None):
         core_length = math.sqrt(cell_area / core_util)
         io_margin = 10
         die_bbox = f"0 0 {core_length+io_margin*2} {core_length+io_margin*2}"
-        core_bbox = (
-            f"{io_margin} {io_margin} {core_length+io_margin} {core_length+io_margin}"
-        )
+        core_bbox = f"{io_margin} {io_margin} {core_length+io_margin} {core_length+io_margin}"
 
     elif not core_util:
         core = core_bbox.split(" ")
@@ -379,9 +361,7 @@ def run(
     ), f"Cell area ({cell_area}) exceeds processing limit ({MAX_CELL_AREA})"
 
     # Calculate areas
-    die_bbox, core_bbox, core_util = _calculate_areas(
-        cell_area, core_util, die_bbox, core_bbox
-    )
+    die_bbox, core_bbox, core_util = _calculate_areas(cell_area, core_util, die_bbox, core_bbox)
 
     metrics = {
         "die_bbox": die_bbox,

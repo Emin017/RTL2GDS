@@ -1,13 +1,13 @@
 """
 WORKSPACE=f"{mount_point}/{stdin.project_id}"
 PYTHONPATH="/opt/rtl2gds/src"
-docker run --rm -it 
--v ${WORKSPACE}:${WORKSPACE} 
--v ${WORKSPACE}/config.yaml:${WORKSPACE}/config.yaml 
--v ${WORKSPACE}/top.v:${WORKSPACE}/top.v 
---net eda-subnet 
+docker run --rm -it
+-v ${WORKSPACE}:${WORKSPACE}
+-v ${WORKSPACE}/config.yaml:${WORKSPACE}/config.yaml
+-v ${WORKSPACE}/top.v:${WORKSPACE}/top.v
+--net eda-subnet
 --env PYTHONPATH=${PYTHONPATH}
-rtl2gds:latest 
+rtl2gds:latest
 /usr/bin/env python3 ${PYTHONPATH}/rtl2gds/cloud_main.py ${WORKSPACE}/top.v ${WORKSPACE}/config.yaml ${WORKSPACE}
 """
 
@@ -33,7 +33,7 @@ def start_rtl2gds_job(
     namespace: str = os.getenv("K8S_NAMESPACE", "eda"),
     front_service_name: str = os.getenv("FRONT_SERVICE_HOST", "mock-front-svc"),
     front_port: int = os.getenv("FRONT_SERVICE_PORT", 8083),
-    job_ttl_seconds: int = 3600
+    job_ttl_seconds: int = 3600,
 ) -> str:
     """
     Starts a Kubernetes Job to run the RTL2GDS process.
@@ -53,12 +53,14 @@ def start_rtl2gds_job(
     Returns:
         A status message indicating whether the Job was created successfully.
     """
-    logging.info(f"Attempting to start Kubernetes Job for step '{flow_step}' in namespace '{namespace}'")
+    logging.info(
+        f"Attempting to start Kubernetes Job for step '{flow_step}' in namespace '{namespace}'"
+    )
 
     api_instance = client.BatchV1Api()
 
     # --- Define Job Structure ---
-    mount_path_in_job_pod = "/projectData" # Job Pod 内挂载 PVC 的路径
+    mount_path_in_job_pod = "/projectData"  # Job Pod 内挂载 PVC 的路径
     guest_r2g_module = "/opt/rtl2gds/src"
     guest_r2g_entry = f"{guest_r2g_module}/rtl2gds/cloud_main.py"
 
@@ -78,13 +80,13 @@ def start_rtl2gds_job(
     # 1. Define Volume Mount (for the container)
     volume_mount = client.V1VolumeMount(
         name="eda-server-data",  # Must match the volume name below
-        mount_path=mount_path_in_job_pod # PVC 在 Job Pod 内的挂载点
+        mount_path=mount_path_in_job_pod,  # PVC 在 Job Pod 内的挂载点
     )
 
     # 2. Define Volume (referencing the PVC)
     volume = client.V1Volume(
-        name="eda-server-data", # Must match volume_mount's name
-        persistent_volume_claim=client.V1PersistentVolumeClaimVolumeSource(claim_name=pvc_name)
+        name="eda-server-data",  # Must match volume_mount's name
+        persistent_volume_claim=client.V1PersistentVolumeClaimVolumeSource(claim_name=pvc_name),
     )
 
     # 3. Define Environment Variables for the Job container
@@ -99,17 +101,16 @@ def start_rtl2gds_job(
         image=job_image,
         command=["/usr/bin/env", "python3", guest_r2g_entry],
         args=[
-            job_rtl_path,      # Arg 1: RTL file path inside Job Pod
-            job_config_path,   # Arg 2: Config file path inside Job Pod
-            job_workspace_path,# Arg 3: Workspace path inside Job Pod
-            flow_step            # Arg 4: Flow step name
+            job_rtl_path,  # Arg 1: RTL file path inside Job Pod
+            job_config_path,  # Arg 2: Config file path inside Job Pod
+            job_workspace_path,  # Arg 3: Workspace path inside Job Pod
+            flow_step,  # Arg 4: Flow step name
         ],
         env=env_vars,
         volume_mounts=[volume_mount],
         resources=client.V1ResourceRequirements(
-            requests={"cpu": "2", "memory": "4Gi"},
-            limits={"cpu": "4", "memory": "8Gi"}
-        )
+            requests={"cpu": "2", "memory": "4Gi"}, limits={"cpu": "4", "memory": "8Gi"}
+        ),
     )
 
     # 5. Define the Pod Template Spec
@@ -120,14 +121,14 @@ def start_rtl2gds_job(
             containers=[container],
             volumes=[volume],
             # service_account_name= # 如果 Job Pod 需要特殊权限，指定 ServiceAccount
-        )
+        ),
     )
 
     # 6. Define the Job Spec
     job_spec = client.V1JobSpec(
         template=pod_template,
         backoff_limit=1,  # 重试次数 (0 表示不重试)
-        ttl_seconds_after_finished=job_ttl_seconds # 自动清理已完成的 Job
+        ttl_seconds_after_finished=job_ttl_seconds,  # 自动清理已完成的 Job
         # active_deadline_seconds= # 可选：设置 Job 的最长运行时间
     )
 
@@ -136,7 +137,7 @@ def start_rtl2gds_job(
         api_version="batch/v1",
         kind="Job",
         metadata=client.V1ObjectMeta(name=job_name, namespace=namespace),
-        spec=job_spec
+        spec=job_spec,
     )
 
     # 8. Create the Job in Kubernetes

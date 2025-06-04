@@ -58,9 +58,7 @@ class Step:
         }
 
         if self.filename_metrics_json:
-            artifacts["tool_metrics_json"] = (
-                f"{result_dir}/{self.filename_metrics_json}"
-            )
+            artifacts["tool_metrics_json"] = f"{result_dir}/{self.filename_metrics_json}"
             shell_env["TOOL_METRICS_JSON"] = artifacts["tool_metrics_json"]
 
         if self.dirname_tool_report:
