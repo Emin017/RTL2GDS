@@ -3,8 +3,8 @@ import os
 from rtl2gds import step
 from rtl2gds.chip import Chip
 from rtl2gds.global_configs import RTL2GDS_FLOW_STEPS, StepName
-from rtl2gds.utils.time import save_execute_time_data
 from rtl2gds.utils import process
+from rtl2gds.utils.time import save_execute_time_data
 
 
 def get_expected_step(finished_step: str) -> str | None:
@@ -67,9 +67,7 @@ class StepWrapper:
         # Create metrics directory (iEDA issue workaround)
         os.makedirs(f"{self.chip.path_setting.result_dir}/metrics", exist_ok=True)
 
-        output_def = (
-            f"{self.chip.path_setting.result_dir}/{self.chip.top_name}_{step_name}.def"
-        )
+        output_def = f"{self.chip.path_setting.result_dir}/{self.chip.top_name}_{step_name}.def"
         self.chip.path_setting.def_file = output_def
 
         metrics, artifacts = step.floorplan.run(
@@ -145,12 +143,8 @@ class StepWrapper:
 
     def run_save_layout_gds(self, step_name: str, take_snapshot: bool = False) -> dict:
         """Run dump layout GDS step"""
-        gds_file = (
-            f"{self.chip.path_setting.result_dir}/{self.chip.top_name}_{step_name}.gds"
-        )
-        snapshot_file = (
-            f"{self.chip.path_setting.result_dir}/{self.chip.top_name}_{step_name}.png"
-        )
+        gds_file = f"{self.chip.path_setting.result_dir}/{self.chip.top_name}_{step_name}.gds"
+        snapshot_file = f"{self.chip.path_setting.result_dir}/{self.chip.top_name}_{step_name}.png"
 
         step.layout_gds.run(
             top_name=self.chip.top_name,
@@ -171,9 +165,7 @@ class StepWrapper:
         else:
             return dict({"gds_file": gds_file})
 
-    def run_collect_timing_metrics(
-        self
-    ) -> dict:
+    def run_collect_timing_metrics(self) -> dict:
         """Run collect timing metrics step"""
 
         output_file = f"{self.chip.path_setting.result_dir}/{self.chip.top_name}.timing.json"
@@ -186,10 +178,7 @@ class StepWrapper:
 
     def save_execute_time_report(self) -> str:
         """Save execute time report"""
-        return save_execute_time_data(
-            self.chip.path_setting.result_dir,
-            self.chip.top_name
-        )
+        return save_execute_time_data(self.chip.path_setting.result_dir, self.chip.top_name)
 
     def save_merged_metrics(self, execute_time_json: str):
         """Merge and save the metrics from execution time and timing reports"""

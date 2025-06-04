@@ -1,9 +1,10 @@
 import json
-import os
 import logging
+import os
 from datetime import datetime
 from typing import Callable
-from .json_helper import load_json, dump_json
+
+from .json_helper import dump_json, load_json
 
 # Save all step timing data in a global dictionary
 time_data = {
@@ -12,84 +13,56 @@ time_data = {
 }
 
 
-def time_decorator(func: Callable) -> Callable:
+def start_step_timer(step_name: str):
     """
-    Record the time taken by a function and store it in a global dictionary.
+    Start a timer for a specific step and return the start time and datetime.
     Args:
-        func (Callable): The function to be decorated.
+        step_name (str): Name of the step to start timing for.
     Returns:
-        Callable: The wrapped function with timing functionality.
+        tuple: A tuple containing the start datetime, start time, and step name.
+    Raises:
+        ValueError: If step_name is not provided.
     """
-
     import time
-    import functools
 
-    @functools.wraps(func)
-    def wrapper(self, *args, **kwargs):
-        if len(args) > 0 and isinstance(args[0], str):
-            step_name = args[0]
-        elif "step_name" in kwargs:
-            step_name = kwargs["step_name"]
-        else:
-            step_name = func.__name__.replace("run_", "")
+    if step_name is None or step_name == "":
+        raise ValueError("step_name must be provided and cannot be empty")
 
-        # Record the start time
-        start_time = time.perf_counter()
-        start_datetime = datetime.now().isoformat()
+    start_time = time.perf_counter()
+    start_datetime = datetime.now().isoformat()
 
-        try:
-            result = func(self, *args, **kwargs)
-            status = "success"
-        except Exception as e:
-            status = f"failed: {str(e)}"
-            raise
-        finally:
-            # Record the end time
-            end_time = time.perf_counter()
-            end_datetime = datetime.now().isoformat()
-            elapsed = end_time - start_time
+    return start_datetime, start_time, step_name
 
-            # Record the timing data
-            time_data["steps"][step_name] = {
-                "start_time": start_datetime,
-                "end_time": end_datetime,
-                "elapsed_seconds": elapsed,
-                "status": status,
-            }
 
-            # If it's the first step, record the total start time
-            if not time_data["summary"]["start_time"]:
-                time_data["summary"]["start_time"] = start_datetime
+def end_step_timer(start_datetime: str, start_time: float, step_name: str):
+    """
+    End the timer for a specific step and record the elapsed time.
+    Args:
+        start_datetime (str): Start datetime of the step.
+        start_time (float): Start time in seconds.
+        step_name (str): Name of the step to end timing for.
+    Raises:
+        ValueError: If step_name is not provided.
+    """
+    import time
 
-            # Update the total time
-            time_data["summary"]["end_time"] = end_datetime
-            time_data["summary"]["total_time"] += elapsed
+    end_time = time.perf_counter()
+    end_datetime = datetime.now().isoformat()
+    elapsed = end_time - start_time
 
-        # Lazy import to avoid circular dependency
-        from ..evaluation.timing import timing_eval
+    # Record the timing data
+    time_data["steps"][step_name] = {
+        "start_time": start_datetime,
+        "end_time": end_datetime,
+        "elapsed_seconds": elapsed,
+    }
 
-        # TODO: Can we merge the execution time data with the timing evaluation data?
-        try:
-            chip = self.chip
-            if hasattr(chip.path_setting, "def_file") and os.path.exists(
-                chip.path_setting.def_file
-            ):
-                timing_eval(
-                    step_name=step_name,
-                    top_name=self.chip.top_name,
-                    result_dir=self.chip.path_setting.result_dir,
-                    sdc_file=self.chip.path_setting.sdc_file,
-                    input_netlist=self.chip.path_setting.netlist_file,
-                    input_def=self.chip.path_setting.def_file,
-                    route_type="HPWL",  # TODO: make this configurable
-                    clock_freq=str(self.chip.constrain.clk_freq_mhz),
-                )
-                logging.info(f"Finished {step_name}")
-        except Exception as e:
-            logging.error(f"Error during timing evaluation for {step_name}: {str(e)}")
-        return result
-
-    return wrapper
+    # If it's the first step, record the total start time
+    if not time_data["summary"]["start_time"]:
+        time_data["summary"]["start_time"] = start_datetime
+    # Update the total time
+    time_data["summary"]["end_time"] = end_datetime
+    time_data["summary"]["total_time"] += elapsed
 
 
 def save_execute_time_data(result_dir: str, chip_name: str) -> str:
@@ -103,9 +76,7 @@ def save_execute_time_data(result_dir: str, chip_name: str) -> str:
     """
     os.makedirs(result_dir, exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    json_file = os.path.join(
-        result_dir, f"evaluation/{chip_name}_execution_time_{timestamp}.json"
-    )
+    json_file = os.path.join(result_dir, f"evaluation/{chip_name}_execution_time_{timestamp}.json")
     dump_json(json_file=json_file, data=time_data)
     return json_file
 
@@ -130,9 +101,7 @@ def save_merged_metrics(chip: Chip, execute_time_json: str):
 
     # Define the paths for the merged report and other reports
     merged_report_path = f"{chip.path_setting.result_dir}/evaluation/final_metrics.json"
-    timing_report_path = (
-        f"{chip.path_setting.result_dir}/evaluation/timing_report.json"
-    )
+    timing_report_path = f"{chip.path_setting.result_dir}/evaluation/timing_report.json"
     execute_time_report_path = execute_time_json
 
     # Ensure the directory exists

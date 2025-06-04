@@ -1,7 +1,7 @@
-import os
 import json
-import subprocess
 import logging
+import os
+import subprocess
 
 
 def replace_one(text, item):
@@ -54,9 +54,7 @@ def cmd_run(shell_cmd: list, shell_env: dict, period_name: str, log_path: str):
                 logging.error("(%s) \n stderr: %s", period_name, stderr_content)
                 raise subprocess.CalledProcessError(ret_code, shell_cmd)
 
-        logging.info(
-            f"The output of the command has been saved to: {timing_output_path}"
-        )
+        logging.info(f"The output of the command has been saved to: {timing_output_path}")
 
     except Exception as e:
         logging.error(f"Error command: {shell_cmd}, Error: {e}")
@@ -80,19 +78,13 @@ def merge_timing_reports(result_dir: str, log_path: str, output_file: str = None
 
     timing_dir = f"{result_dir}/evaluation"
     if not os.path.exists(timing_dir):
-        raise FileNotFoundError(
-            f"Failed to find timing evaluation directory: {timing_dir}"
-        )
+        raise FileNotFoundError(f"Failed to find timing evaluation directory: {timing_dir}")
 
-    step_dirs = [
-        d for d in os.listdir(timing_dir) if os.path.isdir(os.path.join(timing_dir, d))
-    ]
+    step_dirs = [d for d in os.listdir(timing_dir) if os.path.isdir(os.path.join(timing_dir, d))]
 
     merged_data = {}
     for step_name in step_dirs:
-        report_path = os.path.join(
-            timing_dir, step_name, f"timing_result.json"
-        )
+        report_path = os.path.join(timing_dir, step_name, f"timing_result.json")
         if os.path.exists(report_path):
             try:
                 with open(report_path, "r") as f:
