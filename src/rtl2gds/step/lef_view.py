@@ -59,9 +59,7 @@ def save_abstract_lef(input_def: str, lef_file: str):
         print("Magic stderr:", e.stderr)
 
     except subprocess.CalledProcessError as e:
-        print(
-            f"Command '{e.cmd}' failed with signal or non-zero exit code {e.returncode}."
-        )
+        print(f"Command '{e.cmd}' failed with signal or non-zero exit code {e.returncode}.")
         print("Magic stdout:", e.stdout)
         print("Magic stderr:", e.stderr)
 

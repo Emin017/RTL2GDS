@@ -163,9 +163,7 @@ def run_magic(
         # print("Magic stderr:", e.stderr)
 
     except subprocess.CalledProcessError as e:
-        print(
-            f"Command '{e.cmd}' failed with signal or non-zero exit code {e.returncode}."
-        )
+        print(f"Command '{e.cmd}' failed with signal or non-zero exit code {e.returncode}.")
         print("Magic stdout:", e.stdout)
         print("Magic stderr:", e.stderr)
 

@@ -41,9 +41,7 @@ class Chip:
 
         if config_yaml:
             if config_dict:
-                raise ValueError(
-                    "config_yaml and config_dict cannot be set at the same time."
-                )
+                raise ValueError("config_yaml and config_dict cannot be set at the same time.")
             if not os.path.exists(config_yaml):
                 raise FileNotFoundError(f"Config file {config_yaml} does not exist. ")
             with open(config_yaml, "r", encoding="utf-8") as f:
@@ -83,9 +81,7 @@ class Chip:
                 self.update2config()
             else:
                 self._init_from_config(self.config)
-            self.config_yaml = Path(
-                f"{self.path_setting.result_dir}/rtl2gds_{self.top_name}.yaml"
-            )
+            self.config_yaml = Path(f"{self.path_setting.result_dir}/rtl2gds_{self.top_name}.yaml")
             self.config_yaml.parent.mkdir(parents=True, exist_ok=True)
             self.config_yaml.touch()
             self.dump_config_yaml(override=True)
@@ -185,9 +181,7 @@ class Chip:
         io_env.update(self.constrain.to_env_dict())
         return io_env
 
-    def dump_config_yaml(
-        self, config_yaml: Path | None = None, override: bool = False
-    ) -> Path:
+    def dump_config_yaml(self, config_yaml: Path | None = None, override: bool = False) -> Path:
         """
         Dumps the configuration dictionary to a YAML file.
 
@@ -206,7 +200,9 @@ class Chip:
             target_path = self.config_yaml
         else:
             base_name = self.config_yaml.stem
-            checkpoint_filename = f"{base_name}_checkpoint_{self.last_update_time}_{self.finished_step}.yaml"
+            checkpoint_filename = (
+                f"{base_name}_checkpoint_{self.last_update_time}_{self.finished_step}.yaml"
+            )
             target_path = self.config_yaml.with_name(checkpoint_filename)
 
         target_path.parent.mkdir(parents=True, exist_ok=True)
