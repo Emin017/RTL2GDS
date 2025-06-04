@@ -153,10 +153,12 @@ class StepWrapper:
         )
 
         step.layout_gds.run(
+            top_name=self.chip.top_name,
             input_def=self.chip.path_setting.def_file,
+            die_area_bbox=self.chip.constrain.die_bbox,
             gds_file=gds_file,
-            result_dir=self.chip.path_setting.result_dir,
             snapshot_file=snapshot_file if take_snapshot else None,
+            tool="magic",
         )
 
         self.chip.path_setting.gds_file = gds_file
