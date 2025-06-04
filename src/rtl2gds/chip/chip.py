@@ -68,7 +68,6 @@ class Chip:
         self.metrics = DesignMetrics()
         # Contexts
         self.config = config_dict
-        self.config_yaml = Path(config_yaml)
         self.finished_step = finished_step
         self.expected_step = expected_step
         self.init_time = self._strtime()
@@ -84,12 +83,11 @@ class Chip:
                 self.update2config()
             else:
                 self._init_from_config(self.config)
-            self.config_yaml = (
+            self.config_yaml = Path(
                 f"{self.path_setting.result_dir}/rtl2gds_{self.top_name}.yaml"
             )
-            path = Path(self.config_yaml)
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.touch()
+            self.config_yaml.parent.mkdir(parents=True, exist_ok=True)
+            self.config_yaml.touch()
             self.dump_config_yaml(override=True)
 
     def _strtime(self) -> str:
