@@ -74,6 +74,9 @@ class Step:
 
         shell_env.update(ENV_TOOLS_PATH)
 
+        from rtl2gds.utils.time import end_step_timer, start_step_timer
+
+        start_datetime, start_time, timer_step_name = start_step_timer(step_name=self.step_name)
         try:
             ret_code = subprocess.call(self.shell_cmd, env=shell_env)
             if ret_code != 0:
@@ -84,6 +87,12 @@ class Step:
                 e.cmd,
                 output=f"Step {self.step_name} failed with return code {e.returncode}",
             ) from e
+
+        end_step_timer(
+            start_datetime=start_datetime,
+            start_time=start_time,
+            step_name=timer_step_name,
+        )
 
         # iterate through artifacts and check if they exist
         for key, value in artifacts.items():
