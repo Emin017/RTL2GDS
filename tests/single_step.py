@@ -1,7 +1,14 @@
+import logging
 from pprint import pprint
 
 from rtl2gds import Chip, StepName, flow
 from rtl2gds.utils import MDLogger
+
+logging.basicConfig(
+    format="[%(asctime)s - %(levelname)s - %(name)s]: %(message)s",
+    level=logging.INFO,
+)
+
 
 # 配置输入信息
 design_base = "/opt/rtl2gds/demo/spm"
