@@ -72,6 +72,13 @@ jobs:
           python3 -m rtl2gds -c ${{ matrix.config }}
           echo "::endgroup::"
 
+      - name: Run ${{ matrix.design }} for single step checks
+        working-directory: ${{ matrix.path }}
+        run: |
+          echo "::group::Running single step checks for ${{ matrix.design }}"
+          python3 -m rtl2gds.flow.single_step_main -c ${{ matrix.config }} --step synthesis
+          echo "::endgroup::"
+
       - name: Upload artifacts on failure
         if: failure()
         uses: actions/upload-artifact@v4
